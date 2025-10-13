@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "InputAction.h"
 #include "CtpPlayerPawn.generated.h"
 
 class UInputComponent;
-class UInputAction;
 struct FInputActionInstance;
 
 UCLASS()
@@ -28,7 +28,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(Category="Centipede", VisibleAnywhere)
+	UPROPERTY(Category="Centipede", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 public:
@@ -42,4 +42,18 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Centipede")
 	TObjectPtr<UInputAction> MoveAction;
+
+	UPROPERTY(EditAnywhere, Category="Centipede")
+	TObjectPtr<UInputAction> ShootAction;
+
+	UPROPERTY(EditAnywhere, Category="Centipede")
+	FVector2D MoveDirection = FVector2D::Zero();
+
+	UPROPERTY(EditAnywhere, Category="Centipede")
+	float MoveSpeed = 1000.f;
+
+	UPROPERTY(EditAnywhere, Category="Centipede")
+	FVector2D MeshScale = FVector2D(.6f, 1.f);
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 };

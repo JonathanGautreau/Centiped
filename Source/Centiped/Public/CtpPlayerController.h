@@ -3,11 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputMappingContext.h"
 #include "GameFramework/PlayerController.h"
 #include "CtpPlayerController.generated.h"
-
-class UInputMappingContext;
-class UEnhancedInputLocalPlayerSubsystem;
 
 /**
  * 
@@ -31,5 +29,6 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, Category="Centipede")
-	TSoftObjectPtr<UInputMappingContext> InputMapping;
+	TSoftObjectPtr<UInputMappingContext> InputMapping =
+		TSoftObjectPtr<UInputMappingContext>(FSoftObjectPath(TEXT("/Game/Centiped/Inputs/IMC_Default.IMC_Default")));
 };

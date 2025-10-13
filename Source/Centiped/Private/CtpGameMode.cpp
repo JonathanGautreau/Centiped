@@ -4,6 +4,7 @@
 #include "Centiped/Public/CtpGameMode.h"
 #include "Centiped/Public/CtpPlayerController.h"
 #include "Centiped/Public/CtpPlayerPawn.h"
+#include "EngineUtils.h"
 
 ACtpGameMode::ACtpGameMode()
 {
@@ -15,6 +16,9 @@ void ACtpGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+	}
 }
 

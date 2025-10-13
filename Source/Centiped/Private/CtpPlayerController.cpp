@@ -2,11 +2,25 @@
 
 
 #include "Centiped/Public/CtpPlayerController.h"
+#include "Centiped/Public/CtpGameMode.h"
+#include "Centiped/Public/CtpLog.h"
+#include "Centiped/Public/CtpPlayerPawn.h"
+#include "EnhancedInputSubsystems.h"
 #include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
 
 ACtpPlayerController::ACtpPlayerController()
 {
-	
+	// static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(TEXT("/Game/Centiped/Inputs/IMC_Default.IMC_Default"));
+	// if (InputMappingContextRef.Succeeded())
+	// {
+	// 	InputMapping = InputMappingContextRef.Object;
+	// 	UE_LOG(LogCentiped, Log, TEXT("Input Mapping Context loaded successfully in constructor"));
+	// }
+	// else
+	// {
+	// 	UE_LOG(LogCentiped, Error, TEXT("Failed to load Input Mapping Context from /Game/Centiped/Inputs/IMC_Default.IMC_Default"));
+	// }
 }
 
 void ACtpPlayerController::BeginPlay()
@@ -17,7 +31,24 @@ void ACtpPlayerController::BeginPlay()
 	SpawnParameters.Owner = this;
 
 	CameraActor = GetWorld()->SpawnActor<ACameraActor>(SpawnParameters);
-	CameraActor.
+	// CameraActor = GetWorld()->SpawnActor<ACameraActor>(ACameraActor::StaticClass());
+
+	if (CameraActor)
+	{
+		if (UCameraComponent* CameraComponent = CameraActor->GetCameraComponent())
+		{
+			CameraComponent->SetProjectionMode(ECameraProjectionMode::Type::Orthographic);
+			CameraComponent->SetOrthoWidth(1600.f);
+			CameraComponent->SetWorldLocation(FVector(-500, 0, 0));
+			// CameraComponent->SetAspectRatio(160.f / 192.f);
+			CameraComponent->SetAspectRatio(16.f / 9.f);
+
+			CameraActor->SetActorLocation(FVector(-500.f, 0.f, 0.f));
+			CameraActor->SetActorRotation(FRotator(0.f, 0.f, 0.f));
+
+			SetViewTarget(CameraActor);
+		}
+	}
 }
 
 void ACtpPlayerController::OnPossess(APawn* InPawn)
@@ -29,8 +60,22 @@ void ACtpPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+	UE_LOG(LogCentiped, Log, TEXT("SetupInputComponent called"));
+
+	if (const ULocalPlayer* LocalPlayer = GetLocalPlayer())
 	{
-		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
+		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (!InputMapping.IsNull())
+			{
+				if (const UInputMappingContext* Context = InputMapping.LoadSynchronous())
+				{
+					InputSystem->AddMappingContext(Context, 0);
+					return;
+				}
+			}
+		}
 	}
+
+	UE_LOG(LogCentiped, Error, TEXT("Failed to add InputMapping : %s"), *InputMapping->GetPathName());
 }
