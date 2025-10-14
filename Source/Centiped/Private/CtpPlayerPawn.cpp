@@ -5,6 +5,7 @@
 #include "Centiped/Public/CTPLog.h"
 #include "EnhancedInputComponent.h"
 #include "Centiped/Public/CtpGameMode.h"
+#include "Centiped/Public/CtpBullet.h"
 #include "Kismet/GameplayStatics.h"
 // #include "InputAction.h"
 // #include "InputTriggers.h"
@@ -146,7 +147,6 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
 	// TODO
 	UE_LOG(LogCentiped, Log, TEXT("Shoot"));
-	MoveDirection = Instance.GetValue().Get<FVector2D>().GetSafeNormal();
 }
 
 void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)

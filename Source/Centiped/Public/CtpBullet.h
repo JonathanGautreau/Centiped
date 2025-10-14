@@ -35,4 +35,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Centipede")
 	FVector2D MeshScale = FVector2D(.3f, .3f);
+
+	void CreateBullet();
 };

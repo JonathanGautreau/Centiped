@@ -14,22 +14,6 @@ ACtpBullet::ACtpBullet()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Bullet.Bullet"));
-	if (StaticMeshRef.Succeeded())
-	{
-		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
-	}
-
-	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	MeshComponent->SetGenerateOverlapEvents(true);
-	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
-	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
-	MeshComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -51,5 +35,24 @@ void ACtpBullet::Tick(float DeltaTime)
 
 		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
 	}
+}
+
+void ACtpBullet::CreateBullet()
+{
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Bullet.Bullet"));
+	if (StaticMeshRef.Succeeded())
+	{
+		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
+	}
+
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	MeshComponent->SetGenerateOverlapEvents(true);
+	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
+	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
+	MeshComponent->SetupAttachment(RootComponent);
 }
 
