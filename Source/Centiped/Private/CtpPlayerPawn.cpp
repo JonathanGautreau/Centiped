@@ -21,8 +21,7 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-
-	// TODO : add Cube.Cube in UE5
+	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Cube.Cube"));
 	if (StaticMeshRef.Succeeded())
 	{
@@ -63,7 +62,15 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 void ACtpPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		SetActorLocation(FVector(0, 0, -(GameMode->Height / 3)));
+	}
+	else
+	{
+		SetActorLocation(FVector(0, 0, -900));
+	}
 }
 
 // Called every frame
@@ -80,6 +87,17 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 			NewLocation,
 			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
 			GameMode->Bounds.Max - 0.5f * MeshScale * 100
+<<<<<<< Updated upstream
+=======
+		);
+
+		NewLocation = NewLocation.Clamp(
+			NewLocation,
+			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
+			FVector2D(
+				GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100,
+				GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100 - (GameMode->Height * 2 / 3))
+>>>>>>> Stashed changes
 		);
 
 		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
@@ -130,6 +148,7 @@ void ACtpPlayerPawn::Move(const FInputActionInstance& Instance)
 void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
 	// TODO
+	UE_LOG(LogCentiped, Log, TEXT("Shoot"));
 	MoveDirection = Instance.GetValue().Get<FVector2D>().GetSafeNormal();
 }
 

@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "InputAction.h"
 #include "CtpPlayerPawn.generated.h"
 
+// Forward declaration avoids circular dependencies 
 class UInputComponent;
+class UInputAction;
 struct FInputActionInstance;
 
 UCLASS()

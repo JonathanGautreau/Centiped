@@ -19,6 +19,12 @@ public:
 
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere, Category="Game")
+	float Height = 1920;
+	
+	UPROPERTY(VisibleAnywhere, Category="Game")
+	float Width = 1600;
+	
 	UPROPERTY(EditAnywhere, Category="Game")
-	FBox2D Bounds = FBox2D(FVector2D(-800, -960), FVector2D(800, 960));
+	FBox2D Bounds = FBox2D(FVector2D(-(Width / 2), -(Height / 2)), FVector2D(Width / 2, Height / 2));
 };
