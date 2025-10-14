@@ -87,11 +87,6 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 			NewLocation,
 			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
 			GameMode->Bounds.Max - 0.5f * MeshScale * 100
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
 		);
 
 		NewLocation = NewLocation.Clamp(
@@ -100,10 +95,6 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 			FVector2D(
 				GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100,
 				GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100 - (GameMode->Height * 2 / 3))
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 		);
 
 		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
