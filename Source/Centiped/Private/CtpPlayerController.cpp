@@ -37,16 +37,19 @@ void ACtpPlayerController::BeginPlay()
 	{
 		if (UCameraComponent* CameraComponent = CameraActor->GetCameraComponent())
 		{
-			CameraComponent->SetProjectionMode(ECameraProjectionMode::Type::Orthographic);
-			CameraComponent->SetOrthoWidth(1600.f);
-			CameraComponent->SetWorldLocation(FVector(-500, 0, 0));
-			CameraComponent->SetAspectRatio(160.f / 192.f);
-			//CameraComponent->SetAspectRatio(16.f / 9.f);
+			if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+			{
+				CameraComponent->SetProjectionMode(ECameraProjectionMode::Type::Orthographic);
+				CameraComponent->SetOrthoWidth(GameMode->Width);
+				CameraComponent->SetWorldLocation(FVector(-500, 0, 0));
+				CameraComponent->SetAspectRatio(GameMode->Width / GameMode->Height);
 
-			CameraActor->SetActorLocation(FVector(-500.f, 0.f, 0.f));
-			CameraActor->SetActorRotation(FRotator(0.f, 0.f, 0.f));
+				CameraActor->SetActorLocation(FVector(-500.f, 0.f, 0.f));
+				CameraActor->SetActorRotation(FRotator(0.f, 0.f, 0.f));
 
-			SetViewTarget(CameraActor);
+				SetViewTarget(CameraActor);
+				
+			}
 		}
 	}
 }
