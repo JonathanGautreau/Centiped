@@ -40,8 +40,8 @@ void ACtpPlayerController::BeginPlay()
 			CameraComponent->SetProjectionMode(ECameraProjectionMode::Type::Orthographic);
 			CameraComponent->SetOrthoWidth(1600.f);
 			CameraComponent->SetWorldLocation(FVector(-500, 0, 0));
-			// CameraComponent->SetAspectRatio(160.f / 192.f);
-			CameraComponent->SetAspectRatio(16.f / 9.f);
+			CameraComponent->SetAspectRatio(160.f / 192.f);
+			//CameraComponent->SetAspectRatio(16.f / 9.f);
 
 			CameraActor->SetActorLocation(FVector(-500.f, 0.f, 0.f));
 			CameraActor->SetActorRotation(FRotator(0.f, 0.f, 0.f));

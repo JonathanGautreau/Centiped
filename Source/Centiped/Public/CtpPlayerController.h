@@ -29,6 +29,5 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, Category="Centipede")
-	TSoftObjectPtr<UInputMappingContext> InputMapping =
-		TSoftObjectPtr<UInputMappingContext>(FSoftObjectPath(TEXT("/Game/Centiped/Inputs/IMC_Default.IMC_Default")));
+	TSoftObjectPtr<UInputMappingContext> InputMapping = TSoftObjectPtr<UInputMappingContext>(FSoftObjectPath(TEXT("/Game/Centiped/Inputs/IMC_Default.IMC_Default")));
 };

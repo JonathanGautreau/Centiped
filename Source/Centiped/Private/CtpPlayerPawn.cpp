@@ -79,7 +79,7 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 		NewLocation = NewLocation.Clamp(
 			NewLocation,
 			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
-			GameMode->Bounds.Max + 0.5f * MeshScale * 100
+			GameMode->Bounds.Max - 0.5f * MeshScale * 100
 		);
 
 		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
