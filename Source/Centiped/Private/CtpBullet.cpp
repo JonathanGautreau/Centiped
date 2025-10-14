@@ -37,22 +37,22 @@ void ACtpBullet::Tick(float DeltaTime)
 	}
 }
 
-void ACtpBullet::CreateBullet()
+void ACtpBullet::CreateBullet(ACtpBullet* Bullet)
 {
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Bullet.Bullet"));
-	if (StaticMeshRef.Succeeded())
-	{
-		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
-	}
-
-	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	MeshComponent->SetGenerateOverlapEvents(true);
-	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
-	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
-	MeshComponent->SetupAttachment(RootComponent);
+	// Bullet->RootComponent = Bullet->CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	// Bullet->MeshComponent = Bullet->CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	//
+	// static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Bullet.Bullet"));
+	// if (StaticMeshRef.Succeeded())
+	// {
+	// 	MeshComponent->SetStaticMesh(StaticMeshRef.Object);
+	// }
+	//
+	// MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	// MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	// MeshComponent->SetGenerateOverlapEvents(true);
+	// MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
+	// MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
+	// MeshComponent->SetupAttachment(RootComponent);
 }
 

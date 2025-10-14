@@ -95,7 +95,7 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
 			FVector2D(
 				GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100,
-				GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100 - (GameMode->Height * 2 / 3))
+				GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100 - GameMode->Height * 2 / 3)
 		);
 
 		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
@@ -147,6 +147,9 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
 	// TODO
 	UE_LOG(LogCentiped, Log, TEXT("Shoot"));
+
+ 	ACtpBullet* Bullet = NewObject<ACtpBullet>();
+	Bullet->CreateBullet(Bullet);
 }
 
 void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
