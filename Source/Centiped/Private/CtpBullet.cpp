@@ -2,7 +2,6 @@
 
 
 #include "CtpBullet.h"
-
 #include "CtpGameMode.h"
 
 
@@ -14,6 +13,30 @@ ACtpBullet::ACtpBullet()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	if(!RootComponent)
+	{
+		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSceneComponent"));
+	}
+		
+	if(!CollisionComponent)
+	{
+		CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+		CollisionComponent->InitSphereRadius(1.0f);
+		RootComponent = CollisionComponent;
+	}
+
+	if(!ProjectileMovementComponent)
+	{
+		ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
+		ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
+		ProjectileMovementComponent->InitialSpeed = 3000.0f;
+		ProjectileMovementComponent->MaxSpeed = 3000.0f;
+		ProjectileMovementComponent->bRotationFollowsVelocity = true;
+		ProjectileMovementComponent->bShouldBounce = true;
+		ProjectileMovementComponent->Bounciness = 0.3f;
+		ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -37,22 +60,12 @@ void ACtpBullet::Tick(float DeltaTime)
 	}
 }
 
-void ACtpBullet::CreateBullet(ACtpBullet* Bullet)
+void ACtpBullet::CreateBullet(ACtpBullet& Bullet)
 {
-	// Bullet->RootComponent = Bullet->CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
-	// Bullet->MeshComponent = Bullet->CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	//
-	// static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Bullet.Bullet"));
-	// if (StaticMeshRef.Succeeded())
-	// {
-	// 	MeshComponent->SetStaticMesh(StaticMeshRef.Object);
-	// }
-	//
-	// MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	// MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	// MeshComponent->SetGenerateOverlapEvents(true);
-	// MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
-	// MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
-	// MeshComponent->SetupAttachment(RootComponent);
+}
+
+void ACtpBullet::FireInDirection(const FVector& ShootDirection)
+{
+    ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
 }
 

@@ -3,11 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "Components/SphereComponent.h"
+#include "GameFramework/Actor.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "CtpBullet.generated.h"
 
 UCLASS()
-class CENTIPED_API ACtpBullet : public APawn
+class CENTIPED_API ACtpBullet : public AActor
 {
 	GENERATED_BODY()
 
@@ -24,17 +26,25 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(Category="Centipede", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(Category="Bullet", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 public:
 	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 
-	UPROPERTY(EditAnywhere, Category="Centipede")
+	UPROPERTY(EditAnywhere, Category="Bullet")
 	float MoveSpeed = 2000.f;
 
-	UPROPERTY(EditAnywhere, Category="Centipede")
+	UPROPERTY(EditAnywhere, Category="Bullet")
 	FVector2D MeshScale = FVector2D(.3f, .3f);
 
-	void CreateBullet(ACtpBullet* Bullet);
+	UPROPERTY(VisibleDefaultsOnly, Category="Bullet")
+	USphereComponent* CollisionComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Bullet")
+	UProjectileMovementComponent* ProjectileMovementComponent;
+
+	void CreateBullet(ACtpBullet& Bullet);
+
+	void FireInDirection(const FVector& ShootDirection);
 };

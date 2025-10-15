@@ -24,12 +24,16 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")
+	TSubclassOf<class ACtpBullet> ProjectileClass;
+
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(Category="Centipede", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(Category="PlayerPawn", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 public:
@@ -41,20 +45,23 @@ public:
 	void Move(const FInputActionInstance& Instance);
 	void Shoot(const FInputActionInstance& Instance);
 
-	UPROPERTY(EditAnywhere, Category="Centipede")
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	TObjectPtr<UInputAction> MoveAction;
 
-	UPROPERTY(EditAnywhere, Category="Centipede")
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	TObjectPtr<UInputAction> ShootAction;
 
-	UPROPERTY(EditAnywhere, Category="Centipede")
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	FVector2D MoveDirection = FVector2D::Zero();
 
-	UPROPERTY(EditAnywhere, Category="Centipede")
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	float MoveSpeed = 1000.f;
 
-	UPROPERTY(EditAnywhere, Category="Centipede")
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	FVector2D MeshScale = FVector2D(.6f, 1.f);
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PlayerPawn")
+	FVector MuzzleOffset;
 };
