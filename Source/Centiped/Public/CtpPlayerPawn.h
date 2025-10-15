@@ -59,9 +59,6 @@ public:
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PlayerPawn")
-	FVector MuzzleOffset;
-
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")
 	TSubclassOf<class ACtpBullet> ProjectileClass = ACtpBullet::StaticClass();

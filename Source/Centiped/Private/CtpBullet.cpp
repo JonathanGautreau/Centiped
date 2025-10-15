@@ -19,34 +19,21 @@ ACtpBullet::ACtpBullet()
 	{
 		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSceneComponent"));
 	}
-		
-	if(!CollisionComponent)
-	{
-		CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-		CollisionComponent->InitSphereRadius(.1f);
-		RootComponent = CollisionComponent;
-	}
 
-	if(!ProjectileMovementComponent)
+	if(!MeshComponent)
 	{
-		ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-		// ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
-		// ProjectileMovementComponent->InitialSpeed = 3000.0f;
-		ProjectileMovementComponent->MaxSpeed = 1000.0f;
-		// ProjectileMovementComponent->bRotationFollowsVelocity = true;
-		// ProjectileMovementComponent->bShouldBounce = true;
-		// ProjectileMovementComponent->Bounciness = 0.3f;
-		// ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
-	}
-
-	if(!BulletMeshComponent)
-	{
-		BulletMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMeshComponent"));
+		MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMeshComponent"));
 		static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Bullet.SM_Bullet"));
 		if(StaticMeshRef.Succeeded())
 		{
-			BulletMeshComponent->SetStaticMesh(StaticMeshRef.Object);
+			MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 		}
+		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+		MeshComponent->SetGenerateOverlapEvents(true);
+		MeshComponent->SetRelativeScale3D(FVector(Radius, Radius, Radius));
+		MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
+		MeshComponent->SetupAttachment(RootComponent);
 	}
 }
 
@@ -61,24 +48,23 @@ void ACtpBullet::BeginPlay()
 void ACtpBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	FVector CurrentLocation = GetActorLocation();
+	BulletVelocity(DeltaTime);
 
-	// if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
-	// {
-		// FVector LaunchDirection = FVector(0, 1, 0);
-	// 	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
-	// 	NewLocation += FVector2D::Zero() * DeltaTime * MoveSpeed;
-	//
-	// 	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
-	// }
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (CurrentLocation.Z > GameMode->Height)
+		{
+			Destroy();
+		}
+	}
 }
 
-void ACtpBullet::CreateBullet(ACtpBullet& Bullet)
+void ACtpBullet::BulletVelocity(float DeltaTime)
 {
-}
-
-void ACtpBullet::FireInDirection(const FVector& ShootDirection)
-{
-	UE_LOG(LogCentiped, Log, TEXT("Bullet fired"))
-    ProjectileMovementComponent->Velocity = ShootDirection * MoveSpeed;
+	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
+	NewLocation.Y += DeltaTime * MoveSpeed;
+	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
 }
 

@@ -20,6 +20,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void BulletVelocity(float DeltaTime);
 
 public:
 	// Called every frame
@@ -27,24 +28,14 @@ public:
 
 private:
 	UPROPERTY(Category="Bullet", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> BulletMeshComponent;
+	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 public:
-	UStaticMeshComponent* GetMeshComponent() const { return BulletMeshComponent; }
+	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 
 	UPROPERTY(EditAnywhere, Category="Bullet")
-	float MoveSpeed = 2000.f;
+	float MoveSpeed = 1000.f;
 
 	UPROPERTY(EditAnywhere, Category="Bullet")
-	FVector2D MeshScale = FVector2D(.3f, .3f);
-
-	UPROPERTY(VisibleDefaultsOnly, Category="Bullet")
-	USphereComponent* CollisionComponent;
-
-	UPROPERTY(VisibleAnywhere, Category = "Bullet")
-	UProjectileMovementComponent* ProjectileMovementComponent;
-
-	void CreateBullet(ACtpBullet& Bullet);
-
-	void FireInDirection(const FVector& ShootDirection);
+	float Radius = .2f;
 };
