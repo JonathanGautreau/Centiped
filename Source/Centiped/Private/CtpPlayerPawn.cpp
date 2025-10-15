@@ -83,11 +83,11 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 		FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 		NewLocation += MoveDirection * DeltaTime * MoveSpeed;
 
-		NewLocation = NewLocation.Clamp(
-			NewLocation,
-			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
-			GameMode->Bounds.Max - 0.5f * MeshScale * 100
-		);
+		// NewLocation = NewLocation.Clamp(
+		// 	NewLocation,
+		// 	GameMode->Bounds.Min + 0.5f * MeshScale * 100,
+		// 	GameMode->Bounds.Max - 0.5f * MeshScale * 100
+		// );
 
 		NewLocation = NewLocation.Clamp(
 			NewLocation,
