@@ -18,7 +18,7 @@ public:
 	ACtpGameMode();
 
 	virtual void BeginPlay() override;
-
+	
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	float Height = 1920;
 	
