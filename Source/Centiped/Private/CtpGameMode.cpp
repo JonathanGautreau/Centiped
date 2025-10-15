@@ -15,7 +15,7 @@ ACtpGameMode::ACtpGameMode()
 void ACtpGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
 	{
 		AActor* Actor = *It;

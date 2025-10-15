@@ -19,6 +19,9 @@ public:
 	UPROPERTY(Category="Centipede", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
+	UPROPERTY(EditAnywhere, Category="Centipede")
+	FVector2D MeshScale = FVector2D(.6f, 1.f);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -9,6 +9,9 @@ ACTPCentiNode::ACTPCentiNode()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 
@@ -17,6 +20,11 @@ ACTPCentiNode::ACTPCentiNode()
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 	}
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	MeshComponent->SetGenerateOverlapEvents(true);
+	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
+	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
 	MeshComponent->SetupAttachment(RootComponent);
 }
 
@@ -24,16 +32,6 @@ ACTPCentiNode::ACTPCentiNode()
 void ACTPCentiNode::BeginPlay()
 {
 	Super::BeginPlay();
-	
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.Owner = this;
-
-	GetWorld()->SpawnActor<ACTPCentiNode>(SpawnParameters);
-		
-		
-
-	
-	
 }
 
 // Called every frame

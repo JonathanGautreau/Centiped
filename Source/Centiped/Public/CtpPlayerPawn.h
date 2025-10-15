@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "CTPCentiNode.h"
 #include "CtpPlayerPawn.generated.h"
 
 // Forward declaration avoids circular dependencies 
@@ -57,4 +58,8 @@ public:
 	FVector2D MeshScale = FVector2D(.6f, 1.f);
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+protected:
+	UPROPERTY()
+	TSubclassOf<class ACTPCentiNode> CentiNode = ACTPCentiNode::StaticClass();
 };

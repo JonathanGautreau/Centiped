@@ -1,6 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "CTPCentiNode.h"
 #include "Centiped/Public/CtpPlayerPawn.h"
 #include "Centiped/Public/CTPLog.h"
 #include "EnhancedInputComponent.h"
@@ -70,6 +71,14 @@ void ACtpPlayerPawn::BeginPlay()
 	else
 	{
 		SetActorLocation(FVector(0, 0, -900));
+	}
+
+	if (CentiNode)
+	{
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = this;
+
+		GetWorld()->SpawnActor<ACTPCentiNode>(CentiNode,FVector::Zero(),GetActorRotation(),SpawnParameters);
 	}
 }
 
