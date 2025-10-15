@@ -2,6 +2,8 @@
 
 
 #include "Centiped/Public/CtpPlayerPawn.h"
+
+#include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
 #include "EnhancedInputComponent.h"
 #include "Centiped/Public/CtpGameMode.h"
@@ -55,16 +57,6 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	{
 		UE_LOG(LogCentiped, Error, TEXT("Failed to load ShootAction from /Game/Centiped/Inputs/IA_Shoot"));
 	}
-
-	// for (int i = 0; i < 20; ++i)
-	// {
-	// 	if (UWorld* World = GetWorld())
-	// 	{
-	// 		FActorSpawnParameters SpawnParams;
-	// 		SpawnParams.Owner = this;
-	// 		World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-	// 	}
-	// }
 }
 
 // Called when the game starts or when spawned
@@ -79,6 +71,16 @@ void ACtpPlayerPawn::BeginPlay()
 	else
 	{
 		SetActorLocation(FVector(0, 0, -900));
+	}
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
+		}
 	}
 }
 

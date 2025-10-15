@@ -20,15 +20,15 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	// UPROPERTY(Category="PlayerPawn", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	// TObjectPtr<UStaticMeshComponent> MeshComponent;
+	UPROPERTY(Category="PlayerPawn", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
-	//
-	// UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	// FVector2D MeshScale = FVector2D(1.f, .6f);
+	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
+	
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
+	FVector2D MeshScale = FVector2D(1.f, .6f);
 };
