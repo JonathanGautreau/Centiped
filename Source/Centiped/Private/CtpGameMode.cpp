@@ -2,8 +2,6 @@
 
 
 #include "Centiped/Public/CtpGameMode.h"
-
-#include "CtpMushroom.h"
 #include "Centiped/Public/CtpPlayerController.h"
 #include "Centiped/Public/CtpPlayerPawn.h"
 #include "EngineUtils.h"
@@ -21,16 +19,5 @@ void ACtpGameMode::BeginPlay()
 	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
 	{
 		AActor* Actor = *It;
-	}
-
-	for (int i = 0; i < 20; ++i)
-	{
-		if (UWorld* World = GetWorld())
-		{
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
- 
-			World->SpawnActor<ACtpMushroom>(StaticClass(), FVector(), FRotator(), SpawnParams);
-		}
 	}
 }

@@ -4,7 +4,6 @@
 #include "Centiped/Public/CtpPlayerController.h"
 #include "Centiped/Public/CtpGameMode.h"
 #include "Centiped/Public/CtpLog.h"
-#include "Centiped/Public/CtpPlayerPawn.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
