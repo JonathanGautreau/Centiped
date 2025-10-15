@@ -2,13 +2,13 @@
 
 
 #include "Centiped/Public/CtpPlayerPawn.h"
+
+#include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
 #include "EnhancedInputComponent.h"
 #include "Centiped/Public/CtpGameMode.h"
 #include "Centiped/Public/CtpBullet.h"
 #include "Kismet/GameplayStatics.h"
-// #include "InputAction.h"
-// #include "InputTriggers.h"
 
 
 // Sets default values
@@ -56,6 +56,17 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	else
 	{
 		UE_LOG(LogCentiped, Error, TEXT("Failed to load ShootAction from /Game/Centiped/Inputs/IA_Shoot"));
+	}
+
+	for (int i = 0; i < 20; ++i)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+ 
+			World->SpawnActor<ACtpMushroom>(StaticClass(), FVector(), FRotator(), SpawnParams);
+		}
 	}
 }
 
@@ -141,16 +152,13 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
 	UE_LOG(LogCentiped, Log, TEXT("Shoot"));
 
-	// Attempt to fire a projectile.
 	if (ProjectileClass)
 	{
 		if (UWorld* World = GetWorld())
 		{
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
-			SpawnParams.Instigator = GetInstigator();
  
-			// Spawn the projectile
 			World->SpawnActor<ACtpBullet>(ProjectileClass, GetActorLocation(), FRotator(), SpawnParams);
 		}
 	}

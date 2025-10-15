@@ -49,16 +49,8 @@ void ACtpBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	FVector CurrentLocation = GetActorLocation();
 	BulletVelocity(DeltaTime);
-
-	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-		if (CurrentLocation.Z > GameMode->Height)
-		{
-			Destroy();
-		}
-	}
+	DestroyOutsideBounds();
 }
 
 void ACtpBullet::BulletVelocity(float DeltaTime)
@@ -68,3 +60,14 @@ void ACtpBullet::BulletVelocity(float DeltaTime)
 	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
 }
 
+void ACtpBullet::DestroyOutsideBounds()
+{
+	FVector CurrentLocation = GetActorLocation();
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (CurrentLocation.Z > (GameMode->Height / 2) + Radius)
+		{
+			Destroy();
+		}
+	}
+}

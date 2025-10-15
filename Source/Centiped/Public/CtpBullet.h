@@ -20,6 +20,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void DestroyOutsideBounds();
 	void BulletVelocity(float DeltaTime);
 
 public:
