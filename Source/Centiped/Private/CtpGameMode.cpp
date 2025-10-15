@@ -21,4 +21,3 @@ void ACtpGameMode::BeginPlay()
 		AActor* Actor = *It;
 	}
 }
-

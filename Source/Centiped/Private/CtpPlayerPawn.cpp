@@ -1,14 +1,14 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CTPCentiNode.h"
 #include "Centiped/Public/CtpPlayerPawn.h"
+
+#include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
 #include "EnhancedInputComponent.h"
 #include "Centiped/Public/CtpGameMode.h"
+#include "Centiped/Public/CtpBullet.h"
 #include "Kismet/GameplayStatics.h"
-// #include "InputAction.h"
-// #include "InputTriggers.h"
 
 
 // Sets default values
@@ -23,7 +23,7 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Cube.Cube"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Cube.SM_Cube"));
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
@@ -73,12 +73,14 @@ void ACtpPlayerPawn::BeginPlay()
 		SetActorLocation(FVector(0, 0, -900));
 	}
 
-	if (CentiNode)
+	for (int i = 0; i < 20; ++i)
 	{
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.Owner = this;
-
-		GetWorld()->SpawnActor<ACTPCentiNode>(CentiNode,FVector::Zero(),GetActorRotation(),SpawnParameters);
+		if (UWorld* World = GetWorld())
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
+		}
 	}
 }
 
@@ -92,18 +94,12 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 		FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 		NewLocation += MoveDirection * DeltaTime * MoveSpeed;
 
-		// NewLocation = NewLocation.Clamp(
-		// 	NewLocation,
-		// 	GameMode->Bounds.Min + 0.5f * MeshScale * 100,
-		// 	GameMode->Bounds.Max - 0.5f * MeshScale * 100
-		// );
-
 		NewLocation = NewLocation.Clamp(
 			NewLocation,
 			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
 			FVector2D(
 				GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100,
-				GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100 - (GameMode->Height * 2 / 3))
+				GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100 - GameMode->Height * 2 / 3)
 		);
 
 		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
@@ -153,15 +149,25 @@ void ACtpPlayerPawn::Move(const FInputActionInstance& Instance)
 
 void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
-	// TODO
 	UE_LOG(LogCentiped, Log, TEXT("Shoot"));
-	MoveDirection = Instance.GetValue().Get<FVector2D>().GetSafeNormal();
+
+	if (ProjectileClass)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+ 
+			World->SpawnActor<ACtpBullet>(ProjectileClass, GetActorLocation(), FRotator(), SpawnParams);
+		}
+	}
 }
 
 void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
-	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
+	// UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
 }
+
 
