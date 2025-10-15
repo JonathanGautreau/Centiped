@@ -23,7 +23,7 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Cube.Cube"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Cube.SM_Cube"));
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
@@ -87,12 +87,6 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 		NewLocation = NewLocation.Clamp(
 			NewLocation,
 			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
-			GameMode->Bounds.Max - 0.5f * MeshScale * 100
-		);
-
-		NewLocation = NewLocation.Clamp(
-			NewLocation,
-			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
 			FVector2D(
 				GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100,
 				GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100 - GameMode->Height * 2 / 3)
@@ -145,42 +139,19 @@ void ACtpPlayerPawn::Move(const FInputActionInstance& Instance)
 
 void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
-	// TODO
 	UE_LOG(LogCentiped, Log, TEXT("Shoot"));
 
 	// Attempt to fire a projectile.
 	if (ProjectileClass)
 	{
-		// Get the camera transform.
-		FVector CameraLocation;
-		FRotator CameraRotation;
-		GetActorEyesViewPoint(CameraLocation, CameraRotation);
- 
-		// Set MuzzleOffset to spawn projectiles slightly in front of the camera.
-		MuzzleOffset.Set(100.0f, 0.0f, 0.0f);
- 
-		// Transform MuzzleOffset from camera space to world space.
-		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(MuzzleOffset);
-        
-		// Skew the aim to be slightly upwards.
-		FRotator MuzzleRotation = CameraRotation;
-		MuzzleRotation.Pitch += 10.0f;
- 
-		UWorld* World = GetWorld();
-		if (World)
+		if (UWorld* World = GetWorld())
 		{
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 			SpawnParams.Instigator = GetInstigator();
  
-			// Spawn the projectile at the muzzle.
-			ACtpBullet* Projectile = World->SpawnActor<ACtpBullet>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
-			if (Projectile)
-			{
-				// Set the projectile's initial trajectory.
-				FVector LaunchDirection = MuzzleRotation.Vector();
-				Projectile->FireInDirection(LaunchDirection);
-			}
+			// Spawn the projectile
+			World->SpawnActor<ACtpBullet>(ProjectileClass, GetActorLocation(), FRotator(), SpawnParams);
 		}
 	}
 }
@@ -189,6 +160,7 @@ void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
-	UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
+	// UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
 }
+
 

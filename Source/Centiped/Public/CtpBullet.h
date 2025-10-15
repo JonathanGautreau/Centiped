@@ -27,10 +27,10 @@ public:
 
 private:
 	UPROPERTY(Category="Bullet", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> MeshComponent;
+	TObjectPtr<UStaticMeshComponent> BulletMeshComponent;
 
 public:
-	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
+	UStaticMeshComponent* GetMeshComponent() const { return BulletMeshComponent; }
 
 	UPROPERTY(EditAnywhere, Category="Bullet")
 	float MoveSpeed = 2000.f;

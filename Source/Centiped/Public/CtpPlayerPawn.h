@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CtpBullet.h"
 #include "GameFramework/Pawn.h"
 #include "CtpPlayerPawn.generated.h"
 
@@ -23,10 +24,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")
-	TSubclassOf<class ACtpBullet> ProjectileClass;
-
 
 public:
 	// Called every frame
@@ -64,4 +61,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PlayerPawn")
 	FVector MuzzleOffset;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")
+	TSubclassOf<class ACtpBullet> ProjectileClass = ACtpBullet::StaticClass();
 };
