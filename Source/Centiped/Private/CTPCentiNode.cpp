@@ -71,9 +71,9 @@ void ACTPCentiNode::Move(float DeltaTime)
 	else
 	{
 		FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
-		NewLocation += MoveDirection * DeltaTime * MoveSpeed;
+		NewLocation += MoveDirection * DeltaTime * MoveSpeed/2;
 		
-		if ( NewLocation.X < PrevNode->HitSwitch.X -1e-7)
+		if ( NewLocation.X > PrevNode->HitSwitch.X + 1e-7 )
 		{
 			SwitchDirection();
 			HitSwitch = PrevNode->HitSwitch;
@@ -86,7 +86,8 @@ void ACTPCentiNode::Move(float DeltaTime)
 void ACTPCentiNode::SwitchDirection()
 {
 	
-	MoveDirection.X = -MoveDirection.X;	
+	MoveDirection.X = -MoveDirection.X;
+	
 }
 
 

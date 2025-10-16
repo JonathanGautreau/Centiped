@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
 #include "CTPCentiNode.generated.h"
 
 UCLASS()
@@ -32,7 +33,7 @@ public:
 	float MoveSpeed = 1000.f;
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
-	FVector2D HitSwitch = FVector2D(2000,2000);
+	FVector2D HitSwitch = FVector2D::Zero();
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	ACTPCentiNode* PrevNode;

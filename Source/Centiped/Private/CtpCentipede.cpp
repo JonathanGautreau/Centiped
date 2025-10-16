@@ -23,8 +23,14 @@ void ACtpCentipede::BeginPlay()
 	for (int i = 0; i < CentiSize ; ++i )
 	{
 		ACTPCentiNode* Curr = GetWorld()->SpawnActor<ACTPCentiNode>(SpawnParameters);
+		Curr->SetActorLocation(FVector(Prev->GetActorLocation().X, Prev->GetActorLocation().Y+40, Prev->GetActorLocation().Z));
 		
 		Curr->PrevNode = Prev;
+		
+		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			Curr->HitSwitch = FVector2D(GameMode->Bounds.Max.Y,GameMode->Bounds.Max.X);
+		}
 		if (Prev)
 		{
 			Prev->NextNode = Curr;
