@@ -15,6 +15,13 @@ ACtpCentipede::ACtpCentipede()
 void ACtpCentipede::BeginPlay()
 {
 	Super::BeginPlay();
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = this;
+	for (int i = 0; i < CentiSize; ++i )
+	{
+		CentiNode = GetWorld()->SpawnActor<ACTPCentiNode>(SpawnParameters);
+		Centipede.Emplace(CentiNode);
+	}
 	
 }
 
@@ -22,11 +29,5 @@ void ACtpCentipede::BeginPlay()
 void ACtpCentipede::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-// Called to bind functionality to input
-void ACtpCentipede::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
