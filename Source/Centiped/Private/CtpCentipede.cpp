@@ -2,6 +2,7 @@
 
 
 #include "Centiped/Public/CtpCentipede.h"
+#include "CtpGameMode.h"
 
 
 // Sets default values
@@ -17,11 +18,20 @@ void ACtpCentipede::BeginPlay()
 	Super::BeginPlay();
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;
-	for (int i = 0; i < CentiSize; ++i )
+
+	ACTPCentiNode* Prev = nullptr;
+	for (int i = 0; i < CentiSize ; ++i )
 	{
-		CentiNode = GetWorld()->SpawnActor<ACTPCentiNode>(SpawnParameters);
-		Centipede.Emplace(CentiNode);
+		ACTPCentiNode* Curr = GetWorld()->SpawnActor<ACTPCentiNode>(SpawnParameters);
+		
+		Curr->PrevNode = Prev;
+		if (Prev)
+		{
+			Prev->NextNode = Curr;
+		}
+		Prev = Curr;
 	}
+	
 	
 }
 
@@ -29,5 +39,10 @@ void ACtpCentipede::BeginPlay()
 void ACtpCentipede::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
 }
+
+
+
 

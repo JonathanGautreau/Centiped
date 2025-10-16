@@ -16,12 +16,14 @@ public:
 	// Sets default values for this pawn's properties
 	ACtpCentipede();
 
-	
-	TArray<ACTPCentiNode*> Centipede;
-
 	UPROPERTY(Category = "Centipede", EditAnywhere)
 	int CentiSize = 10;
-	TObjectPtr<ACTPCentiNode> CentiNode;
+
+	UPROPERTY(Category = "Centipede", EditAnywhere)
+	FVector2D HeatDirection;
+
+	UPROPERTY(category = "Centipede", EditAnywhere)
+	float CentiSpeed;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -31,6 +33,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void MoveHead(float DeltaTime);
+
 	
 };

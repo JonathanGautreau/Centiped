@@ -2,6 +2,7 @@
 
 
 #include "CTPCentiNode.h"
+#include "CtpGameMode.h"
 
 
 // Sets default values
@@ -38,8 +39,54 @@ void ACTPCentiNode::BeginPlay()
 void ACTPCentiNode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (PrevNode == nullptr)
+	{
+		IsHead=true;
+	}
+	Move(DeltaTime);
 }
 
+void ACTPCentiNode::Move(float DeltaTime)
+{
+	if (IsHead)
+	{
+		FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
+		NewLocation += MoveDirection * DeltaTime * MoveSpeed;
 
+		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			if (NewLocation.X < GameMode->Bounds.Min.X || NewLocation.X > GameMode->Bounds.Max.X)
+			{
+				NewLocation = NewLocation.Clamp(
+				NewLocation,
+				GameMode->Bounds.Min + 0.5f * MeshScale * 100,
+				GameMode->Bounds.Max + 0.5f * MeshScale * 100);
+				SwitchDirection();
+				HitSwitch = NewLocation;
+				NewLocation = FVector2D(NewLocation.X, NewLocation.Y-40);
+			}
+		}
+		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
+	}
+	else
+	{
+		FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
+		NewLocation += MoveDirection * DeltaTime * MoveSpeed;
+		
+		if ( NewLocation.X < PrevNode->HitSwitch.X -1e-7)
+		{
+			SwitchDirection();
+			HitSwitch = PrevNode->HitSwitch;
+			NewLocation = FVector2D(NewLocation.X, NewLocation.Y-40);
+		}
+		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
+	}
+}
+
+void ACTPCentiNode::SwitchDirection()
+{
+	
+	MoveDirection.X = -MoveDirection.X;	
+}
 
 
