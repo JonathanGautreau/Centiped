@@ -18,12 +18,13 @@ public:
 	ACtpGameMode();
 
 	virtual void BeginPlay() override;
+
+	// TODO : pourquoi changer en int fait tout planter
+	UPROPERTY(VisibleAnywhere, Category="Game")
+	float Height = 1920;
 	
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	int Height = 1920;
-	
-	UPROPERTY(VisibleAnywhere, Category="Game")
-	int Width = 1600;
+	float Width = 1600;
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int SquareSize = 40;

@@ -81,32 +81,32 @@ void ACtpPlayerPawn::BeginPlay()
 
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
-			// for (int j = 0; j < 3; ++j)
-			// {
-			// 	ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-			// 	Mushroom->InitializePosition(FVector(0, 0, 0));
-			//
-			// 	int Col = FMath::RandRange(0, GameMode->Columns - 1);
-			// 	int Row = FMath::RandRange(0, GameMode->Rows - 1);
-			// 	int x = round(GameMode->Bounds.Min.X) + round(Mushroom->MeshScale.X * 100 * Col) + round(Mushroom->MeshScale.X * 0.5 * 100);
-			// 	int y = round(GameMode->Bounds.Max.Y) - round(Mushroom->MeshScale.Y * 100 * Row) - round(Mushroom->MeshScale.Y * 0.5 * 100);
-			// 	Mushroom->InitializePosition(FVector(0, x, y));
-			// 	UE_LOG(LogCentiped, Warning, TEXT("Column: %d"), i);
-			// 	UE_LOG(LogCentiped, Warning, TEXT("Row: %d"), j);
-			// 	UE_LOG(LogCentiped, Warning, TEXT("%f + %f + %f"), round(GameMode->Bounds.Min.X), round(Mushroom->MeshScale.X * 100 * i), round(Mushroom->MeshScale.X * 100 * 0.5));
-			// 	UE_LOG(LogCentiped, Warning, TEXT("X: %d"), x);
-			// 	UE_LOG(LogCentiped, Warning, TEXT("%f - %f - %f"), round(GameMode->Bounds.Max.Y), round(Mushroom->MeshScale.Y * 100 * j), round(Mushroom->MeshScale.Y * 100 * 0.5));
-			// 	UE_LOG(LogCentiped, Warning, TEXT("Y: %d"), y);
-			// }
-			
-			
-			for (int i = 0; i < 20; ++i)
+			for (int j = 0; j < 20; ++j)
 			{
-				ACtpMushroom* MushroomTop = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-				int PosX = FMath::RandRange(static_cast<int>(round(GameMode->Bounds.Min.X + 0.5f * MushroomTop->MeshScale.X * 100)), static_cast<int>(GameMode->Bounds.Max.X - 0.5f * MushroomTop->MeshScale.X * 100));
-				int PosY = FMath::RandRange(-static_cast<int>(round(GameMode->Bounds.Max.Y - GameMode->Height / 3)),  static_cast<int>(GameMode->Bounds.Max.Y - 0.5f * MushroomTop->MeshScale.Y * 100));
-				MushroomTop->InitializePosition(FVector(0, PosX, PosY));
+				ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
+				Mushroom->InitializePosition(FVector(0, 0, 0));
+			
+				int Col = FMath::RandRange(0, GameMode->Columns - 1);
+				int Row = FMath::RandRange(0, GameMode->Rows - 1);
+				int x = round(GameMode->Bounds.Min.X) + round(Mushroom->MeshScale.X * 100 * Col) + round(Mushroom->MeshScale.X * 0.5 * 100);
+				int y = round(GameMode->Bounds.Max.Y) - round(Mushroom->MeshScale.Y * 100 * Row) - round(Mushroom->MeshScale.Y * 0.5 * 100);
+				Mushroom->InitializePosition(FVector(0, x, y));
+				UE_LOG(LogCentiped, Warning, TEXT("Column: %d"), Col);
+				UE_LOG(LogCentiped, Warning, TEXT("Row: %d"), Row);
+				UE_LOG(LogCentiped, Warning, TEXT("%f + %f + %f"), round(GameMode->Bounds.Min.X), round(Mushroom->MeshScale.X * 100 * Col), round(Mushroom->MeshScale.X * 100 * 0.5));
+				UE_LOG(LogCentiped, Warning, TEXT("X: %d"), x);
+				UE_LOG(LogCentiped, Warning, TEXT("%f - %f - %f"), round(GameMode->Bounds.Max.Y), round(Mushroom->MeshScale.Y * 100 * Row), round(Mushroom->MeshScale.Y * 100 * 0.5));
+				UE_LOG(LogCentiped, Warning, TEXT("Y: %d"), y);
 			}
+			
+			
+			// for (int i = 0; i < 20; ++i)
+			// {
+			// 	ACtpMushroom* MushroomTop = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
+			// 	int PosX = FMath::RandRange(static_cast<int>(round(GameMode->Bounds.Min.X + 0.5f * MushroomTop->MeshScale.X * 100)), static_cast<int>(GameMode->Bounds.Max.X - 0.5f * MushroomTop->MeshScale.X * 100));
+			// 	int PosY = FMath::RandRange(-static_cast<int>(round(GameMode->Bounds.Max.Y - GameMode->Height / 3)),  static_cast<int>(GameMode->Bounds.Max.Y - 0.5f * MushroomTop->MeshScale.Y * 100));
+			// 	MushroomTop->InitializePosition(FVector(0, PosX, PosY));
+			// }
 		}
 	}
 }
