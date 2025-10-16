@@ -20,10 +20,19 @@ public:
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	float Height = 1920;
+	int Height = 1920;
 	
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	float Width = 1600;
+	int Width = 1600;
+
+	UPROPERTY(VisibleAnywhere, Category="Game")
+	int SquareSize = 40;
+
+	UPROPERTY(VisibleAnywhere, Category="Game")
+	int Rows = Height / SquareSize;
+	
+	UPROPERTY(VisibleAnywhere, Category="Game")
+	int Columns = Width / SquareSize;
 	
 	UPROPERTY(EditAnywhere, Category="Game")
 	FBox2D Bounds = FBox2D(FVector2D(-(Width / 2), -(Height / 2)), FVector2D(Width / 2, Height / 2));

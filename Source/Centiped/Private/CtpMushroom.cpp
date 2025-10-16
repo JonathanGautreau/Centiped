@@ -35,13 +35,6 @@ ACtpMushroom::ACtpMushroom()
 void ACtpMushroom::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-		int PosX = FMath::RandRange(-(static_cast<int>(round(GameMode->Width)) / 2),  static_cast<int>(round(GameMode->Width)) / 2);
-		int PosY = FMath::RandRange(-(static_cast<int>(round(GameMode->Width)) / 2),  static_cast<int>(round(GameMode->Height)) / 2);
-		SetActorLocation(FVector(0, PosX, PosY));
-	}
 }
 
 // Called every frame
@@ -50,3 +43,7 @@ void ACtpMushroom::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ACtpMushroom::InitializePosition(const FVector& InitialPosition)
+{
+	SetActorLocation(InitialPosition);
+}

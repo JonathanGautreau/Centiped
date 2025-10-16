@@ -55,7 +55,7 @@ public:
 	float MoveSpeed = 1000.f;
 
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	FVector2D MeshScale = FVector2D(.6f, 1.f);
+	FVector2D MeshScale = FVector2D(.4f, .8f);
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
