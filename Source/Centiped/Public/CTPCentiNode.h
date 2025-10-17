@@ -21,7 +21,7 @@ public:
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 	UPROPERTY(EditAnywhere, Category="Centipede")
-	FVector2D MeshScale = FVector2D(.6f, 1.f);
+	FVector2D MeshScale = FVector2D(.4f, .4f);
 
 	UPROPERTY(Category="Centipede", EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	bool IsHead;

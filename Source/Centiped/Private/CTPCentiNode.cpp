@@ -3,6 +3,7 @@
 
 #include "CTPCentiNode.h"
 #include "CtpGameMode.h"
+#include "CtpLog.h"
 
 
 // Sets default values
@@ -33,6 +34,7 @@ ACTPCentiNode::ACTPCentiNode()
 void ACTPCentiNode::BeginPlay()
 {
 	Super::BeginPlay();
+	
 }
 
 // Called every frame
@@ -55,14 +57,12 @@ void ACTPCentiNode::Move(float DeltaTime)
 
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
-			if (NewLocation.X < GameMode->Bounds.Min.X || NewLocation.X > GameMode->Bounds.Max.X)
+			if (NewLocation.X < GameMode->Bounds.Min.X-MeshScale.X)
 			{
-				NewLocation = NewLocation.Clamp(
-				NewLocation,
-				GameMode->Bounds.Min + 0.5f * MeshScale * 100,
-				GameMode->Bounds.Max + 0.5f * MeshScale * 100);
+				// TODO
+				//NewLocation= FVector2D(,DeltaTime * MoveSpeed+GetActorLocation().Y);
 				SwitchDirection();
-				HitSwitch = NewLocation;
+				NextNode->HitSwitch = NewLocation;
 				NewLocation = FVector2D(NewLocation.X, NewLocation.Y-40);
 			}
 		}
@@ -71,15 +71,20 @@ void ACTPCentiNode::Move(float DeltaTime)
 	else
 	{
 		FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
-		NewLocation += MoveDirection * DeltaTime * MoveSpeed/2;
-		
-		if ( NewLocation.X > PrevNode->HitSwitch.X + 1e-7 )
+		NewLocation += MoveDirection * DeltaTime * MoveSpeed;
+		float DistToNextLoc = DeltaTime * MoveSpeed;
+		float DistToNextSwitch = FMath::Abs(HitSwitch.X - GetActorLocation().X);
+		if (DistToNextLoc > DistToNextSwitch)
 		{
+			NewLocation = FVector2D(HitSwitch.X, DistToNextLoc-DistToNextSwitch+GetActorLocation().Y);
 			SwitchDirection();
-			HitSwitch = PrevNode->HitSwitch;
-			NewLocation = FVector2D(NewLocation.X, NewLocation.Y-40);
+			if (NextNode)
+			{
+				NextNode->HitSwitch = HitSwitch;
+			}
 		}
-		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
+		//AddActorLocalOffset(FVector(0, NewLocation.X,NewLocation.Y));
+		SetActorLocation(FVector(0,NewLocation.X,NewLocation.Y));
 	}
 }
 
