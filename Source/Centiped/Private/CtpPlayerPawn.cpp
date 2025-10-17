@@ -29,9 +29,10 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 	}
 
+	MeshComponent->SetGenerateOverlapEvents(true);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	MeshComponent->SetGenerateOverlapEvents(true);
+	MeshComponent->SetCollisionObjectType(ECC_Pawn);
 	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
 	MeshComponent->SetupAttachment(RootComponent);
@@ -66,13 +67,12 @@ void ACtpPlayerPawn::BeginPlay()
 
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		SetActorLocation(FVector(0, 0, -(GameMode->Height / 3)));
+		SetActorLocation(FVector(0, 0, -(GameMode->Height / 3.0f)));
 	}
 	else
 	{
 		SetActorLocation(FVector(0, 0, -900));
 	}
-
 	
 	if (UWorld* World = GetWorld())
 	{
@@ -81,32 +81,11 @@ void ACtpPlayerPawn::BeginPlay()
 
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
-			for (int j = 0; j < 20; ++j)
-			{
-				ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-				Mushroom->InitializePosition(FVector(0, 0, 0));
-			
-				int Col = FMath::RandRange(0, GameMode->Columns - 1);
-				int Row = FMath::RandRange(0, GameMode->Rows - 1);
-				int x = round(GameMode->Bounds.Min.X) + round(Mushroom->MeshScale.X * 100 * Col) + round(Mushroom->MeshScale.X * 0.5 * 100);
-				int y = round(GameMode->Bounds.Max.Y) - round(Mushroom->MeshScale.Y * 100 * Row) - round(Mushroom->MeshScale.Y * 0.5 * 100);
-				Mushroom->InitializePosition(FVector(0, x, y));
-				UE_LOG(LogCentiped, Warning, TEXT("Column: %d"), Col);
-				UE_LOG(LogCentiped, Warning, TEXT("Row: %d"), Row);
-				UE_LOG(LogCentiped, Warning, TEXT("%f + %f + %f"), round(GameMode->Bounds.Min.X), round(Mushroom->MeshScale.X * 100 * Col), round(Mushroom->MeshScale.X * 100 * 0.5));
-				UE_LOG(LogCentiped, Warning, TEXT("X: %d"), x);
-				UE_LOG(LogCentiped, Warning, TEXT("%f - %f - %f"), round(GameMode->Bounds.Max.Y), round(Mushroom->MeshScale.Y * 100 * Row), round(Mushroom->MeshScale.Y * 100 * 0.5));
-				UE_LOG(LogCentiped, Warning, TEXT("Y: %d"), y);
-			}
-			
-			
-			// for (int i = 0; i < 20; ++i)
-			// {
-			// 	ACtpMushroom* MushroomTop = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-			// 	int PosX = FMath::RandRange(static_cast<int>(round(GameMode->Bounds.Min.X + 0.5f * MushroomTop->MeshScale.X * 100)), static_cast<int>(GameMode->Bounds.Max.X - 0.5f * MushroomTop->MeshScale.X * 100));
-			// 	int PosY = FMath::RandRange(-static_cast<int>(round(GameMode->Bounds.Max.Y - GameMode->Height / 3)),  static_cast<int>(GameMode->Bounds.Max.Y - 0.5f * MushroomTop->MeshScale.Y * 100));
-			// 	MushroomTop->InitializePosition(FVector(0, PosX, PosY));
-			// }
+			GenerateAvailableCells(GameMode);
+			// A lot of mushrooms
+			SpawnMushrooms(World, GameMode, 20, 0, GameMode->Rows - 20);
+			// Some mushrooms
+			SpawnMushrooms(World, GameMode, 8, GameMode->Rows - 21, GameMode->Rows - 6);
 		}
 	}
 }
@@ -126,9 +105,9 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
 			FVector2D(
 				GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100,
-				GameMode->Bounds.Max.Y - GameMode->Height * 2 / 3)
-		);
-
+				GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * 28) - round(GameMode->SquareSize.Y * 0.5)
+		));
+		
 		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
 
 		MoveDirection = FVector2D::Zero();
@@ -197,4 +176,48 @@ void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 	// UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
 }
 
+void ACtpPlayerPawn::SpawnMushrooms(UWorld* World, const ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax)
+{
+	int SpawnedMushrooms = 0;
+	
+	while (SpawnedMushrooms < NumberOfMushrooms && AvailableCells.Num() > 0)
+	{
+		// Chose location
+		const int Col = FMath::RandRange(0, GameMode->Columns - 1);
+		const int Row = FMath::RandRange(RowMin, RowMax);
 
+		// Remove chosen location from AvailableCells array
+		AvailableCells.Remove(FIntPoint(Row, Col));
+
+		// Safe zone for the player
+		if (Col < 13 && Col > 7 && Row > 35)
+		{
+			SpawnedMushrooms--;
+			UE_LOG(LogCentiped, Log, TEXT("SpawnedMushrooms : %d"), SpawnedMushrooms);
+			continue;
+		}
+				
+		// Create mushrooms
+		ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
+
+		// Define position of the mushroom
+		const int x = round(GameMode->Bounds.Min.X) + round(Mushroom->MeshScale.X * 100 * Col) + round(Mushroom->MeshScale.X * 0.5 * 100);
+		const int y = round(GameMode->Bounds.Max.Y) - round(Mushroom->MeshScale.Y * 100 * Row) - round(Mushroom->MeshScale.Y * 0.5 * 100);
+		Mushroom->InitializePosition(FVector(0, x, y));
+
+		SpawnedMushrooms++;
+	}
+}
+
+void ACtpPlayerPawn::GenerateAvailableCells(const ACtpGameMode* GameMode)
+{
+	AvailableCells.Empty();
+	
+	for (int Row = 0; Row < GameMode->Rows; ++Row)
+	{
+		for (int32 Col = 0; Col < GameMode->Columns; ++Col)
+		{
+			AvailableCells.Add(FIntPoint(Row, Col));
+		}
+	}
+}

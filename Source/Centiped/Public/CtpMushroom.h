@@ -30,7 +30,7 @@ public:
 	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 	
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	FVector2D MeshScale = FVector2D(.8f, .8f);
+	FVector2D MeshScale = FVector2D(.8f, .4f);
 	
 	void InitializePosition(const FVector& InitialPosition);
 };

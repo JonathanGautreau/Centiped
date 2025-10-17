@@ -65,7 +65,7 @@ void ACtpBullet::DestroyOutsideBounds()
 	FVector CurrentLocation = GetActorLocation();
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		if (CurrentLocation.Z > (GameMode->Height / 2) + Radius)
+		if (CurrentLocation.Z > GameMode->Height / 2 + Radius)
 		{
 			Destroy();
 		}

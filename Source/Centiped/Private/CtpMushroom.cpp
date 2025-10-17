@@ -22,10 +22,11 @@ ACtpMushroom::ACtpMushroom()
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 	}
-	
+
+	MeshComponent->SetGenerateOverlapEvents(true);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	MeshComponent->SetGenerateOverlapEvents(true);
+	MeshComponent->SetCollisionObjectType(ECC_WorldStatic);
 	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
 	MeshComponent->SetupAttachment(RootComponent);

@@ -19,21 +19,20 @@ public:
 
 	virtual void BeginPlay() override;
 
-	// TODO : pourquoi changer en int fait tout planter
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	float Height = 1920;
+	int Height = 1920;
 	
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	float Width = 1600;
+	int Width = 1600;
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	int SquareSize = 40;
+	FVector2D SquareSize = FVector2D(80, 40);
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	int Rows = Height / SquareSize;
+	int Rows = static_cast<int>(Height / SquareSize.Y);
 	
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	int Columns = Width / SquareSize;
+	int Columns = static_cast<int>(Width / SquareSize.X);
 	
 	UPROPERTY(EditAnywhere, Category="Game")
 	FBox2D Bounds = FBox2D(FVector2D(-(Width / 2), -(Height / 2)), FVector2D(Width / 2, Height / 2));

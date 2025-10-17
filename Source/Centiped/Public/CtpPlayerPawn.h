@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CtpBullet.h"
+#include "CtpGameMode.h"
 #include "GameFramework/Pawn.h"
 #include "CtpPlayerPawn.generated.h"
 
@@ -20,6 +21,7 @@ class CENTIPED_API ACtpPlayerPawn : public APawn
 public:
 	// Sets default values for this pawn's properties
 	ACtpPlayerPawn();
+	void SpawnMushrooms(UWorld* World, const ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax);
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,6 +34,11 @@ public:
 private:
 	UPROPERTY(Category="PlayerPawn", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
+
+	UPROPERTY(Category="PlayerPawn", EditAnywhere)
+	TArray<FIntPoint> AvailableCells;
+
+	void GenerateAvailableCells(const ACtpGameMode* GameMode);
 
 public:
 	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
@@ -55,7 +62,7 @@ public:
 	float MoveSpeed = 1000.f;
 
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	FVector2D MeshScale = FVector2D(.4f, .8f);
+	FVector2D MeshScale = FVector2D(0.8f, 1.2f);
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
