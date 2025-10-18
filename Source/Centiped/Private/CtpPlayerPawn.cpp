@@ -23,15 +23,16 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Cube.SM_Cube"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Player.SM_Player"));
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 	}
 
+	MeshComponent->SetGenerateOverlapEvents(true);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	MeshComponent->SetGenerateOverlapEvents(true);
+	MeshComponent->SetCollisionObjectType(ECC_Pawn);
 	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
 	MeshComponent->SetupAttachment(RootComponent);
@@ -64,24 +65,7 @@ void ACtpPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-		SetActorLocation(FVector(0, 0, -(GameMode->Height / 3)));
-	}
-	else
-	{
-		SetActorLocation(FVector(0, 0, -900));
-	}
-
-	for (int i = 0; i < 20; ++i)
-	{
-		if (UWorld* World = GetWorld())
-		{
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
-			World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-		}
-	}
+	SetPlayerInitialPosition();
 }
 
 // Called every frame
@@ -89,6 +73,23 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	PlayerMovements(DeltaTime);
+}
+
+void ACtpPlayerPawn::SetPlayerInitialPosition()
+{
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		SetActorLocation(FVector(0, 0, GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5f));
+	}
+	else
+	{
+		SetActorLocation(FVector(0, 0, -820));
+	}
+}
+
+void ACtpPlayerPawn::PlayerMovements(float DeltaTime)
+{
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
@@ -99,9 +100,9 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
 			FVector2D(
 				GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100,
-				GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100 - GameMode->Height * 2 / 3)
-		);
-
+				GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * 28) - round(GameMode->SquareSize.Y * 0.5)
+			));
+		
 		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
 
 		MoveDirection = FVector2D::Zero();
@@ -157,8 +158,9 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 		{
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
- 
-			World->SpawnActor<ACtpBullet>(ProjectileClass, GetActorLocation(), FRotator(), SpawnParams);
+
+			const FVector InitialPosition = FVector(0, GetActorLocation().Y, GetActorLocation().Z + MeshScale.Y * 100 * 0.5f);
+			World->SpawnActor<ACtpBullet>(ProjectileClass, InitialPosition, FRotator(), SpawnParams);
 		}
 	}
 }
@@ -169,5 +171,3 @@ void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 	
 	// UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
 }
-
-

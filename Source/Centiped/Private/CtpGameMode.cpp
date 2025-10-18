@@ -2,6 +2,8 @@
 
 
 #include "Centiped/Public/CtpGameMode.h"
+
+#include "CTPGameLoop.h"
 #include "Centiped/Public/CtpPlayerController.h"
 #include "Centiped/Public/CtpPlayerPawn.h"
 #include "EngineUtils.h"
@@ -19,5 +21,10 @@ void ACtpGameMode::BeginPlay()
 	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
 	{
 		AActor* Actor = *It;
+	}
+	
+	if (UWorld* World = GetWorld())
+	{
+		World->SpawnActor<ACtpGameLoop>(ACtpGameLoop::StaticClass());
 	}
 }
