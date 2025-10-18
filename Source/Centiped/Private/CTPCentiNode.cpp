@@ -50,49 +50,69 @@ void ACTPCentiNode::Tick(float DeltaTime)
 
 void ACTPCentiNode::Move(float DeltaTime)
 {
-	if (IsHead)
-	{
-		FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
-		NewLocation += MoveDirection * DeltaTime * MoveSpeed;
-
-		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
+	float DistToNextLoc = DeltaTime * MoveSpeed;
+	float DistToNextSwitch;
+	if (IsHead)	DistToNextSwitch = FindDistToNextHeadHitSwitch();
+	else DistToNextSwitch =FindDistToNextNodeHitSwitch();
+	if (DistToNextLoc > DistToNextSwitch)
 		{
-			if (NewLocation.X < GameMode->Bounds.Min.X-MeshScale.X)
-			{
-				// TODO
-				//NewLocation= FVector2D(,DeltaTime * MoveSpeed+GetActorLocation().Y);
-				SwitchDirection();
-				NextNode->HitSwitch = NewLocation;
-				NewLocation = FVector2D(NewLocation.X, NewLocation.Y-40);
+			if (IsFalling)
+			{					
+				if (MovingDirection.X != 0)
+				{
+					HitSwitch = FVector2D(GetActorLocation().Y+DistToNextSwitch*MovingDirection.X,GetActorLocation().Z);
+					LastMovingDirection = MovingDirection;
+					MovingDirection = FVector2D(0,-1);
+					NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z-(DistToNextLoc-DistToNextSwitch));
+				}
+				else
+				{
+					MovingDirection = FVector2D(-LastMovingDirection.X,0);
+					NewLocation = FVector2D(GetActorLocation().Y+(DistToNextLoc-DistToNextSwitch)*MovingDirection.X,HitSwitch.Y-VerticalOffset);
+				}
 			}
-		}
-		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
-	}
-	else
-	{
-		FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
-		NewLocation += MoveDirection * DeltaTime * MoveSpeed;
-		float DistToNextLoc = DeltaTime * MoveSpeed;
-		float DistToNextSwitch = FMath::Abs(HitSwitch.X - GetActorLocation().X);
-		if (DistToNextLoc > DistToNextSwitch)
-		{
-			NewLocation = FVector2D(HitSwitch.X, DistToNextLoc-DistToNextSwitch+GetActorLocation().Y);
-			SwitchDirection();
 			if (NextNode)
 			{
-				NextNode->HitSwitch = HitSwitch;
+				NextNode->HitSwitch = FVector2D(NewLocation.X, GetActorLocation().Z);
 			}
 		}
-		//AddActorLocalOffset(FVector(0, NewLocation.X,NewLocation.Y));
-		SetActorLocation(FVector(0,NewLocation.X,NewLocation.Y));
-	}
+		else
+		{
+			NewLocation += MovingDirection*DeltaTime*MoveSpeed;
+		}
+	
+		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));	
 }
 
-void ACTPCentiNode::SwitchDirection()
-{
-	
-	MoveDirection.X = -MoveDirection.X;
-	
+ float ACTPCentiNode::FindDistToNextHeadHitSwitch() const
+ {
+ 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+ 	{
+ 		if (MovingDirection.Y!=0)
+ 			return FMath::Abs(HitSwitch.Y+VerticalOffset*MovingDirection.Y  - GetActorLocation().Z);
+ 		if (MovingDirection.X==-1)
+ 			return  FMath::Abs(GameMode->Bounds.Min.X+MeshScale.X - GetActorLocation().Y);
+ 		if (MovingDirection.X==1)
+ 			return  FMath::Abs(GameMode->Bounds.Max.X-MeshScale.X - GetActorLocation().Y);
+ 	}
+ 	return std::numeric_limits<float>::infinity();
 }
+
+float ACTPCentiNode::FindDistToNextNodeHitSwitch() const
+{
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (MovingDirection.Y!=0)
+			return FMath::Abs(HitSwitch.Y+VerticalOffset*MovingDirection.Y  - GetActorLocation().Z);
+		if (MovingDirection.X!=0)
+			return FMath::Abs(HitSwitch.X - GetActorLocation().X);
+	}
+	return std::numeric_limits<float>::infinity();
+}
+
+
+
+
 
 

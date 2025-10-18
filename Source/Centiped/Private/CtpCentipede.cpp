@@ -23,8 +23,7 @@ void ACtpCentipede::BeginPlay()
 	for (int i = 0; i < CentiSize ; ++i )
 	{
 		ACTPCentiNode* Curr = GetWorld()->SpawnActor<ACTPCentiNode>(SpawnParameters);
-		
-		
+				
 		Curr->PrevNode = Prev;
 		
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
@@ -34,7 +33,8 @@ void ACtpCentipede::BeginPlay()
 		if (Prev)
 		{
 			Prev->NextNode = Curr;
-			Curr->SetActorLocation(FVector(Prev->GetActorLocation().X, Prev->GetActorLocation().Y+40, Prev->GetActorLocation().Z));
+			float OffsetSpawn = Curr->MeshScale.X / 2.0f;
+			Curr->SetActorLocation(FVector(Prev->GetActorLocation().X, Prev->GetActorLocation().Y+OffsetSpawn, Prev->GetActorLocation().Z));
 		}
 		Prev = Curr;
 	}
