@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CTPScoreSystem.h"
 #include "GameFramework/GameModeBase.h"
 #include "CtpGameMode.generated.h"
 
@@ -13,11 +14,12 @@ UCLASS()
 class CENTIPED_API ACtpGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-
+	
 public:
 	ACtpGameMode();
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int Height = 1920;
@@ -34,6 +36,12 @@ public:
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int Columns = static_cast<int>(Width / SquareSize.X);
 	
-	UPROPERTY(EditAnywhere, Category="Game")
+	UPROPERTY(VisibleAnywhere, Category="Game")
 	FBox2D Bounds = FBox2D(FVector2D(-(Width / 2), -(Height / 2)), FVector2D(Width / 2, Height / 2));
+
+	UCTPScoreSystem* GetScoreSystem() const { return ScoreSystem; };
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category="Game")
+	UCTPScoreSystem* ScoreSystem;
 };

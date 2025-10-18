@@ -4,6 +4,7 @@
 #include "CtpBullet.h"
 #include "CtpGameMode.h"
 #include "CTPLog.h"
+#include "CtpMushroom.h"
 
 
 // Sets default values
@@ -22,14 +23,20 @@ ACtpBullet::ACtpBullet()
 	if(!MeshComponent)
 	{
 		MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMeshComponent"));
+		
 		static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Bullet.SM_Bullet"));
 		if(StaticMeshRef.Succeeded())
 		{
 			MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 		}
-		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+		
 		MeshComponent->SetGenerateOverlapEvents(true);
+		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		MeshComponent->SetCollisionProfileName(UCollisionProfile::DefaultProjectile_ProfileName);
+		MeshComponent->SetCollisionObjectType(ECC_WorldDynamic);
+		MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+		MeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
+		
 		MeshComponent->SetRelativeScale3D(FVector(Radius, Radius, Radius));
 		MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
 		MeshComponent->SetupAttachment(RootComponent);
@@ -68,5 +75,18 @@ void ACtpBullet::DestroyOutsideBounds()
 		{
 			Destroy();
 		}
+	}
+}
+
+void ACtpBullet::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+	
+	if (OtherActor && OtherActor != this)
+	{
+		// if (OtherActor == ACtpMushroom)
+		Destroy();
+		
+		UE_LOG(LogCentiped, Warning, TEXT("Bullet is  overlying : %s"), *OtherActor->GetName());
 	}
 }

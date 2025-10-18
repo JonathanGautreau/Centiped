@@ -2,8 +2,6 @@
 
 
 #include "Centiped/Public/CtpPlayerPawn.h"
-
-#include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
 #include "EnhancedInputComponent.h"
 #include "Centiped/Public/CtpGameMode.h"
@@ -33,6 +31,9 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
 	MeshComponent->SetCollisionObjectType(ECC_Pawn);
+	MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	MeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
+	
 	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
 	MeshComponent->SetupAttachment(RootComponent);
@@ -72,6 +73,12 @@ void ACtpPlayerPawn::BeginPlay()
 void ACtpPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (!bIsOverlapping)
+	{
+		LastSafeLocation = GetActorLocation();
+	}
+	bIsOverlapping = false;
 
 	PlayerMovements(DeltaTime);
 }
@@ -100,7 +107,7 @@ void ACtpPlayerPawn::PlayerMovements(float DeltaTime)
 			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
 			FVector2D(
 				GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100,
-				GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * 28) - round(GameMode->SquareSize.Y * 0.5)
+				GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * 32) - round(GameMode->SquareSize.Y * 0.5)
 			));
 		
 		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
@@ -170,4 +177,13 @@ void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
 	// UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
+	if (OtherActor && OtherActor != this)
+	{
+		bIsOverlapping = true;
+
+		SetActorLocation(LastSafeLocation);
+		
+		UE_LOG(LogCentiped, Warning, TEXT("Player is  overlying : %s"), *OtherActor->GetName());
+	}
 }
+

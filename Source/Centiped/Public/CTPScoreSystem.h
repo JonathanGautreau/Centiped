@@ -13,4 +13,13 @@ UCLASS()
 class CENTIPED_API UCTPScoreSystem : public UObject
 {
 	GENERATED_BODY()
+
+private:
+	UPROPERTY(Category="ScoreSystem", VisibleAnywhere, meta=(AllowPrivateAccess = "true"))
+	int Score;
+
+public:
+	// int GetScore() const;
+	// void SetScore(int NewScore);
+	// void ResetScore();
 };

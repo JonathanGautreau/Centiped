@@ -4,6 +4,8 @@
 #include "Centiped/Public/CtpGameMode.h"
 
 #include "CTPGameLoop.h"
+#include "CTPLog.h"
+#include "CTPScoreSystem.h"
 #include "Centiped/Public/CtpPlayerController.h"
 #include "Centiped/Public/CtpPlayerPawn.h"
 #include "EngineUtils.h"
@@ -25,6 +27,19 @@ void ACtpGameMode::BeginPlay()
 	
 	if (UWorld* World = GetWorld())
 	{
-		World->SpawnActor<ACtpGameLoop>(ACtpGameLoop::StaticClass());
+		ACtpGameLoop* GameLoop = World->SpawnActor<ACtpGameLoop>(ACtpGameLoop::StaticClass());
+		if (!GameLoop)
+		{
+			UE_LOG(LogTemp, Error, TEXT("GameLoop wasn't instantiated correctly"));
+		}
+	}
+	
+	if (!ScoreSystem)
+	{
+		ScoreSystem = NewObject<UCTPScoreSystem>(this, UCTPScoreSystem::StaticClass());
+		if (ScoreSystem)
+		{
+			// ScoreSystem->ResetScore();
+		}
 	}
 }

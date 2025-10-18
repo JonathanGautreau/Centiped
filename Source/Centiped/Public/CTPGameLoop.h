@@ -26,7 +26,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(Category="PlayerPawn", EditAnywhere)
+	UPROPERTY(Category="GameLoop", EditAnywhere)
 	TArray<FIntPoint> AvailableCells;
 
 	void GenerateAvailableCells(const ACtpGameMode* GameMode);

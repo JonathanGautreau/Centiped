@@ -2,7 +2,10 @@
 
 
 #include "CtpMushroom.h"
+
 #include "CtpGameMode.h"
+#include "CTPLog.h"
+#include "CTPScoreSystem.h"
 
 
 // Sets default values
@@ -25,8 +28,12 @@ ACtpMushroom::ACtpMushroom()
 
 	MeshComponent->SetGenerateOverlapEvents(true);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	MeshComponent->SetCollisionProfileName(UCollisionProfile::CustomCollisionProfileName);
 	MeshComponent->SetCollisionObjectType(ECC_WorldStatic);
+	MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	MeshComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+	
 	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
 	MeshComponent->SetupAttachment(RootComponent);
@@ -47,4 +54,35 @@ void ACtpMushroom::Tick(float DeltaTime)
 void ACtpMushroom::InitializePosition(const FVector& InitialPosition)
 {
 	SetActorLocation(InitialPosition);
+}
+
+void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+
+	// if (OtherActor == ACtpBullet)
+
+	if (OtherActor && OtherActor != this)
+	{
+		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			// if (OtherActor == ACtpBullet)
+			Life--;
+			
+			if (Life == 0)
+			{
+				// if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+				// {
+				// 	ScoreSystem->SetScore(ScoreSystem->GetScore() + 1);
+				// }
+				// else
+				// {
+				// 	UE_LOG(LogCentiped, Warning, TEXT("ScoreSystem is  null"));
+				// }
+				Destroy();
+			}
+			
+			UE_LOG(LogCentiped, Warning, TEXT("Mushroom is  overlying : %s"), *OtherActor->GetName());
+		}
+	}
 }
