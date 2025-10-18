@@ -6,6 +6,7 @@
 #include "CTPGameLoop.h"
 #include "Centiped/Public/CtpPlayerController.h"
 #include "Centiped/Public/CtpPlayerPawn.h"
+#include "CtpCentipede.h"
 #include "EngineUtils.h"
 
 ACtpGameMode::ACtpGameMode()
@@ -22,6 +23,11 @@ void ACtpGameMode::BeginPlay()
 	{
 		AActor* Actor = *It;
 	}
+
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = this;
+
+	Centipede = GetWorld()->SpawnActor<ACtpCentipede>(SpawnParameters);
 	
 	if (UWorld* World = GetWorld())
 	{

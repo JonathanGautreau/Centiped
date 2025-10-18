@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "CtpCentipede.h"
 #include "CtpGameMode.generated.h"
 
 /**
@@ -36,4 +37,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category="Game")
 	FBox2D Bounds = FBox2D(FVector2D(-(Width / 2), -(Height / 2)), FVector2D(Width / 2, Height / 2));
+
+	TObjectPtr<ACtpCentipede> Centipede;
+
 };
