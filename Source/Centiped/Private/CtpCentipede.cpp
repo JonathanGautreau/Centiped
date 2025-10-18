@@ -33,8 +33,8 @@ void ACtpCentipede::BeginPlay()
 		if (Prev)
 		{
 			Prev->NextNode = Curr;
-			float OffsetSpawn = Curr->MeshScale.X / 2.0f;
-			Curr->SetActorLocation(FVector(Prev->GetActorLocation().X, Prev->GetActorLocation().Y+OffsetSpawn, Prev->GetActorLocation().Z));
+			float OffsetSpawn = Curr->MeshScale.X;
+			Curr->SetActorLocation(FVector(Prev->GetActorLocation().X, Prev->GetActorLocation().Y+100, Prev->GetActorLocation().Z));
 		}
 		Prev = Curr;
 	}

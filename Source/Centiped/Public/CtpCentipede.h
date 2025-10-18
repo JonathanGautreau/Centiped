@@ -17,7 +17,7 @@ public:
 	ACtpCentipede();
 
 	UPROPERTY(Category = "Centipede", EditAnywhere)
-	int CentiSize = 2;
+	int CentiSize = 3;
 
 	UPROPERTY(Category = "Centipede", EditAnywhere)
 	FVector2D HeatDirection;

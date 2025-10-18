@@ -30,7 +30,7 @@ public:
 	float MoveSpeed = 1000.f;
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
-	float VerticalOffset = 40.f;
+	float VerticalOffset = 80.f;
 
 	UPROPERTY(EditAnywhere, Category="Centipede")
 	FVector2D MeshScale = FVector2D(.4f, .4f);
@@ -50,7 +50,11 @@ public:
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	ACTPCentiNode* NextNode;
 
-		
+	UPROPERTY(category = "Centipede", EditAnywhere)
+	float DistToNextLoc;
+
+	UPROPERTY(category = "Centipede", EditAnywhere)
+	float DistToNextSwitch;
 	
 protected:
 	// Called when the game starts or when spawned
