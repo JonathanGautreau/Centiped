@@ -2,6 +2,8 @@
 
 
 #include "Centiped/Public/CtpGameMode.h"
+
+#include "CTPGameLoop.h"
 #include "Centiped/Public/CtpPlayerController.h"
 #include "Centiped/Public/CtpPlayerPawn.h"
 #include "CtpCentipede.h"
@@ -26,4 +28,9 @@ void ACtpGameMode::BeginPlay()
 	SpawnParameters.Owner = this;
 
 	Centipede = GetWorld()->SpawnActor<ACtpCentipede>(SpawnParameters);
+	
+	if (UWorld* World = GetWorld())
+	{
+		World->SpawnActor<ACtpGameLoop>(ACtpGameLoop::StaticClass());
+	}
 }
