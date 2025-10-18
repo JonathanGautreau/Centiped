@@ -62,13 +62,15 @@ void ACTPCentiNode::Move(float DeltaTime)
 			{					
 				if (MovingDirection.X != 0)
 				{
-					// Le problème est dans cette condition. Elle ne doit s'appliquer que lorsque le node va depacer la hitswitch à ce tick
-					// Cependant lorsque le node doit repartir puisqu'il se trouve encore trop proche de la hitswitch il se retrouver bloquer dans une boucle "infini".
-					
 					if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y+DistToNextSwitch*MovingDirection.X,GetActorLocation().Z);
 					LastMovingDirection = MovingDirection;
 					MovingDirection = FVector2D(0,-1);
 					NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z-(DistToNextLoc-DistToNextSwitch));
+					if (NextNode)
+					{
+						NextNode->HitSwitch = HitSwitch;
+					}
+					
 					if (GEngine)
 					{
 						GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,FString::Printf(TEXT("Switch dir")));
@@ -77,12 +79,9 @@ void ACTPCentiNode::Move(float DeltaTime)
 				
 				else
 				{
-					if (NextNode)
-					{
-						NextNode->HitSwitch = HitSwitch;
-					}
 					MovingDirection = FVector2D(-LastMovingDirection.X,0);
 					NewLocation = FVector2D(GetActorLocation().Y+(DistToNextLoc-DistToNextSwitch)*MovingDirection.X,HitSwitch.Y-VerticalOffset);
+					HitSwitch=FVector2D(2000,2000);
 				}
 			}
 		}
