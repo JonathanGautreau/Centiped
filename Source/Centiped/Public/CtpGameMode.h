@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CTPScoreSystem.h"
 #include "GameFramework/GameModeBase.h"
+#include "CtpCentipede.h"
 #include "CtpGameMode.generated.h"
 
 /**
@@ -14,7 +15,7 @@ UCLASS()
 class CENTIPED_API ACtpGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 public:
 	ACtpGameMode();
 
@@ -40,7 +41,11 @@ public:
 
 	UCTPScoreSystem* GetScoreSystem() const { return ScoreSystem; };
 
+	TObjectPtr<ACtpCentipede> Centipede;
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	UCTPScoreSystem* ScoreSystem;
+
+
 };
