@@ -21,11 +21,14 @@ class CENTIPED_API ACtpPlayerPawn : public APawn
 public:
 	// Sets default values for this pawn's properties
 	ACtpPlayerPawn();
-	void SpawnMushrooms(UWorld* World, const ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax);
+	
+	void SetPlayerInitialPosition();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	void PlayerMovements(float DeltaTime);
 
 public:
 	// Called every frame
@@ -35,16 +38,11 @@ private:
 	UPROPERTY(Category="PlayerPawn", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
-	UPROPERTY(Category="PlayerPawn", EditAnywhere)
-	TArray<FIntPoint> AvailableCells;
-
-	void GenerateAvailableCells(const ACtpGameMode* GameMode);
-
 public:
 	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void Move(const FInputActionInstance& Instance);
 	void Shoot(const FInputActionInstance& Instance);
