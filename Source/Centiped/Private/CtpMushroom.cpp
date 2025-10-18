@@ -71,14 +71,14 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 			
 			if (Life == 0)
 			{
-				// if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
-				// {
-				// 	ScoreSystem->SetScore(ScoreSystem->GetScore() + 1);
-				// }
-				// else
-				// {
-				// 	UE_LOG(LogCentiped, Warning, TEXT("ScoreSystem is  null"));
-				// }
+				if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+				{
+					ScoreSystem->SetScore(ScoreSystem->GetScore() + 1);
+				}
+				else
+				{
+					UE_LOG(LogCentiped, Warning, TEXT("ScoreSystem is  null"));
+				}
 				Destroy();
 			}
 			

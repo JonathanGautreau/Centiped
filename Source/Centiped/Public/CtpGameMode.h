@@ -19,7 +19,6 @@ public:
 	ACtpGameMode();
 
 	virtual void BeginPlay() override;
-	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int Height = 1920;

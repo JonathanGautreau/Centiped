@@ -19,7 +19,7 @@ private:
 	int Score;
 
 public:
-	// int GetScore() const;
-	// void SetScore(int NewScore);
-	// void ResetScore();
+	int GetScore() const;
+	void SetScore(int NewScore);
+	void ResetScore();
 };

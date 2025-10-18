@@ -39,7 +39,7 @@ void ACtpGameMode::BeginPlay()
 		ScoreSystem = NewObject<UCTPScoreSystem>(this, UCTPScoreSystem::StaticClass());
 		if (ScoreSystem)
 		{
-			// ScoreSystem->ResetScore();
+			ScoreSystem->ResetScore();
 		}
 	}
 }

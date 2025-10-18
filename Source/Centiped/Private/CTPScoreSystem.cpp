@@ -5,18 +5,18 @@
 #include "CTPLog.h"
 
 
-// int UCTPScoreSystem::GetScore() const
-// {
-// 	return Score;
-// }
-//
-// void UCTPScoreSystem::SetScore(int NewScore)
-// {
-// 	Score = NewScore;
-// 	UE_LOG(LogCentiped, Log, TEXT("New Score: %d"), Score);
-// }
-//
-// void UCTPScoreSystem::ResetScore()
-// {
-// 	SetScore(0);
-// }
+int UCTPScoreSystem::GetScore() const
+{
+	return Score;
+}
+
+void UCTPScoreSystem::SetScore(int NewScore)
+{
+	Score = NewScore;
+	UE_LOG(LogCentiped, Log, TEXT("New Score: %d"), Score);
+}
+
+void UCTPScoreSystem::ResetScore()
+{
+	SetScore(0);
+}
