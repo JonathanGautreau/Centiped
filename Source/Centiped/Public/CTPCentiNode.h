@@ -15,7 +15,6 @@ class CENTIPED_API ACTPCentiNode : public AActor
 public:
 	// Sets default values for this actor's properties
 	ACTPCentiNode();
-
 	
 	UPROPERTY(Category="Centipede", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
@@ -27,13 +26,13 @@ public:
 	bool IsFalling = true;
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
-	float MoveSpeed = 1000.f;
-
-	UPROPERTY(category = "Centipede", EditAnywhere)
-	float VerticalOffset = 80.f;
-
+	float MoveSpeed = 500.f;
+	
 	UPROPERTY(EditAnywhere, Category="Centipede")
-	FVector2D MeshScale = FVector2D(.4f, .4f);
+	FVector2D MeshScale = FVector2D(.8f, .8f);
+	
+	UPROPERTY(category = "Centipede", EditAnywhere)
+	float VerticalOffset = MeshScale.Y * 100;
 	
 	UPROPERTY(Category = "Centipede", EditAnywhere)
 	FVector2D MovingDirection = FVector2D(-1, 0);
@@ -63,11 +62,11 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 	void Move(float DeltaTime);
 	
 	float FindDistToNextHeadHitSwitch() const;
 
 	float FindDistToNextNodeHitSwitch() const;
-		
 };

@@ -62,9 +62,15 @@ public:
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	FVector2D MeshScale = FVector2D(0.8f, 1.2f);
 
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")
-	TSubclassOf<class ACtpBullet> ProjectileClass = ACtpBullet::StaticClass();
+	TSubclassOf<ACtpBullet> ProjectileClass = ACtpBullet::StaticClass();
+	
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
+	FVector LastSafeLocation;
+
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
+	bool bIsOverlapping = false;
+	
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 };

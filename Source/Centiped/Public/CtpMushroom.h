@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CTPScoreSystem.h"
 #include "GameFramework/Actor.h"
 #include "CtpMushroom.generated.h"
 
@@ -19,8 +20,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
 private:
-	UPROPERTY(Category="PlayerPawn", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(Category="Mushroom", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 public:
@@ -29,8 +32,11 @@ public:
 
 	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 	
-	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	FVector2D MeshScale = FVector2D(.8f, .4f);
+	UPROPERTY(EditAnywhere, Category="Mushroom")
+	FVector2D MeshScale = FVector2D(.8f, .8f);
+
+	UPROPERTY(EditAnywhere, Category="Mushroom")
+	int Life = 3;
 	
 	void InitializePosition(const FVector& InitialPosition);
 };
