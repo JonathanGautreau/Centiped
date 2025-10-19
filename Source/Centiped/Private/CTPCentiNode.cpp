@@ -55,7 +55,7 @@ void ACTPCentiNode::Tick(float DeltaTime)
 	
 	if (PrevNode == nullptr)
 	{
-		IsHead=true;
+		IsHead=true;			//If no Previous node, this node become a head
 	}
 	Move(DeltaTime);
 }
@@ -65,18 +65,17 @@ void ACTPCentiNode::Move(float DeltaTime)
 	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 	NewLocation += MovingDirection * DeltaTime * MoveSpeed;
 	DistToNextLoc = DeltaTime * MoveSpeed;
-	//DistToNextSwitch;
-	if (IsHead)	DistToNextSwitch = FindDistToNextHeadHitSwitch();
-	else DistToNextSwitch = FindDistToNextNodeHitSwitch();
+	if (IsHead)	DistToNextSwitch = FindDistToNextHeadHitSwitch();	//To check the distance to the next border of the map
+	else DistToNextSwitch = FindDistToNextNodeHitSwitch();			//To check the distance to the next switch
 
 	if (DistToNextLoc > DistToNextSwitch || IsColliding )
 	{
 		
-		if (IsFalling)
+		if (IsFalling)		//TODO when the centiped climb up when it reach the bottom left of the bounds
 		{					
-			if (MovingDirection.X != 0)
+			if (MovingDirection.X != 0) //When the centiped move on the left and right
 			{
-				if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
+				if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); 
 				else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z);
 				if (NextNode)
 				{
@@ -87,13 +86,8 @@ void ACTPCentiNode::Move(float DeltaTime)
 				if (IsColliding) NewLocation =FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 				else NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
 				IsColliding=false;
-				
-				if (GEngine)
-				{
-					// GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,FString::Printf(TEXT("Switch dir")));
-				}
 			}
-			else
+			else		//When the centiped move down
 			{
 				MovingDirection = FVector2D(-LastMovingDirection.X,0);
 				NewLocation = FVector2D(GetActorLocation().Y + (DistToNextLoc - DistToNextSwitch) * MovingDirection.X,HitSwitch.Y - VerticalOffset);
