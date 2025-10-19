@@ -2,7 +2,7 @@
 
 
 #include "CtpMushroom.h"
-
+#include "CtpBullet.h"
 #include "CtpGameMode.h"
 #include "CTPLog.h"
 #include "CTPScoreSystem.h"
@@ -31,8 +31,9 @@ ACtpMushroom::ACtpMushroom()
 	MeshComponent->SetCollisionProfileName(UCollisionProfile::CustomCollisionProfileName);
 	MeshComponent->SetCollisionObjectType(ECC_WorldStatic);
 	MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	MeshComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+	MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap); // Collisions with Player
+	MeshComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); // Collisions with Bullets
+	MeshComponent->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Overlap); // Collisions with Centipede
 	
 	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
@@ -59,30 +60,28 @@ void ACtpMushroom::InitializePosition(const FVector& InitialPosition)
 void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-
-	// if (OtherActor == ACtpBullet)
-
+	
 	if (OtherActor && OtherActor != this)
 	{
+		UE_LOG(LogCentiped, Warning, TEXT("%s is  overlying : %s"), *this->GetName(), *OtherActor->GetName());
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
-			// if (OtherActor == ACtpBullet)
-			Life--;
-			
-			if (Life == 0)
+			if (Cast<ACtpBullet>(OtherActor))
 			{
-				if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+				Life--;
+				if (Life == 0)
 				{
-					ScoreSystem->SetScore(ScoreSystem->GetScore() + 1);
+					if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+					{
+						ScoreSystem->SetScore(ScoreSystem->GetScore() + 1);
+					}
+					else
+					{
+						UE_LOG(LogCentiped, Warning, TEXT("ScoreSystem is  null"));
+					}
+					Destroy();
 				}
-				else
-				{
-					UE_LOG(LogCentiped, Warning, TEXT("ScoreSystem is  null"));
-				}
-				Destroy();
 			}
-			
-			UE_LOG(LogCentiped, Warning, TEXT("Mushroom is  overlying : %s"), *OtherActor->GetName());
 		}
 	}
 }

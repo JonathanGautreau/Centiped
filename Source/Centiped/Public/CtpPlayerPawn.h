@@ -64,7 +64,7 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")
-	TSubclassOf<class ACtpBullet> ProjectileClass = ACtpBullet::StaticClass();
+	TSubclassOf<ACtpBullet> ProjectileClass = ACtpBullet::StaticClass();
 	
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	FVector LastSafeLocation;

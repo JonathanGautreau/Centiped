@@ -33,7 +33,7 @@ public:
 	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 	
 	UPROPERTY(EditAnywhere, Category="Mushroom")
-	FVector2D MeshScale = FVector2D(.8f, .4f);
+	FVector2D MeshScale = FVector2D(.8f, .8f);
 
 	UPROPERTY(EditAnywhere, Category="Mushroom")
 	int Life = 3;

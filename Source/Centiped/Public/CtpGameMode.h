@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "CTPScoreSystem.h"
 #include "GameFramework/GameModeBase.h"
-#include "CtpCentipede.h"
 #include "CtpGameMode.generated.h"
 
 /**
@@ -28,7 +27,7 @@ public:
 	int Width = 1600;
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	FVector2D SquareSize = FVector2D(80, 40);
+	FVector2D SquareSize = FVector2D(80, 80);
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int Rows = static_cast<int>(Height / SquareSize.Y);
@@ -41,11 +40,7 @@ public:
 
 	UCTPScoreSystem* GetScoreSystem() const { return ScoreSystem; };
 
-	TObjectPtr<ACtpCentipede> Centipede;
-
 protected:
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	UCTPScoreSystem* ScoreSystem;
-
-
 };

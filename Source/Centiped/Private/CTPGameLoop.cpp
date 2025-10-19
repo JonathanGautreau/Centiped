@@ -2,6 +2,8 @@
 
 
 #include "CTPGameLoop.h"
+
+#include "CTPCentiNode.h"
 #include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
 #include "Centiped/Public/CtpGameMode.h"
@@ -16,7 +18,17 @@ void ACtpGameLoop::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GenerateMushrooms();
+	if (UWorld* World = GetWorld())
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		
+		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+		{
+			GenerateMushrooms(World, GameMode);
+			GenerateCentipede(World, SpawnParams, GameMode);
+		}
+	}
 }
 
 // Called every frame
@@ -25,22 +37,13 @@ void ACtpGameLoop::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ACtpGameLoop::GenerateMushrooms()
+void ACtpGameLoop::GenerateMushrooms(UWorld* World, const ACtpGameMode* GameMode)
 {
-	if (UWorld* World = GetWorld())
-	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-
-		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
-		{
-			GenerateAvailableCells(GameMode);
-			// A lot of mushrooms
-			SpawnMushrooms(World, GameMode, 20, 0, GameMode->Rows - 20);
-			// Some mushrooms
-			SpawnMushrooms(World, GameMode, 8, GameMode->Rows - 21, GameMode->Rows - 6);
-		}
-	}
+	GenerateAvailableCells(GameMode);
+	// A lot of mushrooms
+	SpawnMushrooms(World, GameMode, 25, 0, FMath::RoundToInt(GameMode->Rows * 0.85f));
+	// Some mushrooms
+	// SpawnMushrooms(World, GameMode, 6, FMath::RoundToInt(GameMode->Rows * 0.7f) + 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
 }
 
 void ACtpGameLoop::SpawnMushrooms(UWorld* World, const ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax)
@@ -52,12 +55,18 @@ void ACtpGameLoop::SpawnMushrooms(UWorld* World, const ACtpGameMode* GameMode, i
 		// Chose location
 		const int Col = FMath::RandRange(0, GameMode->Columns - 1);
 		const int Row = FMath::RandRange(RowMin, RowMax);
-
+		
 		// Remove chosen location from AvailableCells array
-		AvailableCells.Remove(FIntPoint(Row, Col));
-
-		// Don't spawn mushrooms near for the player
-		if (!(Col < 13 && Col > 7 && Row > 35))
+		int32 NumberOfDeletedCells = AvailableCells.Remove(FIntPoint(Row, Col));
+		RemoveCellNeighbors(Col, Row, NumberOfDeletedCells);
+		
+		// Don't spawn mushrooms near the player
+		FVector PlayerSquare = FVector(
+			FMath::RoundToInt(GameMode->Columns * 0.4f),
+			FMath::RoundToInt(GameMode->Columns * 0.6f),
+			FMath::RoundToInt(GameMode->Rows * 0.7f));
+		
+		if (!(Col > PlayerSquare.X && Col < PlayerSquare.Y && Row > PlayerSquare.Z) && NumberOfDeletedCells > 0)
 		{
 			// Create mushrooms
 			ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
@@ -82,5 +91,44 @@ void ACtpGameLoop::GenerateAvailableCells(const ACtpGameMode* GameMode)
 		{
 			AvailableCells.Add(FIntPoint(Row, Col));
 		}
+	}
+}
+
+void ACtpGameLoop::RemoveCellNeighbors(const int Col, const int Row, int32 NumberOfDeletedCells)
+{
+	if (NumberOfDeletedCells > 0)
+	{
+		AvailableCells.Remove(FIntPoint(Row-1, Col-1));
+		AvailableCells.Remove(FIntPoint(Row-1, Col));
+		AvailableCells.Remove(FIntPoint(Row-1, Col+1));
+		AvailableCells.Remove(FIntPoint(Row, Col-1));
+		AvailableCells.Remove(FIntPoint(Row, Col+1));
+		AvailableCells.Remove(FIntPoint(Row+1, Col-1));
+		AvailableCells.Remove(FIntPoint(Row+1, Col));
+		AvailableCells.Remove(FIntPoint(Row+1, Col+1));
+	}
+}
+
+void ACtpGameLoop::GenerateCentipede(UWorld* World, const FActorSpawnParameters& SpawnParams, const ACtpGameMode* GameMode) const
+{
+	ACTPCentiNode* Prev = nullptr;
+	
+	for (int i = 0; i < CentiSize ; ++i )
+	{
+		ACTPCentiNode* Curr = World->SpawnActor<ACTPCentiNode>(SpawnParams);
+				
+		Curr->PrevNode = Prev;
+		Curr->HitSwitch = FVector2D(GameMode->Bounds.Max.X - Curr->MeshScale.X * 100 * 0.5, GameMode->Bounds.Max.Y - Curr->MeshScale.Y * 100 * 0.5);
+		
+		if (Prev)
+		{
+			Prev->NextNode = Curr;
+			Curr->SetActorLocation(FVector(0, Prev->GetActorLocation().Y + Curr->MeshScale.X * 100, Prev->GetActorLocation().Z));
+		}
+		else
+		{
+			Curr->SetActorLocation(FVector(0, 0, GameMode->Bounds.Max.Y - Curr->MeshScale.Y * 100 * 0.5));
+		}
+		Prev = Curr;
 	}
 }

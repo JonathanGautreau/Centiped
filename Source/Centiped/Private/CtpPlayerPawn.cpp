@@ -32,7 +32,8 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	MeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
 	MeshComponent->SetCollisionObjectType(ECC_Pawn);
 	MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	MeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
+	MeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap); // Collisions with Mushrooms
+	MeshComponent->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Overlap); // Collisions with Centipede
 	
 	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
@@ -107,9 +108,8 @@ void ACtpPlayerPawn::PlayerMovements(float DeltaTime)
 			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
 			FVector2D(
 				GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100,
-				GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * 32) - round(GameMode->SquareSize.Y * 0.5)
+				GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5)
 			));
-		
 		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
 
 		MoveDirection = FVector2D::Zero();
@@ -183,7 +183,7 @@ void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 
 		SetActorLocation(LastSafeLocation);
 		
-		UE_LOG(LogCentiped, Warning, TEXT("Player is  overlying : %s"), *OtherActor->GetName());
+		UE_LOG(LogCentiped, Warning, TEXT("%s is  overlying : %s"), *this->GetName(), *OtherActor->GetName());
 	}
 }
 
