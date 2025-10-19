@@ -68,6 +68,8 @@ void ACtpPlayerPawn::BeginPlay()
 	Super::BeginPlay();
 
 	SetPlayerInitialPosition();
+
+	IsInSafeFrame=false;
 }
 
 // Called every frame
@@ -82,6 +84,18 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 	bIsOverlapping = false;
 
 	PlayerMovements(DeltaTime);
+
+	if (IsInSafeFrame)
+	{
+		if (SafeFrame>3)
+		{
+			IsInSafeFrame=false;
+		}
+		else
+		{
+			SafeFrame=+DeltaTime;
+		}
+	}
 }
 
 void ACtpPlayerPawn::SetPlayerInitialPosition()
@@ -187,3 +201,13 @@ void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
+void ACtpPlayerPawn::LoseLife()
+{
+	LifeLeft--;
+	IsInSafeFrame = true;
+}
+
+void ACtpPlayerPawn::GainLife()
+{
+	LifeLeft++;
+}

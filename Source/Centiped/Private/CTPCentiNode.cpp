@@ -8,6 +8,7 @@
 #include "CtpLog.h"
 #include "CtpMushroom.h"
 #include "CtpPlayerPawn.h"
+#include "Components/SplineComponent.h"
 
 
 // Sets default values
@@ -68,20 +69,24 @@ void ACTPCentiNode::Move(float DeltaTime)
 	if (IsHead)	DistToNextSwitch = FindDistToNextHeadHitSwitch();
 	else DistToNextSwitch = FindDistToNextNodeHitSwitch();
 
-	if (DistToNextLoc > DistToNextSwitch)
+	if (DistToNextLoc > DistToNextSwitch || IsColliding )
 	{
+		
 		if (IsFalling)
 		{					
 			if (MovingDirection.X != 0)
 			{
-				if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z);
-				LastMovingDirection = MovingDirection;
-				MovingDirection = FVector2D(0,-1);
-				NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z - (DistToNextLoc - DistToNextSwitch));
+				if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
+				else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z);
 				if (NextNode)
 				{
 					NextNode->HitSwitch = HitSwitch;
 				}
+				LastMovingDirection = MovingDirection;
+				MovingDirection = FVector2D(0,-1);
+				if (IsColliding) NewLocation =FVector2D(GetActorLocation().Y, GetActorLocation().Z);
+				else NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
+				IsColliding=false;
 				
 				if (GEngine)
 				{
@@ -92,10 +97,12 @@ void ACTPCentiNode::Move(float DeltaTime)
 			{
 				MovingDirection = FVector2D(-LastMovingDirection.X,0);
 				NewLocation = FVector2D(GetActorLocation().Y + (DistToNextLoc - DistToNextSwitch) * MovingDirection.X,HitSwitch.Y - VerticalOffset);
-				HitSwitch = FVector2D(2000,2000);
+				ACtpGameMode *GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
+				HitSwitch = FVector2D(GameMode->Bounds.Max);
 			}
 		}
 	}
+
 	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));	
 }
 
@@ -131,20 +138,23 @@ void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 	if (OtherActor && OtherActor != this)
 	{
 		UE_LOG(LogCentiped, Warning, TEXT("%s is  overlying : %s"), *this->GetName(), *OtherActor->GetName());
-		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+		if (IsHead)
 		{
 			if (const ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
 			{
-				if (FMath::Abs(Mushroom->GetActorLocation().Y - GetActorLocation().Y) < 20)
+				
+				if (FMath::Abs(Mushroom->GetActorLocation().Y-GetActorLocation().Y)<80)
 				{
-					/**
-					 * TODO
-					 * Rotate the centipede as it was a border screen
-					 */
+					IsColliding = true;				
+					
 					UE_LOG(LogCentiped, Warning, TEXT("Mushroom detected"));
 				}
 			}
-			if (Cast<ACtpPlayerPawn>(OtherActor))
+		}
+
+		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+		{	
+			if (ACtpPlayerPawn* Player =  Cast<ACtpPlayerPawn>(OtherActor))
 			{
 				/**
 				 * TODO
@@ -153,26 +163,40 @@ void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 				 *	- Count mushrooms for score
 				 *	- reset level
 				 */
+				if (Player->IsInSafeFrame)
+				{
+					Player->LoseLife();
+					if (Player->LifeLeft==0)
+					{
+						
+					}
+				}
+								
 				UE_LOG(LogCentiped, Warning, TEXT("Player detected"));
 			}
 			if (ACtpBullet* Bullet = Cast<ACtpBullet>(OtherActor))
 			{
-				/**
-				 * TODO
-				 * Hit centipede :
-				 *  - create mushroom on current node position
-				 *	- transform prev node into head
-				 *  - delete current node
-				 */
  				UE_LOG(LogCentiped, Warning, TEXT("Bullet detected"));
-				// this->PrevNode->NextNode = nullptr;
-				// if (UWorld* World = GetWorld())
-				// {
-				// 	ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-				// 	Mushroom->InitializePosition(this->GetActorLocation());
-				// }
-				// this->Destroy();
+				if (PrevNode)
+				{
+					PrevNode->NextNode=nullptr;
+				}
+				if (NextNode)
+				{
+					NextNode->PrevNode=nullptr;
+				}
+				this->Destroy();
 			}
 		}
 	}
+}
+
+void ACTPCentiNode::Destroyed()
+{
+	if (UWorld* World = GetWorld())
+	{
+		ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
+		Mushroom->InitializePosition(this->GetActorLocation());
+	}
+	
 }
