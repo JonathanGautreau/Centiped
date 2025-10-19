@@ -41,7 +41,7 @@ void ACtpGameLoop::GenerateMushrooms(UWorld* World, const ACtpGameMode* GameMode
 {
 	GenerateAvailableCells(GameMode);
 	// A lot of mushrooms
-	SpawnMushrooms(World, GameMode, 2, 0, FMath::RoundToInt(GameMode->Rows * 0.85f));
+	SpawnMushrooms(World, GameMode, 25, 0, FMath::RoundToInt(GameMode->Rows * 0.85f));
 	// Some mushrooms
 	// SpawnMushrooms(World, GameMode, 6, FMath::RoundToInt(GameMode->Rows * 0.7f) + 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
 }
