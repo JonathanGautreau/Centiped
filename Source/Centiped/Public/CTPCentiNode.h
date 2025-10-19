@@ -25,6 +25,9 @@ public:
 	UPROPERTY(Category="Centipede",EditAnywhere)
 	bool IsFalling = true;
 
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	bool IsColliding;
+
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	float MoveSpeed = 500.f;
 	
@@ -32,7 +35,7 @@ public:
 	FVector2D MeshScale = FVector2D(.8f, .8f);
 	
 	UPROPERTY(category = "Centipede", EditAnywhere)
-	float VerticalOffset = MeshScale.Y * 100;
+	float VerticalOffset = MeshScale.Y*100;
 	
 	UPROPERTY(Category = "Centipede", EditAnywhere)
 	FVector2D MovingDirection = FVector2D(-1, 0);
@@ -69,4 +72,6 @@ public:
 	float FindDistToNextHeadHitSwitch() const;
 
 	float FindDistToNextNodeHitSwitch() const;
+
+	virtual void Destroyed() override;
 };
