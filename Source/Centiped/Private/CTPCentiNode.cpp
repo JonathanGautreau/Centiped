@@ -8,8 +8,6 @@
 #include "CtpLog.h"
 #include "CtpMushroom.h"
 #include "CtpPlayerPawn.h"
-#include "Components/SplineComponent.h"
-
 
 // Sets default values
 ACTPCentiNode::ACTPCentiNode()
@@ -57,43 +55,49 @@ void ACTPCentiNode::Tick(float DeltaTime)
 	{
 		IsHead=true;			//If no Previous node, this node become a head
 	}
-	Move(DeltaTime);
+	Move(DeltaTime);			//Move Every Tick
 }
 
 void ACTPCentiNode::Move(float DeltaTime)
 {
 	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 	NewLocation += MovingDirection * DeltaTime * MoveSpeed;
-	DistToNextLoc = DeltaTime * MoveSpeed;
+	DistToNextLoc = DeltaTime * MoveSpeed;							//The distance to the next Location
 	if (IsHead)	DistToNextSwitch = FindDistToNextHeadHitSwitch();	//To check the distance to the next border of the map
 	else DistToNextSwitch = FindDistToNextNodeHitSwitch();			//To check the distance to the next switch
 
-	if (DistToNextLoc > DistToNextSwitch || IsColliding )
+	if (DistToNextLoc > DistToNextSwitch || IsColliding )			//If the location is further than the next switch point or if there is a collision with a mushroom
 	{
+		/**
+		 
+		/!\ There is a issue with this part of the code which somehow doesn't execute as intended and shrink the space between the nodes time after time	
+		/!\ It might be due to the usage of float which when were use to calculates location can create offsets from the actual value and decay the entire logic.
+		/!\ Also the sequence of moving downward and then on the opposite direction is quite long so if the centiped has to switch to quickly in a couple of second it migth break
 		
-		if (IsFalling)		//TODO when the centiped climb up when it reach the bottom left of the bounds
+		*/
+		if (IsFalling)		//TODO when the centiped climb up when it reach the bottom left of the bounds + find a when to avoid or resolve the issues
 		{					
-			if (MovingDirection.X != 0) //When the centiped move on the left and right
+			if (MovingDirection.X != 0) //When the centiped move on the left or right
 			{
-				if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); 
-				else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z);
+				if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
+				else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
 				if (NextNode)
 				{
-					NextNode->HitSwitch = HitSwitch;
+					NextNode->HitSwitch = HitSwitch;		// If the node is not the last one give it to the next one
 				}
-				LastMovingDirection = MovingDirection;
+				LastMovingDirection = MovingDirection;		//Keep the previous direction for later use 
 				MovingDirection = FVector2D(0,-1);
-				if (IsColliding) NewLocation =FVector2D(GetActorLocation().Y, GetActorLocation().Z);
+				if (IsColliding) NewLocation =FVector2D(GetActorLocation().Y, GetActorLocation().Z-DistToNextLoc*MovingDirection.Y);
 				else NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
 				IsColliding=false;
 			}
 			else		//When the centiped move down
 			{
-				MovingDirection = FVector2D(-LastMovingDirection.X,0);
+				MovingDirection = -LastMovingDirection;		//Use of the previous value to turn back in the good direction
 				NewLocation = FVector2D(GetActorLocation().Y + (DistToNextLoc - DistToNextSwitch) * MovingDirection.X,HitSwitch.Y - VerticalOffset);
 				ACtpGameMode *GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
-				HitSwitch = FVector2D(GameMode->Bounds.Max);
-			}
+				HitSwitch = FVector2D(GameMode->Bounds.Max);	// After the changing of direction, move away enough the hitswitch to not get the node lock around it.
+ 			}
 		}
 	}
 
