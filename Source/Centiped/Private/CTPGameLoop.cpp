@@ -41,7 +41,7 @@ void ACtpGameLoop::GenerateMushrooms(UWorld* World, const ACtpGameMode* GameMode
 {
 	GenerateAvailableCells(GameMode);
 	// A lot of mushrooms
-	SpawnMushrooms(World, GameMode, 25, 0, FMath::RoundToInt(GameMode->Rows * 0.85f));
+	SpawnMushrooms(World, GameMode, 25, 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
 	// Some mushrooms
 	// SpawnMushrooms(World, GameMode, 6, FMath::RoundToInt(GameMode->Rows * 0.7f) + 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
 }
@@ -117,8 +117,9 @@ void ACtpGameLoop::GenerateCentipede(UWorld* World, const FActorSpawnParameters&
 	{
 		ACTPCentiNode* Curr = World->SpawnActor<ACTPCentiNode>(SpawnParams);
 				
-		Curr->PrevNode = Prev;
-		Curr->HitSwitch = FVector2D(GameMode->Bounds.Max.X - Curr->MeshScale.X * 100 * 0.5, GameMode->Bounds.Max.Y - Curr->MeshScale.Y * 100 * 0.5);
+		Curr-> PrevNode = Prev;
+		Curr-> DefaultVector = FVector2D(2000,2000);
+		Curr-> HitSwitch = FVector2D(2000,2000); ;//GameMode->Bounds.Max.X - Curr->MeshScale.X * 100 * 0.5, GameMode->Bounds.Max.Y - Curr->MeshScale.Y * 100 * 0.5
 		
 		if (Prev)
 		{

@@ -68,13 +68,6 @@ void ACTPCentiNode::Move(float DeltaTime)
 
 	if (DistToNextLoc > DistToNextSwitch || IsColliding )			//If the location is further than the next switch point or if there is a collision with a mushroom
 	{
-		/**
-		 
-		/!\ There is a issue with this part of the code which somehow doesn't execute as intended and shrink the space between the nodes time after time	
-		/!\ It might be due to the usage of float which when were use to calculates location can create offsets from the actual value and decay the entire logic.
-		/!\ Also the sequence of moving downward and then on the opposite direction is quite long so if the centiped has to switch to quickly in a couple of second it migth break
-		
-		*/
 		if (IsFalling)		//TODO when the centiped climb up when it reach the bottom left of the bounds + find a when to avoid or resolve the issues
 		{					
 			if (MovingDirection.X != 0) //When the centiped move on the left or right
@@ -83,22 +76,46 @@ void ACTPCentiNode::Move(float DeltaTime)
 				else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
 				if (NextNode)
 				{
-					NextNode->HitSwitch = HitSwitch;		// If the node is not the last one give it to the next one
+					if (NextNode->HitSwitch==DefaultVector)
+					{
+						NextNode->HitSwitch = HitSwitch;
+					}
+					else
+					{
+						NextNode->HitSwitches.Emplace(HitSwitch);
+					}
 				}
 				LastMovingDirection = MovingDirection;		//Keep the previous direction for later use 
 				MovingDirection = FVector2D(0,-1);
-				if (IsColliding) NewLocation =FVector2D(GetActorLocation().Y, GetActorLocation().Z-DistToNextLoc*MovingDirection.Y);
+				if (IsColliding) NewLocation =FVector2D(GetActorLocation().Y, GetActorLocation().Z+DistToNextLoc*MovingDirection.Y);
 				else NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
 				IsColliding=false;
+				
 			}
 			else		//When the centiped move down
 			{
 				MovingDirection = -LastMovingDirection;		//Use of the previous value to turn back in the good direction
 				NewLocation = FVector2D(GetActorLocation().Y + (DistToNextLoc - DistToNextSwitch) * MovingDirection.X,HitSwitch.Y - VerticalOffset);
-				ACtpGameMode *GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
-				HitSwitch = FVector2D(GameMode->Bounds.Max);	// After the changing of direction, move away enough the hitswitch to not get the node lock around it.
+				if (IsHead)
+				{
+					ACtpGameMode *GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
+					HitSwitch = FVector2D(GameMode->Bounds.Max);	// After the changing of direction, move away enough the hitswitch to not get the node lock around it.
+				}
+				else
+				{
+					if (HitSwitches.IsEmpty())
+					{
+						HitSwitch = DefaultVector;
+					}
+					else
+					{
+						HitSwitch = HitSwitches[0];
+						HitSwitches.Remove(HitSwitch);
+					}
+				}
  			}
 		}
+		
 	}
 
 	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));	
@@ -124,6 +141,7 @@ float ACTPCentiNode::FindDistToNextNodeHitSwitch() const
 		return FMath::Abs(HitSwitch.Y + VerticalOffset * MovingDirection.Y - GetActorLocation().Z);
 	if (MovingDirection.X != 0)
 		return FMath::Abs(HitSwitch.X - GetActorLocation().Y);
+		
 	
 	return std::numeric_limits<float>::infinity();
 }
@@ -141,7 +159,7 @@ void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 			if (const ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
 			{
 				
-				if (FMath::Abs(Mushroom->GetActorLocation().Y-GetActorLocation().Y)<80)
+				if ( FMath::Abs(Mushroom->GetActorLocation().Z-GetActorLocation().Z)<20)
 				{
 					IsColliding = true;				
 					
@@ -182,6 +200,7 @@ void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 				if (NextNode)
 				{
 					NextNode->PrevNode=nullptr;
+					NextNode->IsColliding = true;
 				}
 				this->Destroy();
 			}

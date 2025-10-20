@@ -45,7 +45,12 @@ public:
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	FVector2D HitSwitch = FVector2D::Zero();
-	
+
+	UPROPERTY(category = "Centipede", EditAnywhere)
+	TArray<FVector2D> HitSwitches;
+
+	UPROPERTY(category = "Centipede", EditAnywhere)
+	FVector2D DefaultVector;
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	ACTPCentiNode* PrevNode;
