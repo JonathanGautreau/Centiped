@@ -3,14 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
-#include "CTPHUD.generated.h"
+#include "GameFramework/HUD.h"
+#include "CtpHud.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CENTIPED_API UCTPHUD : public UObject
+class CENTIPED_API ACtpHud : public AHUD
 {
 	GENERATED_BODY()
+	
+protected:
+	virtual void DrawHUD() override;
 };

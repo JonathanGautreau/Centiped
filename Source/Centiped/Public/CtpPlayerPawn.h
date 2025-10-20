@@ -38,6 +38,9 @@ private:
 	UPROPERTY(Category="PlayerPawn", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
+	UPROPERTY(Category="PlayerPawn", VisibleAnywhere, meta=(AllowPrivateAccess = "true"))
+	int LifeLeft = 3;
+
 public:
 	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 
@@ -61,18 +64,11 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	FVector2D MeshScale = FVector2D(0.8f, 1.2f);
-
-	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	int LifeLeft = 3;
-
-	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	bool IsInSafeFrame;
-
-	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	float SafeFrame;
 	
 	void LoseLife();
 	void GainLife();
+	int GetLife() const { return LifeLeft; };
+	void SetLife(const int NewLifeLeft) { LifeLeft = NewLifeLeft; };
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")

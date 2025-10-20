@@ -133,3 +133,29 @@ void ACtpGameLoop::GenerateCentipede(UWorld* World, const FActorSpawnParameters&
 		Prev = Curr;
 	}
 }
+
+void ACtpGameLoop::ResetRound()
+{
+	/**
+	 * TODO
+	 * Remove current centipede
+	 * Reset player position
+	 * Create new centipede
+	 *
+	 * Don't reset mushrooms
+	 * Don't reset player life and score
+	 */
+}
+
+void ACtpGameLoop::GameOver()
+{
+	/**
+	 * TODO
+	 * Remove current centipede
+	 * Remove current mushrooms
+	 * Reset player position
+	 * Reset player life and score
+	 * Create new centipede
+	 * Create new mushrooms
+	 */
+}

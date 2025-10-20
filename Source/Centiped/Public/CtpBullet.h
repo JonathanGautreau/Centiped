@@ -38,7 +38,7 @@ public:
 	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 
 	UPROPERTY(EditAnywhere, Category="Bullet")
-	float MoveSpeed = 1000.f;
+	float MoveSpeed = 3000.f;
 
 	UPROPERTY(EditAnywhere, Category="Bullet")
 	float Radius = .2f;

@@ -71,7 +71,7 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 				Life--;
 				if (Life == 0)
 				{
-					if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+					if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
 					{
 						ScoreSystem->SetScore(ScoreSystem->GetScore() + 1);
 					}

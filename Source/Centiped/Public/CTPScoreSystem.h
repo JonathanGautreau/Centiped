@@ -3,17 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "GameFramework/Actor.h"
 #include "CTPScoreSystem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CENTIPED_API UCTPScoreSystem : public UObject
+class CENTIPED_API ACTPScoreSystem : public AActor
 {
 	GENERATED_BODY()
 
+public:
+	// Sets default values for this actor's properties
+	ACTPScoreSystem();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	
 private:
 	UPROPERTY(Category="ScoreSystem", VisibleAnywhere, meta=(AllowPrivateAccess = "true"))
 	int Score;
