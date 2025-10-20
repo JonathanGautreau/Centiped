@@ -8,6 +8,7 @@
 #include "CtpLog.h"
 #include "CtpMushroom.h"
 #include "CtpPlayerPawn.h"
+#include "EngineUtils.h"
 
 // Sets default values
 ACTPCentiNode::ACTPCentiNode()
@@ -115,7 +116,6 @@ void ACTPCentiNode::Move(float DeltaTime)
 				}
  			}
 		}
-		
 	}
 
 	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));	
@@ -141,7 +141,6 @@ float ACTPCentiNode::FindDistToNextNodeHitSwitch() const
 		return FMath::Abs(HitSwitch.Y + VerticalOffset * MovingDirection.Y - GetActorLocation().Z);
 	if (MovingDirection.X != 0)
 		return FMath::Abs(HitSwitch.X - GetActorLocation().Y);
-		
 	
 	return std::numeric_limits<float>::infinity();
 }
@@ -154,6 +153,8 @@ void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 	if (OtherActor && OtherActor != this)
 	{
 		UE_LOG(LogCentiped, Warning, TEXT("%s is  overlying : %s"), *this->GetName(), *OtherActor->GetName());
+
+		// Rotate the centipede
 		if (IsHead)
 		{
 			if (const ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
@@ -172,37 +173,59 @@ void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 		{	
 			if (ACtpPlayerPawn* Player =  Cast<ACtpPlayerPawn>(OtherActor))
 			{
-				/**
-				 * TODO
-				 * Hit player :
-				 *	- Remove one player ife
-				 *	- Count mushrooms for score
-				 *	- reset level
-				 */
-				if (Player->IsInSafeFrame)
-				{
-					Player->LoseLife();
-					if (Player->LifeLeft==0)
-					{
-						
-					}
-				}
-								
 				UE_LOG(LogCentiped, Warning, TEXT("Player detected"));
+
+				// Loose one life
+				Player->LoseLife();
+
+				// Score mushrooms
+				int NumberOfRemainingMushrooms = 0;
+				for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+				{
+					if (Cast<ACtpMushroom>(*It))
+						NumberOfRemainingMushrooms++;
+ 				}
+				if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+					ScoreSystem->SetScore(ScoreSystem->GetScore() + NumberOfRemainingMushrooms * 5);
+				else
+					UE_LOG(LogCentiped, Warning, TEXT("ScoreSystem is  null"));
+
+				// Reset
+				if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+					GameLoop->ResetRound();
 			}
+
+			// Hit the centipede
 			if (ACtpBullet* Bullet = Cast<ACtpBullet>(OtherActor))
 			{
  				UE_LOG(LogCentiped, Warning, TEXT("Bullet detected"));
+				
+				Bullet->Destroy(); // Destroying the bullet here avoids to hit the new mushroom
+				// Split the centipede
 				if (PrevNode)
 				{
-					PrevNode->NextNode=nullptr;
+					PrevNode->NextNode = nullptr;
 				}
 				if (NextNode)
 				{
-					NextNode->PrevNode=nullptr;
+					NextNode->PrevNode = nullptr;
 					NextNode->IsColliding = true;
 				}
+				// Delete the hit node, then create mushroom
 				this->Destroy();
+
+				// Score points
+				if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+				{
+					if (IsHead)
+						ScoreSystem->SetScore(ScoreSystem->GetScore() +  100);
+					else
+						ScoreSystem->SetScore(ScoreSystem->GetScore() + 10);
+				}
+				else
+				{
+					UE_LOG(LogCentiped, Warning, TEXT("ScoreSystem is  null"));
+				}
 			}
 		}
 	}
@@ -215,5 +238,4 @@ void ACTPCentiNode::Destroyed()
 		ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
 		Mushroom->InitializePosition(this->GetActorLocation());
 	}
-	
 }

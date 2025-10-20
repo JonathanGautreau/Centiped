@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CtpPlayerPawn.h"
-#include "UObject/Object.h"
+#include "GameFramework/Actor.h"
 #include "CTPGameLoop.generated.h"
 
-/**
- * 
- */
+// Forward declaration avoids circular dependencies 
+class ACtpGameMode;
+
+
 UCLASS()
 class CENTIPED_API ACtpGameLoop : public AActor
 {
@@ -37,6 +37,8 @@ private:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void ResetRound();
+	void GameOver();
 
 	UPROPERTY(Category = "Centipede", EditAnywhere)
 	int CentiSize = 10;

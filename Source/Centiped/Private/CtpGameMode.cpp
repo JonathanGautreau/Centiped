@@ -2,8 +2,8 @@
 
 
 #include "Centiped/Public/CtpGameMode.h"
-
 #include "CTPGameLoop.h"
+#include "CtpHud.h"
 #include "CTPLog.h"
 #include "CTPScoreSystem.h"
 #include "Centiped/Public/CtpPlayerController.h"
@@ -14,6 +14,7 @@ ACtpGameMode::ACtpGameMode()
 {
 	PlayerControllerClass = ACtpPlayerController::StaticClass();
 	DefaultPawnClass = ACtpPlayerPawn::StaticClass();
+	HUDClass = ACtpHud::StaticClass();
 }
 
 void ACtpGameMode::BeginPlay()
@@ -28,22 +29,28 @@ void ACtpGameMode::BeginPlay()
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;
 
-	
 	if (UWorld* World = GetWorld())
 	{
-		ACtpGameLoop* GameLoop = World->SpawnActor<ACtpGameLoop>(ACtpGameLoop::StaticClass());
 		if (!GameLoop)
 		{
-			UE_LOG(LogTemp, Error, TEXT("GameLoop wasn't instantiated correctly"));
+			GameLoop = World->SpawnActor<ACtpGameLoop>(ACtpGameLoop::StaticClass());
+			if (!GameLoop)
+			{
+				UE_LOG(LogTemp, Error, TEXT("GameLoop wasn't instantiated correctly"));
+			}
 		}
-	}
-	
-	if (!ScoreSystem)
-	{
-		ScoreSystem = NewObject<UCTPScoreSystem>(this, UCTPScoreSystem::StaticClass());
-		if (ScoreSystem)
+		
+		if (!ScoreSystem)
 		{
-			ScoreSystem->ResetScore();
+			ScoreSystem = World->SpawnActor<ACTPScoreSystem>(ACTPScoreSystem::StaticClass());
+			if (!ScoreSystem)
+			{
+				UE_LOG(LogTemp, Error, TEXT("ScoreSystem wasn't instantiated correctly"));
+			}
+			else
+			{
+				ScoreSystem->ResetScore();
+			}
 		}
 	}
 }
