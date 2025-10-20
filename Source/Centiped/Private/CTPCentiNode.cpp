@@ -115,18 +115,70 @@ void ACTPCentiNode::Move(float DeltaTime)
 				}
  			}
 		}
+		else
+		{
+			{					
+				if (MovingDirection.X != 0) //When the centiped move on the left or right
+				{
+					if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
+					else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
+					if (NextNode)
+					{
+						if (NextNode->HitSwitch==DefaultVector)
+						{
+							NextNode->HitSwitch = HitSwitch;
+						}
+						else
+						{
+							NextNode->HitSwitches.Emplace(HitSwitch);
+						}
+					}
+					LastMovingDirection = MovingDirection;		//Keep the previous direction for later use 
+					MovingDirection = FVector2D(0,1);
+					if (IsColliding) NewLocation =FVector2D(GetActorLocation().Y, GetActorLocation().Z+DistToNextLoc*MovingDirection.Y);
+					else NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
+					IsColliding=false;
+				
+				}
+				else		//When the centiped move up
+				{
+					MovingDirection = -LastMovingDirection;		//Use of the previous value to turn back in the good direction
+					NewLocation = FVector2D(GetActorLocation().Y + (DistToNextLoc - DistToNextSwitch) * MovingDirection.X,HitSwitch.Y + VerticalOffset);
+					if (IsHead)
+					{
+						ACtpGameMode *GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
+						HitSwitch = FVector2D(GameMode->Bounds.Max);	// After the changing of direction, move away enough the hitswitch to not get the node lock around it.
+					}
+					else
+					{
+						if (HitSwitches.IsEmpty())
+						{
+							HitSwitch = DefaultVector;
+						}
+						else
+						{
+							HitSwitch = HitSwitches[0];
+							HitSwitches.Remove(HitSwitch);
+						}
+					}
+				}
+			}
+		}
 		
 	}
-
+	
 	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));	
 }
 
- float ACTPCentiNode::FindDistToNextHeadHitSwitch() const
+ float ACTPCentiNode::FindDistToNextHeadHitSwitch()
  {
  	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
  	{
+ 		IsAtTheBounds();
  		if (MovingDirection.Y != 0)
- 			return FMath::Abs(HitSwitch.Y + VerticalOffset * MovingDirection.Y - GetActorLocation().Z);
+ 		{ 			
+ 			return FMath::Abs(HitSwitch.Y + VerticalOffset * MovingDirection.Y - GetActorLocation().Z);;
+ 		} 			
  		if (MovingDirection.X == -1)
  			return  FMath::Abs(GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5 - GetActorLocation().Y);
  		if (MovingDirection.X == 1)
@@ -145,6 +197,20 @@ float ACTPCentiNode::FindDistToNextNodeHitSwitch() const
 	
 	return std::numeric_limits<float>::infinity();
 }
+
+void ACTPCentiNode::IsAtTheBounds()
+{
+	ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
+	if (IsFalling)
+		if (HitSwitch.Y <= GameMode->Bounds.Max.Y + MeshScale.Y * 100 * 0.5+20)
+			if (HitSwitch.X >= GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5+20 && HitSwitch.X <= GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5+20)
+				IsFalling = false;
+	else
+		if (HitSwitch.Y >= GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5))
+			if (HitSwitch.X >= GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5+20 && HitSwitch.X <= GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5+20)
+				IsFalling = true;	
+}
+
 
 void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 {

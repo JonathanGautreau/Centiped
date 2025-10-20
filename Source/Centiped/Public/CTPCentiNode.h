@@ -74,9 +74,11 @@ public:
 
 	void Move(float DeltaTime);
 	
-	float FindDistToNextHeadHitSwitch() const;
+	float FindDistToNextHeadHitSwitch();
 
 	float FindDistToNextNodeHitSwitch() const;
 
+	void IsAtTheBounds() ;
+	
 	virtual void Destroyed() override;
 };
