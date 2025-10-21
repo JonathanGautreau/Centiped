@@ -74,7 +74,7 @@ public:
 
 	void Move(float DeltaTime);
 	
-	float FindDistToNextHeadHitSwitch();
+	float FindDistToNextHeadHitSwitch() const;
 
 	float FindDistToNextNodeHitSwitch() const;
 
