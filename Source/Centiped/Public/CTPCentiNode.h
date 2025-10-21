@@ -78,5 +78,7 @@ public:
 
 	float FindDistToNextNodeHitSwitch() const;
 
+	void IsAtTheBounds() ;
+	
 	virtual void Destroyed() override;
 };
