@@ -7,6 +7,7 @@
 #include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
 #include "Centiped/Public/CtpGameMode.h"
+#include "CTPFlea.h"
 
 // Sets default values
 ACtpGameLoop::ACtpGameLoop()
@@ -35,6 +36,18 @@ void ACtpGameLoop::BeginPlay()
 void ACtpGameLoop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (SpawnedMushroomsCount>10)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+			{
+				ACTPFlea* Flea = World->SpawnActor<ACTPFlea>(ACTPFlea::StaticClass());
+				Flea->SetActorLocation(FVector(GetActorLocation().X, FMath::RandRange(GameMode->Bounds.Min.X + 50,GameMode->Bounds.Min.X - 50), GameMode->Bounds.Max.Y));
+			}
+		}
+	}
 }
 
 void ACtpGameLoop::GenerateMushrooms(UWorld* World, const ACtpGameMode* GameMode)
@@ -46,7 +59,8 @@ void ACtpGameLoop::GenerateMushrooms(UWorld* World, const ACtpGameMode* GameMode
 	// SpawnMushrooms(World, GameMode, 6, FMath::RoundToInt(GameMode->Rows * 0.7f) + 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
 }
 
-void ACtpGameLoop::SpawnMushrooms(UWorld* World, const ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax)
+void ACtpGameLoop::SpawnMushrooms(UWorld* World, const ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin,
+                                  int RowMax)
 {
 	int SpawnedMushrooms = 0;
 	

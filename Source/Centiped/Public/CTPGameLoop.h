@@ -48,4 +48,6 @@ public:
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	float CentiSpeed;
+
+	int SpawnedMushroomsCount;
 };
