@@ -48,7 +48,7 @@ void ACtpMushroom::BeginPlay()
 
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		GameMode->GetGameLoop()->SpawnedMushroomsCount+=1;
+		//GameMode->GetGameLoop()->SpawnedMushroomsCount+=1;
 	}
 }
 
@@ -96,6 +96,6 @@ void ACtpMushroom::Destroyed()
 {
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		GameMode->GetGameLoop()->SpawnedMushroomsCount-=1;
+		//GameMode->GetGameLoop()->SpawnedMushroomsCount-=1;
 	}
 }

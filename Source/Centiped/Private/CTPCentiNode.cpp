@@ -152,13 +152,13 @@ void ACTPCentiNode::IsAtTheBounds()
 	ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
 	if (IsFalling)
 	{
-		GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is falling true")));
+		//GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is falling true")));
 		 if (HitSwitch.Y <= GameMode->Bounds.Min.Y + MeshScale.Y * 100)
 		 {
-			GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is on the bottom edge of the screen")));
+			//GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is on the bottom edge of the screen")));
 			if (HitSwitch.X > GameMode->Bounds.Max.X - MeshScale.X * 100  || HitSwitch.X < GameMode->Bounds.Min.X + MeshScale.X * 100 )
 			{
-				GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is on the left/right edge of the screen")));
+				//GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is on the left/right edge of the screen")));
 				IsFalling = false;
 			}
 		}
@@ -166,13 +166,13 @@ void ACTPCentiNode::IsAtTheBounds()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is falling false")));
+		//GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is falling false")));
 		if (HitSwitch.Y >= GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5))
 		{
-			GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is on the top 1/3 edge of the screen")));
+			//GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is on the top 1/3 edge of the screen")));
 			//if (HitSwitch.X >= GameMode->Bounds.Max.X - MeshScale.X * 100 || HitSwitch.X <= GameMode->Bounds.Min.X + MeshScale.X * 100 )
 			//{
-				GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is on the left/right edge of the screen")));
+				//GEngine->AddOnScreenDebugMessage(-1,	5.0f,	FColor::Red,	FString::Printf(TEXT("is on the left/right edge of the screen")));
 				IsFalling = true;
 			//}
 		}
