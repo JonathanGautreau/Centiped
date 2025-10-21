@@ -28,11 +28,11 @@ private:
 	UPROPERTY(Category="GameLoop", EditAnywhere)
 	TArray<FIntPoint> AvailableCells;
 
-	void GenerateMushrooms(UWorld* World, const ACtpGameMode* GameMode);
+	void GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode);
 	void RemoveCellNeighbors(int Col, int Row, int32 NumberOfDeletedCells);
-	void GenerateAvailableCells(const ACtpGameMode* GameMode);
-	void SpawnMushrooms(UWorld* World, const ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax);
-	void GenerateCentipede(UWorld* World, const FActorSpawnParameters& SpawnParams, const ACtpGameMode* GameMode) const;
+	void GenerateAvailableCells(ACtpGameMode* GameMode);
+	void SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax);
+	void GenerateCentipede(UWorld* World, FActorSpawnParameters& SpawnParams, ACtpGameMode* GameMode);
 
 	UFUNCTION()
 	void OnResetRoundComplete();
