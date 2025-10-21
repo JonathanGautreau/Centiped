@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CTPGameLoop.h"
 #include "CTPScoreSystem.h"
 #include "GameFramework/GameModeBase.h"
 #include "CtpGameMode.generated.h"
@@ -38,9 +39,13 @@ public:
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	FBox2D Bounds = FBox2D(FVector2D(-(Width / 2), -(Height / 2)), FVector2D(Width / 2, Height / 2));
 
-	UCTPScoreSystem* GetScoreSystem() const { return ScoreSystem; };
+	ACtpGameLoop* GetGameLoop() const { return GameLoop; };
+	ACTPScoreSystem* GetScoreSystem() const { return ScoreSystem; };
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	UCTPScoreSystem* ScoreSystem;
+	ACtpGameLoop* GameLoop;
+	
+	UPROPERTY(VisibleAnywhere, Category="Game")
+	ACTPScoreSystem* ScoreSystem;
 };
