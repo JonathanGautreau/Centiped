@@ -28,6 +28,12 @@ public:
 	int Width = 1600;
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
+	int HeightScreen = 2304;
+	
+	UPROPERTY(VisibleAnywhere, Category="Game")
+	int WidthScreen = 1920;
+
+	UPROPERTY(VisibleAnywhere, Category="Game")
 	FVector2D SquareSize = FVector2D(80, 80);
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
@@ -38,6 +44,9 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	FBox2D Bounds = FBox2D(FVector2D(-(Width / 2), -(Height / 2)), FVector2D(Width / 2, Height / 2));
+
+	UPROPERTY(VisibleAnywhere, Category="Game")
+	FBox2D BoundsScreen = FBox2D(FVector2D(-(WidthScreen / 2), -(HeightScreen / 2)), FVector2D(WidthScreen / 2, HeightScreen / 2));
 
 	ACtpGameLoop* GetGameLoop() const { return GameLoop; };
 	ACTPScoreSystem* GetScoreSystem() const { return ScoreSystem; };

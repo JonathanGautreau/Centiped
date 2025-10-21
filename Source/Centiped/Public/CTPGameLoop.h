@@ -34,18 +34,19 @@ private:
 	void SpawnMushrooms(UWorld* World, const ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax);
 	void GenerateCentipede(UWorld* World, const FActorSpawnParameters& SpawnParams, const ACtpGameMode* GameMode) const;
 
+	UFUNCTION()
+	void OnResetRoundComplete();
+
+	FTimerHandle ResetTimerHandle;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	UFUNCTION()
 	void ResetRound();
 	void GameOver();
 
 	UPROPERTY(Category = "Centipede", EditAnywhere)
-	int CentiSize = 10;
-
-	UPROPERTY(Category = "Centipede", EditAnywhere)
-	FVector2D HeatDirection;
-
-	UPROPERTY(category = "Centipede", EditAnywhere)
-	float CentiSpeed;
+	int CentipedeSize = 10;
 };

@@ -3,8 +3,10 @@
 
 #include "CTPScoreSystem.h"
 #include "CTPLog.h"
+#include "CtpMushroom.h"
 #include "GameFramework/PlayerController.h"
 #include "CtpPlayerPawn.h"
+#include "EngineUtils.h"
 
 class ACtpPlayerPawn;
 
@@ -45,4 +47,18 @@ void ACTPScoreSystem::SetScore(const int NewScore)
 void ACTPScoreSystem::ResetScore()
 {
 	SetScore(0);
+}
+
+void ACTPScoreSystem::ScoreMushrooms()
+{
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		int NumberOfRemainingMushrooms = 0;
+		for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+		{
+			if (Cast<ACtpMushroom>(*It))
+				NumberOfRemainingMushrooms++;
+		}
+		SetScore(GetScore() + NumberOfRemainingMushrooms * 5);
+	}
 }

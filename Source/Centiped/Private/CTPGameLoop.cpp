@@ -2,11 +2,13 @@
 
 
 #include "CTPGameLoop.h"
-
 #include "CTPCentiNode.h"
 #include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
 #include "Centiped/Public/CtpGameMode.h"
+#include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 
 // Sets default values
 ACtpGameLoop::ACtpGameLoop()
@@ -113,7 +115,7 @@ void ACtpGameLoop::GenerateCentipede(UWorld* World, const FActorSpawnParameters&
 {
 	ACTPCentiNode* Prev = nullptr;
 	
-	for (int i = 0; i < CentiSize ; ++i )
+	for (int i = 0; i < CentipedeSize ; ++i )
 	{
 		ACTPCentiNode* Curr = World->SpawnActor<ACTPCentiNode>(SpawnParams);
 				
@@ -134,6 +136,15 @@ void ACtpGameLoop::GenerateCentipede(UWorld* World, const FActorSpawnParameters&
 	}
 }
 
+void ACtpGameLoop::OnResetRoundComplete()
+{
+	// Rétablir la vitesse normale du temps
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+
+	// Reset logique ici
+	UE_LOG(LogTemp, Warning, TEXT("Round reset"));
+}
+
 void ACtpGameLoop::ResetRound()
 {
 	/**
@@ -145,6 +156,25 @@ void ACtpGameLoop::ResetRound()
 	 * Don't reset mushrooms
 	 * Don't reset player life and score
 	 */
+	
+	// Geler le temps en dilatant à 0
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.0f);
+	
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		// Score mushrooms
+		if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+			ScoreSystem->ScoreMushrooms();
+	}
+
+	// Lancer un timer "normal"
+	GetWorld()->GetTimerManager().SetTimer(
+		ResetTimerHandle,
+		this,
+		&ACtpGameLoop::OnResetRoundComplete,
+		3.0f,
+		false
+	);
 }
 
 void ACtpGameLoop::GameOver()

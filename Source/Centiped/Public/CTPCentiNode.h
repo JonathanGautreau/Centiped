@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CtpPlayerPawn.h"
 #include "GameFramework/Actor.h"
 
 #include "CTPCentiNode.generated.h"
@@ -71,14 +72,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void Destroyed() override;
 
 	void Move(float DeltaTime);
 	
 	float FindDistToNextHeadHitSwitch() const;
-
 	float FindDistToNextNodeHitSwitch() const;
+	void IsAtTheBounds();
 
-	void IsAtTheBounds() ;
-	
-	virtual void Destroyed() override;
+	void HitPlayer(const ACtpGameMode* GameMode, ACtpPlayerPawn* Player);
+	void HitBullet(const ACtpGameMode* GameMode, ACtpBullet* Bullet);
+	void HitMushroom(AActor* OtherActor);
 };
