@@ -69,7 +69,7 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 	
 	if (OtherActor && OtherActor != this)
 	{
-		UE_LOG(LogCentiped, Warning, TEXT("%s is  overlying : %s"), *this->GetName(), *OtherActor->GetName());
+		UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
 			if (Cast<ACtpBullet>(OtherActor))

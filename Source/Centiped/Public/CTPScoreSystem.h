@@ -17,6 +17,7 @@ class CENTIPED_API ACTPScoreSystem : public AActor
 public:
 	// Sets default values for this actor's properties
 	ACTPScoreSystem();
+	void ScoreMushrooms();
 
 protected:
 	// Called when the game starts or when spawned

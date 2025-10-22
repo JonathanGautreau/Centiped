@@ -25,6 +25,17 @@ void ACtpHud::DrawHUD()
 	const FString ScoreText = FString::Printf(TEXT("Score : %d"), Score);
 	const FLinearColor TextColor = FLinearColor::Black;
 
-	DrawText(LifeText, TextColor, 50.f, 50.f, nullptr, 1.5f, false);
-	DrawText(ScoreText, TextColor, 50.f, 50.f + 30.f, nullptr, 1.5f, false);
+	DrawText(LifeText, TextColor, 60.f, 20.f, nullptr, 1.5f, false);
+	DrawText(ScoreText, TextColor, 250.f, 20.f, nullptr, 1.5f, false);
+
+	if (bDisplayText)
+	{
+		const FString GameOverText = FString::Printf(TEXT("Press ENTER to restart the game"));
+		DrawText(GameOverText, TextColor, 180.f, 300.f, nullptr, 2.0f, false);
+	}
+}
+
+void ACtpHud::ShowGameOverText(bool bDisplayGameOverText)
+{
+	bDisplayText = bDisplayGameOverText;
 }
