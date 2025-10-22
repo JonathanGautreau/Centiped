@@ -49,12 +49,16 @@ public:
 
 	void Move(const FInputActionInstance& Instance);
 	void Shoot(const FInputActionInstance& Instance);
+	void RestartGame(const FInputActionInstance& Instance);
 
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	TObjectPtr<UInputAction> MoveAction;
 
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	TObjectPtr<UInputAction> ShootAction;
+
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
+	TObjectPtr<UInputAction> RestartAction;
 
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	FVector2D MoveDirection = FVector2D::Zero();
@@ -65,10 +69,16 @@ public:
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	FVector2D MeshScale = FVector2D(0.8f, 1.2f);
 	
-	void LoseLife();
-	void GainLife();
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
+	bool bIsOverlappingMushroom = false;
+
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
+	bool bIsOverlappingCentipede = false;
+	
 	int GetLife() const { return LifeLeft; };
 	void SetLife(const int NewLifeLeft) { LifeLeft = NewLifeLeft; };
+	void LoseLife();
+	void GainLife();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")
@@ -76,9 +86,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	FVector LastSafeLocation;
-
-	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	bool bIsOverlapping = false;
 	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 };
