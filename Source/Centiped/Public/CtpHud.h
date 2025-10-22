@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CtpGameMode.h"
 #include "GameFramework/HUD.h"
 #include "CtpHud.generated.h"
 
@@ -16,4 +17,12 @@ class CENTIPED_API ACtpHud : public AHUD
 	
 protected:
 	virtual void DrawHUD() override;
+
+public:
+	void ShowGameOverText(bool bDisplayGameOverText);
+
+
+private:
+	UPROPERTY(EditAnywhere, Category="HUD")
+	bool bDisplayText = false;
 };

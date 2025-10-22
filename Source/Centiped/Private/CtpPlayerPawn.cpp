@@ -2,6 +2,10 @@
 
 
 #include "Centiped/Public/CtpPlayerPawn.h"
+
+#include "CTPCentiNode.h"
+#include "CtpHud.h"
+#include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
 #include "EnhancedInputComponent.h"
 #include "Centiped/Public/CtpGameMode.h"
@@ -59,6 +63,17 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	{
 		UE_LOG(LogCentiped, Error, TEXT("Failed to load ShootAction from /Game/Centiped/Inputs/IA_Shoot"));
 	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> RestartActionRef(TEXT("/Game/Centiped/Inputs/IA_Restart.IA_Restart"));
+	if (RestartActionRef.Succeeded())
+	{
+		RestartAction = RestartActionRef.Object;
+		UE_LOG(LogCentiped, Log, TEXT("RestartAction loaded successfully in constructor"));
+	}
+	else
+	{
+		UE_LOG(LogCentiped, Error, TEXT("Failed to load RestartAction from /Game/Centiped/Inputs/IA_Restart"));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -74,11 +89,11 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if (!bIsOverlapping)
+	if (!bIsOverlappingMushroom)
 	{
 		LastSafeLocation = GetActorLocation();
 	}
-	bIsOverlapping = false;
+	bIsOverlappingMushroom = false;
 
 	PlayerMovements(DeltaTime);
 }
@@ -132,6 +147,11 @@ void ACtpPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		UE_LOG(LogCentiped, Error, TEXT("ShootAction is null! Make sure IA_Shoot is assigned in Blueprint"));
 		return;
 	}
+	if (!RestartAction)
+	{
+		UE_LOG(LogCentiped, Error, TEXT("RestartAction is null! Make sure IA_Shoot is assigned in Blueprint"));
+		return;
+	}
 
 	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	if (!Input)
@@ -140,13 +160,9 @@ void ACtpPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		return;
 	}
 
-	UE_LOG(LogCentiped, Log, TEXT("Binding MoveAction: %s"), *MoveAction->GetName());
 	Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACtpPlayerPawn::Move);
-	UE_LOG(LogCentiped, Log, TEXT("Input binding complete"));
-
-	UE_LOG(LogCentiped, Log, TEXT("Binding ShootAction: %s"), *ShootAction->GetName());
 	Input->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ACtpPlayerPawn::Shoot);
-	UE_LOG(LogCentiped, Log, TEXT("Input binding complete"));
+	Input->BindAction(RestartAction, ETriggerEvent::Triggered, this, &ACtpPlayerPawn::RestartGame);
 }
 
 void ACtpPlayerPawn::Move(const FInputActionInstance& Instance)
@@ -157,6 +173,9 @@ void ACtpPlayerPawn::Move(const FInputActionInstance& Instance)
 void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
 	UE_LOG(LogCentiped, Log, TEXT("Shoot"));
+
+	if (bIsOverlappingCentipede)
+		return;
 
 	if (ProjectileClass)
 	{
@@ -171,6 +190,31 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 	}
 }
 
+void ACtpPlayerPawn::RestartGame(const FInputActionInstance& Instance)
+{
+	if (GetLife() != 0)
+		return;
+	
+	if (UWorld* World = GetWorld())
+	{
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+		if (!PlayerController) return;
+		
+		if (ACtpHud* HUD = Cast<ACtpHud>(PlayerController->GetHUD()))
+		{
+			HUD->ShowGameOverText(false);
+		}
+	}
+
+	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+		{
+			GameLoop->RestartGame();
+		}
+	}
+}
+
 void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
@@ -178,11 +222,18 @@ void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 	// UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
 	if (OtherActor && OtherActor != this)
 	{
-		bIsOverlapping = true;
+		UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
+		if (Cast<ACtpMushroom>(OtherActor))
+		{
+			bIsOverlappingMushroom = true;
 
-		SetActorLocation(LastSafeLocation);
-		
-		UE_LOG(LogCentiped, Warning, TEXT("%s is  overlying : %s"), *this->GetName(), *OtherActor->GetName());
+			SetActorLocation(LastSafeLocation);
+		}
+
+		if (Cast<ACTPCentiNode>(OtherActor))
+		{
+			bIsOverlappingCentipede = true;
+		}
 	}
 }
 

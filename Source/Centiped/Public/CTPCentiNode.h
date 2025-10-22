@@ -36,17 +36,15 @@ public:
 	FVector2D MeshScale = FVector2D(.8f, .8f);
 	
 	UPROPERTY(category = "Centipede", EditAnywhere)
-	float VerticalOffset = MeshScale.Y*100;
+	float VerticalOffset = MeshScale.Y * 100;
 	
 	UPROPERTY(Category = "Centipede", EditAnywhere)
 	FVector2D MovingDirection = FVector2D(-1, 0);
-
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	FVector2D LastMovingDirection = FVector2D(-1, 0);
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	FVector2D HitSwitch = FVector2D::Zero();
-
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	TArray<FVector2D> HitSwitches;
 
@@ -63,6 +61,9 @@ public:
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	float DistToNextSwitch;
+
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	bool bCentipedeExists = false;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -72,7 +73,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	virtual void Destroyed() override;
 
 	void Move(float DeltaTime);
 	
@@ -80,7 +80,7 @@ public:
 	float FindDistToNextNodeHitSwitch() const;
 	void IsAtTheBounds();
 
-	void HitPlayer(const ACtpGameMode* GameMode, ACtpPlayerPawn* Player);
-	void HitBullet(const ACtpGameMode* GameMode, ACtpBullet* Bullet);
+	void HitPlayer(ACtpGameMode* GameMode, ACtpPlayerPawn* Player);
+	void HitBullet(ACtpGameMode* GameMode, ACtpBullet* Bullet);
 	void HitMushroom(AActor* OtherActor);
 };

@@ -61,15 +61,6 @@ void ACTPCentiNode::Tick(float DeltaTime)
 	Move(DeltaTime);			//Move Every Tick
 }
 
-void ACTPCentiNode::Destroyed()
-{
-	if (UWorld* World = GetWorld())
-	{
-		ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-		Mushroom->InitializePosition(this->GetActorLocation());
-	}
-}
-
 void ACTPCentiNode::Move(float DeltaTime)
 {
 	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
@@ -134,7 +125,7 @@ void ACTPCentiNode::Move(float DeltaTime)
 
  float ACTPCentiNode::FindDistToNextHeadHitSwitch() const
  {
- 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+ 	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
  	{
  		if (MovingDirection.Y != 0)
  		{
@@ -197,23 +188,23 @@ void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 	// UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
 	if (OtherActor && OtherActor != this)
 	{
-		UE_LOG(LogCentiped, Warning, TEXT("%s is  overlying : %s"), *this->GetName(), *OtherActor->GetName());
+		UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
 
-		UE_LOG(LogCentiped, Warning, TEXT("Mushroom detected"));
+		UE_LOG(LogCentiped, Log, TEXT("Mushroom detected"));
 		HitMushroom(OtherActor);
 
-		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{	
 			if (ACtpPlayerPawn* Player =  Cast<ACtpPlayerPawn>(OtherActor))
 			{
-				UE_LOG(LogCentiped, Warning, TEXT("Player detected"));
+				UE_LOG(LogCentiped, Log, TEXT("Player detected"));
 				HitPlayer(GameMode, Player);
 			}
 
 			// Hit the centipede
 			if (ACtpBullet* Bullet = Cast<ACtpBullet>(OtherActor))
 			{
- 				UE_LOG(LogCentiped, Warning, TEXT("Bullet detected"));
+ 				UE_LOG(LogCentiped, Log, TEXT("Bullet detected"));
 				HitBullet(GameMode, Bullet);
 			}
 		}
@@ -225,20 +216,21 @@ void ACTPCentiNode::HitMushroom(AActor* OtherActor)
 	// Rotate the centipede
 	if (IsHead)
 	{
-		if (const ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
+		if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
 		{
 			if ( FMath::Abs(Mushroom->GetActorLocation().Z - GetActorLocation().Z)<20)
 			{
 				IsColliding = true;				
-					
-				UE_LOG(LogCentiped, Warning, TEXT("Mushroom detected"));
 			}
 		}
 	}
 }
 
-void ACTPCentiNode::HitPlayer(const ACtpGameMode* GameMode, ACtpPlayerPawn* Player)
+void ACTPCentiNode::HitPlayer(ACtpGameMode* GameMode, ACtpPlayerPawn* Player)
 {
+	if (Player->bIsOverlappingCentipede)
+		return;;
+	
 	// Loose one life
 	Player->LoseLife();
 
@@ -246,14 +238,21 @@ void ACTPCentiNode::HitPlayer(const ACtpGameMode* GameMode, ACtpPlayerPawn* Play
 	if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
 		ScoreSystem->ScoreMushrooms();
 	
-	// Reset
+	// Reset round/game
 	if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
 	{
-		GameLoop->ResetRound();
+		if (Player->GetLife() == 0)
+		{
+			GameLoop->GameOver();
+		}
+		else
+		{
+			GameLoop->ResetRound();
+		}
 	}
 }
 
-void ACTPCentiNode::HitBullet(const ACtpGameMode* GameMode, ACtpBullet* Bullet)
+void ACTPCentiNode::HitBullet(ACtpGameMode* GameMode, ACtpBullet* Bullet)
 {
 	Bullet->Destroy(); // Destroying the bullet here avoids to hit the new mushroom
 	// Split the centipede
@@ -269,16 +268,40 @@ void ACTPCentiNode::HitBullet(const ACtpGameMode* GameMode, ACtpBullet* Bullet)
 	// Delete the hit node, then create mushroom
 	this->Destroy();
 
-	// Score points
-	if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+	if (UWorld* World = GetWorld())
 	{
-		if (IsHead)
-			ScoreSystem->SetScore(ScoreSystem->GetScore() +  100);
+		// Spawn a mushroom
+		ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
+		Mushroom->InitializePosition(this->GetActorLocation());
+
+		// Score points
+		if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+		{
+			if (IsHead)
+				ScoreSystem->SetScore(ScoreSystem->GetScore() +  100);
+			else
+				ScoreSystem->SetScore(ScoreSystem->GetScore() + 10);
+		}
 		else
-			ScoreSystem->SetScore(ScoreSystem->GetScore() + 10);
-	}
-	else
-	{
-		UE_LOG(LogCentiped, Warning, TEXT("ScoreSystem is  null"));
+		{
+			UE_LOG(LogCentiped, Warning, TEXT("ScoreSystem is  null"));
+		}
+
+		// Generate a new centipede if there is no centipede
+		for (TActorIterator<AActor> It(World); It; ++It)
+		{
+			if (Cast<ACTPCentiNode>(*It))
+				bCentipedeExists = true;
+		}
+		if (!bCentipedeExists)
+		{
+			if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+			{
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = this;
+		
+				GameLoop->GenerateCentipede(World, SpawnParams, GameMode);
+			}
+		}
 	}
 }

@@ -27,7 +27,7 @@ int ACTPScoreSystem::GetScore() const
 void ACTPScoreSystem::SetScore(const int NewScore)
 {
 	// Add one player life every 10 000 points
-	const APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (!PlayerController) return;
 	ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(PlayerController->GetPawn());
 	if (!Player) return;

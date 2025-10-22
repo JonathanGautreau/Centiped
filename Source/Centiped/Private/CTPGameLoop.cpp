@@ -3,7 +3,9 @@
 
 #include "CTPGameLoop.h"
 #include "CTPCentiNode.h"
+#include "CtpHud.h"
 #include "CtpMushroom.h"
+#include "EngineUtils.h"
 #include "Centiped/Public/CTPLog.h"
 #include "Centiped/Public/CtpGameMode.h"
 #include "TimerManager.h"
@@ -42,10 +44,7 @@ void ACtpGameLoop::Tick(float DeltaTime)
 void ACtpGameLoop::GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode)
 {
 	GenerateAvailableCells(GameMode);
-	// A lot of mushrooms
 	SpawnMushrooms(World, GameMode, 25, 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
-	// Some mushrooms
-	// SpawnMushrooms(World, GameMode, 6, FMath::RoundToInt(GameMode->Rows * 0.7f) + 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
 }
 
 void ACtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax)
@@ -136,55 +135,127 @@ void ACtpGameLoop::GenerateCentipede(UWorld* World, FActorSpawnParameters& Spawn
 	}
 }
 
-void ACtpGameLoop::OnResetRoundComplete()
-{
-	// Rétablir la vitesse normale du temps
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
-
-	// Reset logique ici
-	UE_LOG(LogTemp, Warning, TEXT("Round reset"));
-}
-
 void ACtpGameLoop::ResetRound()
 {
-	/**
-	 * TODO
-	 * Remove current centipede
-	 * Reset player position
-	 * Create new centipede
-	 *
-	 * Don't reset mushrooms
-	 * Don't reset player life and score
-	 */
-	
-	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-		// Score mushrooms
-		if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
-			ScoreSystem->ScoreMushrooms();
-	}
-	
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
 
-	// Lancer un timer "normal"
 	GetWorld()->GetTimerManager().SetTimer(
 		ResetTimerHandle,
 		this,
 		&ACtpGameLoop::OnResetRoundComplete,
-		.5f,
+		.3f,
 		false
 	);
 }
 
+void ACtpGameLoop::OnResetRoundComplete()
+{
+	if (UWorld* World = GetWorld())
+	{
+		// Destroy all CentiNodes and Bullets
+		for (TActorIterator<AActor> It(World); It; ++It)
+		{
+			if (Cast<ACTPCentiNode>(*It))
+				It->Destroy();
+			if (Cast<ACtpBullet>(*It))
+				It->Destroy();
+		}
+	
+		// Generate a new Centipede
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+		{
+			GenerateCentipede(World, SpawnParams, GameMode);
+		}
+		
+		// Reset Player
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+		if (!PlayerController) return;
+		ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(PlayerController->GetPawn());
+		if (!Player) return;
+
+		Player->bIsOverlappingCentipede = false;
+		Player->SetPlayerInitialPosition();
+		
+		UGameplayStatics::SetGlobalTimeDilation(World, 1.0f);
+	}
+}
+
 void ACtpGameLoop::GameOver()
 {
-	/**
-	 * TODO
-	 * Remove current centipede
-	 * Remove current mushrooms
-	 * Reset player position
-	 * Reset player life and score
-	 * Create new centipede
-	 * Create new mushrooms
-	 */
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .1f);
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		GameOverTimerHandle,
+		this,
+		&ACtpGameLoop::OnGameOverComplete,
+		.3f,
+		false
+	);
+}
+
+void ACtpGameLoop::OnGameOverComplete()
+{
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .0f);
+	
+	// Display Game Over text
+	if (UWorld* World = GetWorld())
+	{
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+		if (!PlayerController) return;
+		ACtpHud* Hud = Cast<ACtpHud>(PlayerController->GetHUD());
+		if (!Hud) return;
+
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+		{
+			Hud->ShowGameOverText(true);
+		}
+	}
+}
+
+void ACtpGameLoop::RestartGame()
+{
+	if (UWorld* World = GetWorld())
+	{
+		// Destroy all CentiNodes and Bullets and Mushrooms
+		for (TActorIterator<AActor> It(World); It; ++It)
+		{
+			if (Cast<ACTPCentiNode>(*It))
+				It->Destroy();
+			if (Cast<ACtpBullet>(*It))
+				It->Destroy();
+			if (Cast<ACtpMushroom>(*It))
+				It->Destroy();
+		}
+	
+		// Generate a new centipede and new mushrooms
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+		{
+			GenerateMushrooms(World, GameMode);
+			GenerateCentipede(World, SpawnParams, GameMode);
+		}
+		
+		// Reset Player
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+		if (!PlayerController) return;
+		ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(PlayerController->GetPawn());
+		if (!Player) return;
+
+		Player->bIsOverlappingCentipede = false;
+		Player->SetPlayerInitialPosition();
+		Player->SetLife(3);
+
+		// Reset score
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+		{
+			// Score mushrooms
+			if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+				ScoreSystem->ResetScore();
+		}
+		
+		UGameplayStatics::SetGlobalTimeDilation(World, 1.0f);
+	}
 }

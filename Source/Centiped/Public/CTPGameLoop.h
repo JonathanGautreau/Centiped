@@ -32,12 +32,16 @@ private:
 	void RemoveCellNeighbors(int Col, int Row, int32 NumberOfDeletedCells);
 	void GenerateAvailableCells(ACtpGameMode* GameMode);
 	void SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax);
-	void GenerateCentipede(UWorld* World, FActorSpawnParameters& SpawnParams, ACtpGameMode* GameMode);
 
 	UFUNCTION()
 	void OnResetRoundComplete();
+	UFUNCTION()
+	void OnGameOverComplete();
 
+	UPROPERTY(Category = "GameLoop", EditAnywhere)
 	FTimerHandle ResetTimerHandle;
+	UPROPERTY(Category = "GameLoop", EditAnywhere)
+	FTimerHandle GameOverTimerHandle;
 
 public:
 	// Called every frame
@@ -45,8 +49,12 @@ public:
 	
 	UFUNCTION()
 	void ResetRound();
+	UFUNCTION()
+	void RestartGame();
+	
 	void GameOver();
-
-	UPROPERTY(Category = "Centipede", EditAnywhere)
+	void GenerateCentipede(UWorld* World, FActorSpawnParameters& SpawnParams, ACtpGameMode* GameMode);
+	
+	UPROPERTY(Category = "GameLoop", EditAnywhere)
 	int CentipedeSize = 10;
 };
