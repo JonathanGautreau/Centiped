@@ -8,6 +8,7 @@
 #include "EngineUtils.h"
 #include "Centiped/Public/CTPLog.h"
 #include "Centiped/Public/CtpGameMode.h"
+#include "CTPFlea.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -39,6 +40,18 @@ void ACtpGameLoop::BeginPlay()
 void ACtpGameLoop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (SpawnedMushroomsCount>10)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+			{
+				ACTPFlea* Flea = World->SpawnActor<ACTPFlea>(ACTPFlea::StaticClass());
+				Flea->SetActorLocation(FVector(GetActorLocation().X, FMath::RandRange(GameMode->Bounds.Min.X + 50,GameMode->Bounds.Min.X - 50), GameMode->Bounds.Max.Y));
+			}
+		}
+	}
 }
 
 void ACtpGameLoop::GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode)

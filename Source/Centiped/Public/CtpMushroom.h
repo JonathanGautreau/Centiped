@@ -39,4 +39,6 @@ public:
 	int Life = 3;
 	
 	void InitializePosition(const FVector& InitialPosition);
+
+	virtual void Destroyed() override;
 };

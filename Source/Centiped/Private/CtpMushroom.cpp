@@ -8,6 +8,7 @@
 #include "CTPScoreSystem.h"
 
 
+
 // Sets default values
 ACtpMushroom::ACtpMushroom()
 {
@@ -44,6 +45,11 @@ ACtpMushroom::ACtpMushroom()
 void ACtpMushroom::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		//GameMode->GetGameLoop()->SpawnedMushroomsCount+=1;
+	}
 }
 
 // Called every frame
@@ -83,5 +89,13 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 				}
 			}
 		}
+	}
+}
+
+void ACtpMushroom::Destroyed()
+{
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		//GameMode->GetGameLoop()->SpawnedMushroomsCount-=1;
 	}
 }
