@@ -5,6 +5,7 @@
 #include "CtpMushroom.h"
 #include "CtpPlayerPawn.h"
 #include "CtpBullet.h"
+#include "CtpGameMode.h"
 
 
 // Sets default values
@@ -35,30 +36,54 @@ void ACTPEnnemie::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	if (OtherActor && OtherActor != this)
 	{
-		if (const ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
+		if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
 		{
-			HitMushroom(OtherActor);
+			HitMushroom(Mushroom);
 		}
-		if (const ACtpPlayerPawn* PlayerPawn = Cast<ACtpPlayerPawn>(OtherActor))
+		if (ACtpPlayerPawn* PlayerPawn = Cast<ACtpPlayerPawn>(OtherActor))
 		{
-			HitPLayer(OtherActor);
+			HitPLayer(PlayerPawn);
 		}
-		if (const ACtpBullet* Bullet = Cast<ACtpBullet>(OtherActor))
+		if (ACtpBullet* Bullet = Cast<ACtpBullet>(OtherActor))
 		{
-			HitBullet(OtherActor);
+			HitBullet(Bullet);
 		}
 	}
 }
 
-void ACTPEnnemie::HitMushroom(AActor* OtherActor)
+void ACTPEnnemie::HitMushroom(ACtpMushroom* Mushroom)
 {
 	
 }
-void ACTPEnnemie::HitPLayer(AActor* OtherActor)
+void ACTPEnnemie::HitPLayer(ACtpPlayerPawn* Player)
 {
+	if (Player->bIsOverlappingCentipede)
+		return;
 	
+	// Loose one life
+	Player->LoseLife();
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+ 		// Score mushrooms
+ 		if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+ 			ScoreSystem->ScoreMushrooms();
+	
+ 		// Reset round/game
+ 		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+ 		{
+ 			if (Player->GetLife() == 0)
+ 			{
+ 				GameLoop->GameOver();
+ 			}
+ 		else
+ 		{
+ 			GameLoop->ResetRound();
+ 		}
+ 	}
+ }
+
 }
-void ACTPEnnemie::HitBullet(AActor* OtherActor)
+void ACTPEnnemie::HitBullet(ACtpBullet* Bullet)
 {
 	
 }

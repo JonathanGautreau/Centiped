@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "CTPEnnemie.h"
+#include "CtpPlayerPawn.h"
+#include "CtpMushroom.h"
+#include "CtpBullet.h"
 #include "GameFramework/Actor.h"
 #include "CTPFlea.generated.h"
 
@@ -33,7 +36,7 @@ public:
 	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
-	virtual void HitMushroom(AActor* OtherActor) override;
-	virtual void HitPLayer(AActor* OtherActor) override;
-	virtual void HitBullet(AActor* OtherActor) override;
+	virtual void HitMushroom(ACtpMushroom* Mushroom) override;
+	virtual void HitPLayer(ACtpPlayerPawn* Player) override;
+	virtual void HitBullet(ACtpBullet* Bullet) override;
 };

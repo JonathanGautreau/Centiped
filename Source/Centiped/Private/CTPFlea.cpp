@@ -6,6 +6,8 @@
 #include "CtpGameMode.h"
 #include "CTPScoreSystem.h"
 #include "CtpMushroom.h"
+#include "CtpBullet.h"
+#include "CtpPlayerPawn.h"
 
 // Sets default values
 ACTPFlea::ACTPFlea()
@@ -70,7 +72,7 @@ void ACTPFlea::Move(float DeltaTime)
 	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
 	if (const ACtpGameMode* Gamemode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		if (HitSwitch.Y < Gamemode->Bounds.Min.Y+MeshScale.Y*100)
+		if (HitSwitch.Y < Gamemode->Bounds.Min.Y+MeshScale.Y*250)
 		{
 			Destroy();
 		}
@@ -83,29 +85,23 @@ void ACTPFlea::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 }
 
-void ACTPFlea::HitMushroom(AActor* OtherActor)
+void ACTPFlea::HitMushroom(ACtpMushroom* Mushroom)
 {
-	Super::HitMushroom(OtherActor);
+	Super::HitMushroom(Mushroom);
 
-	HitSwitch.Y-=FMath::RandRange(80,160);
+	HitSwitch.Y = Mushroom->GetActorLocation().Z - FMath::RandRange(80,160);
 }
 
-void ACTPFlea::HitPLayer(AActor* OtherActor)
+void ACTPFlea::HitPLayer(ACtpPlayerPawn* Player)
 {
-	Super::HitPLayer(OtherActor);
-
-	if (const ACTPScoreSystem* Score = Cast<ACTPScoreSystem>(OtherActor))
-	{
-		//Score.RestCount;
-	}
-	
+	Super::HitPLayer(Player);
 }
 
-void ACTPFlea::HitBullet(AActor* OtherActor)
+void ACTPFlea::HitBullet(ACtpBullet* Bullet)
 {
-	Super::HitBullet(OtherActor);
-
-	if (--Life == 0 )
+	Super::HitBullet(Bullet);
+	Life--;
+	if (Life == 0 )
 	{
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
