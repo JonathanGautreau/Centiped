@@ -3,7 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CtpBullet.h"
 #include "GameFramework/Actor.h"
+#include "CtpPlayerPawn.h"
+#include "CtpMushroom.h"
 #include "CTPEnnemie.generated.h"
 
 UCLASS()
@@ -27,11 +30,11 @@ public:
 	
 	virtual void  NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
-	virtual void HitMushroom(AActor* OtherActor) PURE_VIRTUAL();
+	virtual void HitMushroom(ACtpMushroom* OtherActor);
 	
-	virtual void HitPLayer(AActor* OtherActor) PURE_VIRTUAL();
+	virtual void HitPLayer(ACtpPlayerPawn* OtherActor);
 	
-	virtual void HitBullet(AActor* OtherActor) PURE_VIRTUAL();
+	virtual void HitBullet(ACtpBullet* OtherActor);
 	
 	// Méthodes communes
 	virtual void Move(float Deltatime);     // Peut être redéfinie

@@ -12,6 +12,7 @@ class ACtpPlayerPawn;
 
 ACTPScoreSystem::ACTPScoreSystem()
 {
+	
 }
 
 void ACTPScoreSystem::BeginPlay()
