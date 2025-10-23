@@ -50,4 +50,17 @@ void ACTPEnnemie::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
+void ACTPEnnemie::HitMushroom(AActor* OtherActor)
+{
+	
+}
+void ACTPEnnemie::HitPLayer(AActor* OtherActor)
+{
+	
+}
+void ACTPEnnemie::HitBullet(AActor* OtherActor)
+{
+	
+}
+
 

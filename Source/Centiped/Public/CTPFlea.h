@@ -16,7 +16,10 @@ public:
 	// Sets default values for this actor's properties
 	ACTPFlea();
 
+	UPROPERTY(category = "Centiped", EditAnywhere)
 	FVector2D HitSwitch;
+
+
 
 protected:
 	// Called when the game starts or when spawned

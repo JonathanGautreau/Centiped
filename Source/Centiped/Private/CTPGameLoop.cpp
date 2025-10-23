@@ -16,13 +16,15 @@
 // Sets default values
 ACtpGameLoop::ACtpGameLoop()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	
 }
 
 // Called when the game starts or when spawned
 void ACtpGameLoop::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	if (UWorld* World = GetWorld())
 	{
 		FActorSpawnParameters SpawnParams;
@@ -40,19 +42,28 @@ void ACtpGameLoop::BeginPlay()
 void ACtpGameLoop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (SpawnedMushroomsCount>10)
+	
+	if (SpawnedMushroomsCount<=10 && !isFlea)
 	{
 		if (UWorld* World = GetWorld())
 		{
-			if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+			if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 			{
+				isFlea = true;
+				GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,FString::Printf(TEXT("Spawned Mushrooms count < 10 ")));
 				ACTPFlea* Flea = World->SpawnActor<ACTPFlea>(ACTPFlea::StaticClass());
-				Flea->SetActorLocation(FVector(GetActorLocation().X, FMath::RandRange(GameMode->Bounds.Min.X + 50,GameMode->Bounds.Min.X - 50), GameMode->Bounds.Max.Y));
+				float SpawnOnY = FMath::RandRange(GameMode->Bounds.Min.X + Flea->MeshScale.X*100,GameMode->Bounds.Max.X - Flea->MeshScale.X*100);
+				Flea->SetActorLocation(FVector(0,SpawnOnY,GameMode->Bounds.Max.Y)-Flea->MeshScale.Y*100);
+				Flea->HitSwitch = FVector2D(SpawnOnY,GameMode->Bounds.Max.Y-Flea->MeshScale.Y*200-80);
 			}
 		}
 	}
+	else if (SpawnedMushroomsCount>10)
+	{
+		isFlea = false;
+	}
 }
+
 
 void ACtpGameLoop::GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode)
 {
@@ -93,6 +104,7 @@ void ACtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int Num
 			SpawnedMushrooms++;
 		}
 	}
+	SpawnedMushroomsCount = SpawnedMushrooms;
 }
 
 void ACtpGameLoop::GenerateAvailableCells(ACtpGameMode* GameMode)
@@ -272,3 +284,14 @@ void ACtpGameLoop::RestartGame()
 		UGameplayStatics::SetGlobalTimeDilation(World, 1.0f);
 	}
 }
+
+int ACtpGameLoop::GetSpawnedMushrooms() const
+{
+	return SpawnedMushroomsCount;
+}
+
+void ACtpGameLoop::SetSpawnedMushroomsCount( int Count)
+{
+	SpawnedMushroomsCount = Count;
+}
+

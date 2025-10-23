@@ -52,6 +52,7 @@ public:
 	ACTPScoreSystem* GetScoreSystem() const { return ScoreSystem; };
 
 protected:
+	
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	ACtpGameLoop* GameLoop;
 	

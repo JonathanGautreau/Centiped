@@ -57,4 +57,13 @@ public:
 	
 	UPROPERTY(Category = "GameLoop", EditAnywhere)
 	int CentipedeSize = 10;
+
+	UPROPERTY(category = "GameLoop", EditAnywhere)
+	int SpawnedMushroomsCount;
+
+	int GetSpawnedMushrooms() const;
+	void SetSpawnedMushroomsCount(int Count);
+
+	UPROPERTY(category = "GameLoop", EditAnywhere)
+	bool isFlea;
 };

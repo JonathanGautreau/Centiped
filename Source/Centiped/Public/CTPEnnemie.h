@@ -27,11 +27,11 @@ public:
 	
 	virtual void  NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
-	virtual void HitMushroom(AActor* OtherActor) PURE_VIRTUAL();
+	virtual void HitMushroom(AActor* OtherActor);
 	
-	virtual void HitPLayer(AActor* OtherActor) PURE_VIRTUAL();
+	virtual void HitPLayer(AActor* OtherActor);
 	
-	virtual void HitBullet(AActor* OtherActor) PURE_VIRTUAL();
+	virtual void HitBullet(AActor* OtherActor);
 	
 	// Méthodes communes
 	virtual void Move(float Deltatime);     // Peut être redéfinie
