@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CTPEnnemie.h"
+#include "CTPEnemy.h"
 #include "CtpPlayerPawn.h"
 #include "CtpMushroom.h"
 #include "CtpBullet.h"
@@ -11,7 +11,7 @@
 #include "CTPFlea.generated.h"
 
 UCLASS()
-class CENTIPED_API ACTPFlea : public ACTPEnnemie
+class CENTIPED_API ACTPFlea : public ACTPEnemy
 {
 	GENERATED_BODY()
 
@@ -19,24 +19,22 @@ public:
 	// Sets default values for this actor's properties
 	ACTPFlea();
 
-	UPROPERTY(category = "Centiped", EditAnywhere)
-	FVector2D HitSwitch;
-
-
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	// ------- Specific properties ------- //
 
-	virtual void Move(float DeltaTime) override;
-	
+public:
+	// ------- Common functions ------- //
+	virtual void Tick(float DeltaTime) override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
+	virtual void Move(float DeltaTime) override;
 	virtual void HitMushroom(ACtpMushroom* Mushroom) override;
 	virtual void HitPLayer(ACtpPlayerPawn* Player) override;
 	virtual void HitBullet(ACtpBullet* Bullet) override;
+
+	// ------- Specific functions ------- //
+	
 };

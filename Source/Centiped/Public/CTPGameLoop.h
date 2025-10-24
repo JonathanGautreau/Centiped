@@ -23,16 +23,19 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 
 private:
 	UPROPERTY(Category="GameLoop", EditAnywhere)
 	TArray<FIntPoint> AvailableCells;
 
 	void GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode);
-	void RemoveCellNeighbors(int Col, int Row, int32 NumberOfDeletedCells);
 	void GenerateAvailableCells(ACtpGameMode* GameMode);
-	void SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax);
+	void RemoveCellNeighbors(int Col, int Row, int32 NumberOfDeletedCells);
+	void SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int MushroomsCount, int RowMin, int RowMax);
 
+	void GenerateFlea();
+	
 	UFUNCTION()
 	void OnResetRoundComplete();
 	UFUNCTION()
@@ -51,9 +54,12 @@ public:
 	void ResetRound();
 	UFUNCTION()
 	void RestartGame();
-	
 	void GameOver();
+	
 	void GenerateCentipede(UWorld* World, FActorSpawnParameters& SpawnParams, ACtpGameMode* GameMode);
+	
+	int GetSpawnedMushrooms() const;
+	void SetSpawnedMushroomsCount(int Count);
 	
 	UPROPERTY(Category = "GameLoop", EditAnywhere)
 	int CentipedeSize = 10;
@@ -61,9 +67,9 @@ public:
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	int SpawnedMushroomsCount;
 
-	int GetSpawnedMushrooms() const;
-	void SetSpawnedMushroomsCount(int Count);
-
+	UPROPERTY(category = "GameLoop", EditAnywhere)
+	int NumberOfMushrooms = 25;
+	
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	bool isFlea;
 };

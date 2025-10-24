@@ -43,39 +43,21 @@ void ACtpGameLoop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if (SpawnedMushroomsCount<=10 && !isFlea)
-	{
-		if (UWorld* World = GetWorld())
-		{
-			if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
-			{
-				isFlea = true;
-				GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,FString::Printf(TEXT("Spawned Mushrooms count < 10 ")));
-				ACTPFlea* Flea = World->SpawnActor<ACTPFlea>(ACTPFlea::StaticClass());
-				float SpawnOnY = FMath::RandRange(GameMode->Bounds.Min.X + Flea->MeshScale.X*100,GameMode->Bounds.Max.X - Flea->MeshScale.X*100);
-				Flea->SetActorLocation(FVector(0,SpawnOnY,GameMode->Bounds.Max.Y)-Flea->MeshScale.Y*100);
-				Flea->HitSwitch = FVector2D(SpawnOnY,GameMode->Bounds.Max.Y-Flea->MeshScale.Y*200-80);
-			}
-		}
-	}
-	else if (SpawnedMushroomsCount>10)
-	{
-		isFlea = false;
-	}
+	GenerateFlea();
 }
 
 
 void ACtpGameLoop::GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode)
 {
 	GenerateAvailableCells(GameMode);
-	SpawnMushrooms(World, GameMode, 25, 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
+	SpawnMushrooms(World, GameMode, NumberOfMushrooms, 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
 }
 
-void ACtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax)
+void ACtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int MushroomsCount, int RowMin, int RowMax)
 {
 	int SpawnedMushrooms = 0;
 	
-	while (SpawnedMushrooms < NumberOfMushrooms && AvailableCells.Num() > 0)
+	while (SpawnedMushrooms < MushroomsCount && AvailableCells.Num() > 0)
 	{
 		// Chose location
 		int Col = FMath::RandRange(0, GameMode->Columns - 1);
@@ -160,6 +142,39 @@ void ACtpGameLoop::GenerateCentipede(UWorld* World, FActorSpawnParameters& Spawn
 	}
 }
 
+void ACtpGameLoop::GenerateFlea()
+{
+	if (SpawnedMushroomsCount <= FMath::FloorToInt(NumberOfMushrooms / 2.f) && !isFlea)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+			{
+				isFlea = true;
+				GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,FString::Printf(TEXT("Spawned Mushrooms count < %d "), FMath::FloorToInt(NumberOfMushrooms / 2.f)));
+				ACTPFlea* Flea = World->SpawnActor<ACTPFlea>(ACTPFlea::StaticClass());
+				float SpawnOnY = FMath::RandRange(GameMode->Bounds.Min.X + Flea->MeshScale.X * 100,GameMode->Bounds.Max.X - Flea->MeshScale.X * 100);
+				Flea->SetActorLocation(FVector(0,SpawnOnY,GameMode->Bounds.Max.Y) - Flea->MeshScale.Y * 100);
+				Flea->HitSwitch = FVector2D(SpawnOnY,GameMode->Bounds.Max.Y - Flea->MeshScale.Y * 200 - 80);
+			}
+		}
+	}
+	else if (SpawnedMushroomsCount > FMath::FloorToInt(NumberOfMushrooms / 2.f))
+	{
+		isFlea = false;
+	}
+}
+
+int ACtpGameLoop::GetSpawnedMushrooms() const
+{
+	return SpawnedMushroomsCount;
+}
+
+void ACtpGameLoop::SetSpawnedMushroomsCount(const int Count)
+{
+	SpawnedMushroomsCount = Count;
+}
+
 void ACtpGameLoop::ResetRound()
 {
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
@@ -232,10 +247,7 @@ void ACtpGameLoop::OnGameOverComplete()
 		ACtpHud* Hud = Cast<ACtpHud>(PlayerController->GetHUD());
 		if (!Hud) return;
 
-		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
-		{
-			Hud->ShowGameOverText(true);
-		}
+		Hud->ShowGameOverText(true);
 	}
 }
 
@@ -284,14 +296,3 @@ void ACtpGameLoop::RestartGame()
 		UGameplayStatics::SetGlobalTimeDilation(World, 1.0f);
 	}
 }
-
-int ACtpGameLoop::GetSpawnedMushrooms() const
-{
-	return SpawnedMushroomsCount;
-}
-
-void ACtpGameLoop::SetSpawnedMushroomsCount( int Count)
-{
-	SpawnedMushroomsCount = Count;
-}
-

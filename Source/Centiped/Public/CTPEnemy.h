@@ -7,16 +7,16 @@
 #include "GameFramework/Actor.h"
 #include "CtpPlayerPawn.h"
 #include "CtpMushroom.h"
-#include "CTPEnnemie.generated.h"
+#include "CTPEnemy.generated.h"
 
 UCLASS()
-class CENTIPED_API ACTPEnnemie : public AActor
+class CENTIPED_API ACTPEnemy : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ACTPEnnemie();
+	ACTPEnemy();
 	
 
 protected:
@@ -26,30 +26,25 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	
 	virtual void  NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
+	virtual void Move(float Deltatime);
 	virtual void HitMushroom(ACtpMushroom* OtherActor);
-	
 	virtual void HitPLayer(ACtpPlayerPawn* OtherActor);
-	
 	virtual void HitBullet(ACtpBullet* OtherActor);
-	
-	// Méthodes communes
-	virtual void Move(float Deltatime);     // Peut être redéfinie
-	
-	// Propriétés communes
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Centiped")
-	float Life;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Centiped")
-	float MoveSpeed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Centiped")
-	FVector MeshScale;
-
-	UPROPERTY(Category="Centiped", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(Category="Enemy", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy")
+	float MoveSpeed = 500.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy")
+	int Life = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy")
+	FVector2D MeshScale = FVector2D(.8f, .8f);
+
+	UPROPERTY(category = "Enemy", EditAnywhere)
+	FVector2D HitSwitch = FVector2D::Zero();
 };

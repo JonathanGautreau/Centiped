@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CTPEnnemie.h"
+#include "CTPEnemy.h"
 #include "CtpMushroom.h"
 #include "CtpPlayerPawn.h"
 #include "CtpBullet.h"
@@ -9,31 +9,33 @@
 
 
 // Sets default values
-ACTPEnnemie::ACTPEnnemie(): Life(0), MoveSpeed(0)
+ACTPEnemy::ACTPEnemy(): MoveSpeed(500), Life(1)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void ACTPEnnemie::BeginPlay()
+void ACTPEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
 // Called every frame
-void ACTPEnnemie::Tick(float DeltaTime)
+void ACTPEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void ACTPEnnemie::Move(float DeltaTime)
+void ACTPEnemy::Move(float DeltaTime)
 {
 	
 }
 
-void ACTPEnnemie::NotifyActorBeginOverlap(AActor* OtherActor)
+void ACTPEnemy::NotifyActorBeginOverlap(AActor* OtherActor)
 {
+ 	Super::NotifyActorBeginOverlap(OtherActor); // method from AActor
+	
 	if (OtherActor && OtherActor != this)
 	{
 		if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
@@ -51,11 +53,12 @@ void ACTPEnnemie::NotifyActorBeginOverlap(AActor* OtherActor)
 	}
 }
 
-void ACTPEnnemie::HitMushroom(ACtpMushroom* Mushroom)
+void ACTPEnemy::HitMushroom(ACtpMushroom* Mushroom)
 {
 	
 }
-void ACTPEnnemie::HitPLayer(ACtpPlayerPawn* Player)
+
+void ACTPEnemy::HitPLayer(ACtpPlayerPawn* Player)
 {
 	if (Player->bIsOverlappingCentipede)
 		return;
@@ -83,7 +86,7 @@ void ACTPEnnemie::HitPLayer(ACtpPlayerPawn* Player)
  }
 
 }
-void ACTPEnnemie::HitBullet(ACtpBullet* Bullet)
+void ACTPEnemy::HitBullet(ACtpBullet* Bullet)
 {
 	
 }

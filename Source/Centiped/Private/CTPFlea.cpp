@@ -25,11 +25,15 @@ ACTPFlea::ACTPFlea()
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 	}
+
+	// ------- Override properties ------- //
+	MeshScale = FVector2D(.4f,.4f);
+	MoveSpeed = 1000;
+	Life = 2;
 	
 	MeshComponent->SetGenerateOverlapEvents(true);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	MeshComponent->SetCollisionProfileName(UCollisionProfile::CustomCollisionProfileName);
-	MeshScale = FVector(.4f,.4f,.4f);
 	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
 	MeshComponent->SetupAttachment(RootComponent);
@@ -39,11 +43,8 @@ ACTPFlea::ACTPFlea()
 void ACTPFlea::BeginPlay()
 {
 	Super::BeginPlay();
-	Life = 2;
-	MoveSpeed=1000;
-	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
-	HitSwitch = FVector2D(GetActorLocation().X,GetActorLocation().Y-120);
 	
+	HitSwitch = FVector2D(GetActorLocation().X,GetActorLocation().Y-120);
 }
 
 // Called every frame

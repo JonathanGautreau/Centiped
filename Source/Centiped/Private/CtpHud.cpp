@@ -31,6 +31,7 @@ void ACtpHud::DrawHUD()
 	if (bDisplayText)
 	{
 		const FString GameOverText = FString::Printf(TEXT("Press ENTER to restart the game"));
+		DrawText("GAME OVER", TextColor, 180.f, 250.f, nullptr, 2.0f, false);
 		DrawText(GameOverText, TextColor, 180.f, 300.f, nullptr, 2.0f, false);
 	}
 }

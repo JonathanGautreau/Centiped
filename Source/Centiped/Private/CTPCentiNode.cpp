@@ -170,14 +170,13 @@ void ACTPCentiNode::IsAtTheBounds()
 
 void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	Super::NotifyActorBeginOverlap(OtherActor);
+	Super::NotifyActorBeginOverlap(OtherActor); // method from AEnemy
 	
 	// UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
 	if (OtherActor && OtherActor != this)
 	{
 		UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
 		
-		UE_LOG(LogCentiped, Log, TEXT("Mushroom detected"));
 		HitMushroom(OtherActor);
 
 		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
@@ -205,6 +204,7 @@ void ACTPCentiNode::HitMushroom(AActor* OtherActor)
 	{
 		if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
 		{
+			UE_LOG(LogCentiped, Log, TEXT("Mushroom detected"));
 			if ( FMath::Abs(Mushroom->GetActorLocation().Z - GetActorLocation().Z)<70)
 			{
 				IsColliding = true;				
