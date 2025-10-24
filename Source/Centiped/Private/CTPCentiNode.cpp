@@ -74,6 +74,13 @@ void ACTPCentiNode::Move(float DeltaTime)
 		if (MovingDirection.X != 0) //When the centiped move on the left or right
 		{
 			if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
+			else if (IsCollidingPoison)
+			{
+				if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+				{
+					HitSwitch = FVector2D(GetActorLocation().Y,GameMode->Bounds.Min.Y);
+				}
+			}
 			else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
 			if (IsHead) IsAtTheBounds();
 			if (NextNode)
@@ -123,9 +130,10 @@ void ACTPCentiNode::Move(float DeltaTime)
 	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));	
 }
 
- float ACTPCentiNode::FindDistToNextHeadHitSwitch() const
- {
- 	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+
+float ACTPCentiNode::FindDistToNextHeadHitSwitch() const
+{
+	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
  	{
  		if (MovingDirection.Y != 0)
  		{
@@ -207,7 +215,12 @@ void ACTPCentiNode::HitMushroom(AActor* OtherActor)
 		{
 			if ( FMath::Abs(Mushroom->GetActorLocation().Z - GetActorLocation().Z)<70)
 			{
-				IsColliding = true;				
+				IsColliding = true;	
+				if (Mushroom->IsPoison)
+				{
+					IsCollidingPoison = true;
+				}
+				
 			}
 		}
 	}

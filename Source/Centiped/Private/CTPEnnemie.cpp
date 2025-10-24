@@ -85,7 +85,8 @@ void ACTPEnnemie::HitPLayer(ACtpPlayerPawn* Player)
 }
 void ACTPEnnemie::HitBullet(ACtpBullet* Bullet)
 {
-	
+	Life--;
+	if (Life == 0) Destroy();
 }
 
 

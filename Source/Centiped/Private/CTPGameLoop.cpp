@@ -2,6 +2,8 @@
 
 
 #include "CTPGameLoop.h"
+
+#include "BlendSpaceAnalysis.h"
 #include "CTPCentiNode.h"
 #include "CtpHud.h"
 #include "CtpMushroom.h"
@@ -9,6 +11,7 @@
 #include "Centiped/Public/CTPLog.h"
 #include "Centiped/Public/CtpGameMode.h"
 #include "CTPFlea.h"
+#include "CTPScorpion.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -42,26 +45,36 @@ void ACtpGameLoop::BeginPlay()
 void ACtpGameLoop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (SpawnedMushroomsCount<=10 && !isFlea)
+
+	if (UWorld* World = GetWorld())
 	{
-		if (UWorld* World = GetWorld())
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 		{
-			if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+			if (SpawnedMushroomsCount<=10 && !isFlea)
 			{
-				isFlea = true;
-				GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,FString::Printf(TEXT("Spawned Mushrooms count < 10 ")));
+				isFlea = true; 
 				ACTPFlea* Flea = World->SpawnActor<ACTPFlea>(ACTPFlea::StaticClass());
 				float SpawnOnY = FMath::RandRange(GameMode->Bounds.Min.X + Flea->MeshScale.X*100,GameMode->Bounds.Max.X - Flea->MeshScale.X*100);
 				Flea->SetActorLocation(FVector(0,SpawnOnY,GameMode->Bounds.Max.Y)-Flea->MeshScale.Y*100);
 				Flea->HitSwitch = FVector2D(SpawnOnY,GameMode->Bounds.Max.Y-Flea->MeshScale.Y*200-80);
 			}
+			else if (SpawnedMushroomsCount>10)
+			{
+				isFlea = false;
+			}
+
+			if (!IsScorpion ) //TODO the spawn system of the scorpion.
+			{
+				IsScorpion = true;
+				ACTPScorpion* Scorpion = World->SpawnActor<ACTPScorpion>();
+				//float SpawnOnZ = FMath::RandRange(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f) - round(GameMode->SquareSize.Y * 0.5)),GameMode->Bounds.Max.Y);
+			}
 		}
 	}
-	else if (SpawnedMushroomsCount>10)
-	{
-		isFlea = false;
-	}
+	
+
+	
+
 }
 
 
@@ -185,7 +198,13 @@ void ACtpGameLoop::OnResetRoundComplete()
 			if (Cast<ACtpBullet>(*It))
 				It->Destroy();
 		}
-	
+		
+		// Reset all Poisonned Mushroom to normal ones
+		for (auto Mushroom : PoisonedMush)
+		{
+			Mushroom->IsPoison = false;	
+		}
+		
 		// Generate a new Centipede
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;

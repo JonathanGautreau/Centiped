@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "CtpMushroom.h"
 #include "CTPGameLoop.generated.h"
 
 // Forward declaration avoids circular dependencies 
@@ -66,4 +67,13 @@ public:
 
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	bool isFlea;
+
+	UPROPERTY(Category = "GameLoop", EditAnywhere)
+	bool IsScorpion;
+
+	UPROPERTY(category = "GameLoop", EditAnywhere)
+	bool IsSpider;
+
+	UPROPERTY(category = "GameLoop", EditAnywhere)
+	TArray<ACtpMushroom*> PoisonedMush;
 };

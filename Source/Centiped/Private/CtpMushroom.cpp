@@ -51,11 +51,6 @@ void ACtpMushroom::BeginPlay()
 		
 		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
 		{
-			GEngine->AddOnScreenDebugMessage(
--1,
-5.0f,
-FColor::Red,
-FString::Printf(TEXT("MushroomCreate")));
 			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushrooms()+1);
 		}
 	}
@@ -110,11 +105,6 @@ void ACtpMushroom::Destroyed()
 		
 		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
 		{
-			GEngine->AddOnScreenDebugMessage(
-	-1,
-	5.0f,
-	FColor::Red,
-	FString::Printf(TEXT("MushroomDestroy")));
 			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushrooms()-1);
 		}
 	}

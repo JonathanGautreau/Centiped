@@ -29,6 +29,9 @@ public:
 	UPROPERTY(Category="Centipede",EditAnywhere)
 	bool IsColliding;
 
+	UPROPERTY(category="Centipede",EditAnywhere)
+	bool IsCollidingPoison;
+	
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	float MoveSpeed = 500.f;
 	
