@@ -4,6 +4,7 @@
 #include "Centiped/Public/CtpPlayerPawn.h"
 
 #include "CTPCentiNode.h"
+#include "CTPEnemy.h"
 #include "CtpHud.h"
 #include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
@@ -174,7 +175,7 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
 	UE_LOG(LogCentiped, Log, TEXT("Shoot"));
 
-	if (bIsOverlappingCentipede)
+	if (bIsOverlappedByEnemy)
 		return;
 
 	if (ProjectileClass)
@@ -230,9 +231,9 @@ void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 			SetActorLocation(LastSafeLocation);
 		}
 
-		if (Cast<ACTPCentiNode>(OtherActor))
+		if (Cast<ACTPCentiNode>(OtherActor) || Cast<ACTPEnemy>(OtherActor))
 		{
-			bIsOverlappingCentipede = true;
+			bIsOverlappedByEnemy = true;
 		}
 	}
 }

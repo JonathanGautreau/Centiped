@@ -32,9 +32,12 @@ public:
 
 	virtual void Move(float DeltaTime) override;
 	virtual void HitMushroom(ACtpMushroom* Mushroom) override;
-	virtual void HitPLayer(ACtpPlayerPawn* Player) override;
+	virtual void HitPlayer(ACtpPlayerPawn* Player) override;
 	virtual void HitBullet(ACtpBullet* Bullet) override;
 
 	// ------- Specific functions ------- //
-	
+
+	// ------- Specific properties ------- //
+	UPROPERTY(category = "Flea", EditAnywhere)
+	float VerticalOffset = 80.f;
 };

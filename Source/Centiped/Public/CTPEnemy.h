@@ -17,11 +17,14 @@ class CENTIPED_API ACTPEnemy : public AActor
 public:
 	// Sets default values for this actor's properties
 	ACTPEnemy();
-	
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
+
+	UPROPERTY(Category="Enemy", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 public:
 	// Called every frame
@@ -30,11 +33,8 @@ public:
 	
 	virtual void Move(float Deltatime);
 	virtual void HitMushroom(ACtpMushroom* OtherActor);
-	virtual void HitPLayer(ACtpPlayerPawn* OtherActor);
+	virtual void HitPlayer(ACtpPlayerPawn* OtherActor);
 	virtual void HitBullet(ACtpBullet* OtherActor);
-
-	UPROPERTY(Category="Enemy", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy")
 	float MoveSpeed = 500.f;
