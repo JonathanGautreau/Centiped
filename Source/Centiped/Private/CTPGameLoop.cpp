@@ -42,40 +42,20 @@ void ACtpGameLoop::BeginPlay()
 void ACtpGameLoop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (SpawnedMushroomsCount<=10 && !isFlea)
-	{
-		if (UWorld* World = GetWorld())
-		{
-			if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
-			{
-				isFlea = true;
-				GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,FString::Printf(TEXT("Spawned Mushrooms count < 10 ")));
-				ACTPFlea* Flea = World->SpawnActor<ACTPFlea>(ACTPFlea::StaticClass());
-				float SpawnOnY = FMath::RandRange(GameMode->Bounds.Min.X + Flea->MeshScale.X*100,GameMode->Bounds.Max.X - Flea->MeshScale.X*100);
-				Flea->SetActorLocation(FVector(0,SpawnOnY,GameMode->Bounds.Max.Y)-Flea->MeshScale.Y*100);
-				Flea->HitSwitch = FVector2D(SpawnOnY,GameMode->Bounds.Max.Y-Flea->MeshScale.Y*200-80);
-			}
-		}
-	}
-	else if (SpawnedMushroomsCount>10)
-	{
-		isFlea = false;
-	}
 }
 
 
 void ACtpGameLoop::GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode)
 {
 	GenerateAvailableCells(GameMode);
-	SpawnMushrooms(World, GameMode, 25, 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
+	SpawnMushrooms(World, GameMode, InitialNumberOfMushrooms, 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
 }
 
-void ACtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int NumberOfMushrooms, int RowMin, int RowMax)
+void ACtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int MushroomsCount, int RowMin, int RowMax)
 {
 	int SpawnedMushrooms = 0;
 	
-	while (SpawnedMushrooms < NumberOfMushrooms && AvailableCells.Num() > 0)
+	while (SpawnedMushrooms < MushroomsCount && AvailableCells.Num() > 0)
 	{
 		// Chose location
 		int Col = FMath::RandRange(0, GameMode->Columns - 1);
@@ -104,7 +84,7 @@ void ACtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int Num
 			SpawnedMushrooms++;
 		}
 	}
-	SpawnedMushroomsCount = SpawnedMushrooms;
+	SetSpawnedMushroomsCount(SpawnedMushrooms);
 }
 
 void ACtpGameLoop::GenerateAvailableCells(ACtpGameMode* GameMode)
@@ -160,6 +140,44 @@ void ACtpGameLoop::GenerateCentipede(UWorld* World, FActorSpawnParameters& Spawn
 	}
 }
 
+void ACtpGameLoop::CheckFleaGeneration()
+{
+	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms / 2.f) && !isFlea)
+	{
+		GenerateFlea();
+	}
+	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms / 2.f))
+	{
+		isFlea = false;
+	}
+}
+
+void ACtpGameLoop::GenerateFlea()
+{
+	if (UWorld* World = GetWorld())
+	{
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+		{
+ 			isFlea = true;
+			ACTPFlea* Flea = World->SpawnActor<ACTPFlea>(ACTPFlea::StaticClass());
+			float SpawnOnY = FMath::RandRange(GameMode->Bounds.Min.X + Flea->MeshScale.X * 100,GameMode->Bounds.Max.X - Flea->MeshScale.X * 100);
+			Flea->SetActorLocation(FVector(0,SpawnOnY,GameMode->Bounds.Max.Y) - Flea->MeshScale.Y * 100);
+			Flea->HitSwitch = FVector2D(SpawnOnY,GameMode->Bounds.Max.Y - Flea->MeshScale.Y * 200 - Flea->VerticalOffset);
+		}
+	}
+}
+
+int ACtpGameLoop::GetSpawnedMushroomsCount() const
+{
+	return SpawnedMushroomsCount;
+}
+
+void ACtpGameLoop::SetSpawnedMushroomsCount(const int Count)
+{
+	SpawnedMushroomsCount = Count;
+	// GEngine->AddOnScreenDebugMessage(-1,2.0f,FColor::Red,FString::Printf(TEXT("Set Spawned Mushrooms count %d "), SpawnedMushroomsCount));
+}
+
 void ACtpGameLoop::ResetRound()
 {
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
@@ -200,7 +218,7 @@ void ACtpGameLoop::OnResetRoundComplete()
 		ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(PlayerController->GetPawn());
 		if (!Player) return;
 
-		Player->bIsOverlappingCentipede = false;
+		Player->bIsOverlappedByEnemy = false;
 		Player->SetPlayerInitialPosition();
 		
 		UGameplayStatics::SetGlobalTimeDilation(World, 1.0f);
@@ -232,10 +250,7 @@ void ACtpGameLoop::OnGameOverComplete()
 		ACtpHud* Hud = Cast<ACtpHud>(PlayerController->GetHUD());
 		if (!Hud) return;
 
-		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
-		{
-			Hud->ShowGameOverText(true);
-		}
+		Hud->ShowGameOverText(true);
 	}
 }
 
@@ -269,7 +284,7 @@ void ACtpGameLoop::RestartGame()
 		ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(PlayerController->GetPawn());
 		if (!Player) return;
 
-		Player->bIsOverlappingCentipede = false;
+		Player->bIsOverlappedByEnemy = false;
 		Player->SetPlayerInitialPosition();
 		Player->SetLife(3);
 
@@ -284,14 +299,3 @@ void ACtpGameLoop::RestartGame()
 		UGameplayStatics::SetGlobalTimeDilation(World, 1.0f);
 	}
 }
-
-int ACtpGameLoop::GetSpawnedMushrooms() const
-{
-	return SpawnedMushroomsCount;
-}
-
-void ACtpGameLoop::SetSpawnedMushroomsCount( int Count)
-{
-	SpawnedMushroomsCount = Count;
-}
-
