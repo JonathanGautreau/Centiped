@@ -32,10 +32,18 @@ void ACTPCentiNode::BeginPlay()
 void ACTPCentiNode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (PrevNode == nullptr)
+	if (!IsHead)
 	{
-		IsHead=true;			//If no Previous node, this node become a head
+		if (PrevNode == nullptr)
+		{
+			IsHead=true;			//If no Previous node, this node become a head
+
+			// static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Centiped.SM_Centiped"));
+			// if (StaticMeshRef.Succeeded())
+			// {
+			// 	MeshComponent->SetStaticMesh(StaticMeshRef.Object);
+			// }
+		}
 	}
 }
 
@@ -57,6 +65,7 @@ void ACTPCentiNode::Move(float DeltaTime)
 				if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 				{
 					HitSwitch = FVector2D(GetActorLocation().Y,GameMode->Bounds.Min.Y);
+					IsFalling = true;
 				}
 			}
 			else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
