@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CTPEnemy.h"
 #include "CtpPlayerPawn.h"
 #include "GameFramework/Actor.h"
-
 #include "CTPCentiNode.generated.h"
 
 UCLASS()
-class CENTIPED_API ACTPCentiNode : public AActor
+class CENTIPED_API ACTPCentiNode : public ACTPEnemy
 {
 	GENERATED_BODY()
 
@@ -17,9 +17,26 @@ public:
 	// Sets default values for this actor's properties
 	ACTPCentiNode();
 	
-	UPROPERTY(Category="Centipede", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> MeshComponent;
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
+public:
+	// ------- Common functions ------- //
+	virtual void Tick(float DeltaTime) override;
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	virtual void Move(float DeltaTime) override;
+	virtual void HitMushroom(ACtpMushroom* Mushroom) override;
+	virtual void HitPlayer(ACtpPlayerPawn* Player) override;
+	virtual void HitBullet(ACtpBullet* Bullet) override;
+
+	// ------- Specific functions ------- //
+	float FindDistToNextHeadHitSwitch() const;
+	float FindDistToNextNodeHitSwitch() const;
+	void IsAtTheBounds();
+
+	// ------- Specific properties ------- //
 	UPROPERTY(Category="Centipede", EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	bool IsHead;
 
@@ -33,21 +50,13 @@ public:
 	bool IsCollidingPoison;
 	
 	UPROPERTY(category = "Centipede", EditAnywhere)
-	float MoveSpeed = 500.f;
-	
-	UPROPERTY(EditAnywhere, Category="Centipede")
-	FVector2D MeshScale = FVector2D(.8f, .8f);
-	
-	UPROPERTY(category = "Centipede", EditAnywhere)
 	float VerticalOffset = MeshScale.Y * 100;
 	
 	UPROPERTY(Category = "Centipede", EditAnywhere)
 	FVector2D MovingDirection = FVector2D(-1, 0);
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	FVector2D LastMovingDirection = FVector2D(-1, 0);
-
-	UPROPERTY(category = "Centipede", EditAnywhere)
-	FVector2D HitSwitch = FVector2D::Zero();
+	
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	TArray<FVector2D> HitSwitches;
 
@@ -67,23 +76,4 @@ public:
 
 	UPROPERTY(Category="Centipede",EditAnywhere)
 	bool bCentipedeExists = false;
-	
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-
-	void Move(float DeltaTime);
-	
-	float FindDistToNextHeadHitSwitch() const;
-	float FindDistToNextNodeHitSwitch() const;
-	void IsAtTheBounds();
-
-	void HitPlayer(ACtpGameMode* GameMode, ACtpPlayerPawn* Player);
-	void HitBullet(ACtpGameMode* GameMode, ACtpBullet* Bullet);
-	void HitMushroom(AActor* OtherActor);
 };

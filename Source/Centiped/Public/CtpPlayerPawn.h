@@ -73,7 +73,7 @@ public:
 	bool bIsOverlappingMushroom = false;
 
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	bool bIsOverlappingCentipede = false;
+	bool bIsOverlappedByEnemy = false;
 	
 	int GetLife() const { return LifeLeft; };
 	void SetLife(const int NewLifeLeft) { LifeLeft = NewLifeLeft; };

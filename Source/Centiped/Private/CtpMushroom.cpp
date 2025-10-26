@@ -48,10 +48,9 @@ void ACtpMushroom::BeginPlay()
 
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		
 		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
 		{
-			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushrooms()+1);
+			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushroomsCount() + 1);
 		}
 	}
 }
@@ -99,15 +98,14 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void ACtpMushroom::Destroyed()
 {
-
+	Super::Destroyed();
+	
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		
 		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
 		{
-			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushrooms()-1);
+			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushroomsCount() - 1);
+			GameLoop->CheckFleaGeneration();
 		}
 	}
-	
-	Super::Destroyed();
 }
