@@ -8,8 +8,16 @@
 // Sets default values
 ACTPScorpion::ACTPScorpion()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Flea.SM_Flea"));
+	if (StaticMeshRef.Succeeded())
+	{
+		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
+	}
+	
+	// ------- Override properties ------- //
+	MeshScale = FVector2D(.4f,.4f);
+	MoveSpeed = 1000;
+	Life = 1;
 }
 
 // Called when the game starts or when spawned
@@ -17,10 +25,8 @@ void ACTPScorpion::BeginPlay()
 {
 	Super::BeginPlay();
 	IsLeftDirection = FMath::RandBool();
-	if (IsLeftDirection)
-	{
-		SetActorLocation(FVector(GetActorLocation().X,-GetActorLocation().Y,GetActorLocation().Z));
-	}
+	if (IsLeftDirection)	SetActorLocation(FVector(GetActorLocation().X,-GetActorLocation().Y,GetActorLocation().Z));
+	else					SetActorLocation(FVector(GetActorLocation().X,GetActorLocation().Y,GetActorLocation().Z));
 }
 
 // Called every frame
@@ -66,25 +72,24 @@ void ACTPScorpion::HitMushroom(ACtpMushroom* Mushroom)
 }
 
 
-void ACTPScorpion::HitPLayer(ACtpPlayerPawn* Player)
+void ACTPScorpion::HitPlayer(ACtpPlayerPawn* Player)
 {
-	Super::HitPLayer(Player);
+	Super::HitPlayer(Player);
 }
+
 
 void ACTPScorpion::HitBullet(ACtpBullet* Bullet)
 {
 	Super::HitBullet(Bullet);
-
-	if (Life == 0)
+	
+	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+		if (ACTPScoreSystem* Score = GameMode->GetScoreSystem())
 		{
-			if (ACTPScoreSystem* Score = GameMode->GetScoreSystem())
-			{
-				Score->SetScore(Score->GetScore() + 1000);
-			}
+			Score->SetScore(Score->GetScore() + 1000);
 		}
 	}
+	this->Destroy();
 		
 }
 

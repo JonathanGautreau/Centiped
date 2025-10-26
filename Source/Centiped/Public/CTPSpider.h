@@ -1,21 +1,20 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "CTPEnemy.h"
 #include "GameFramework/Actor.h"
-#include "CtpMushroom.h"
-#include "CTPScorpion.generated.h"
+#include "CTPSpider.generated.h"
 
 UCLASS()
-class CENTIPED_API ACTPScorpion : public ACTPEnemy
+class CENTIPED_API ACTPSpider : public ACTPEnemy
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ACTPScorpion();
+	ACTPSpider();
 
 protected:
 	// Called when the game starts or when spawned
@@ -33,9 +32,6 @@ public:
 	virtual void HitBullet(ACtpBullet* Bullet) override;
 
 	// ------- Specific properties ------- //
-	UPROPERTY(EditAnywhere,Category="Scorpion")
-	bool  IsLeftDirection;
-	
-	UPROPERTY(EditAnywhere,Category="Scorpion")
-	TArray<ACtpMushroom*> MushToPoison;
+	UPROPERTY(EditAnywhere, category = Spider)
+	float DistToPlayer;
 };
