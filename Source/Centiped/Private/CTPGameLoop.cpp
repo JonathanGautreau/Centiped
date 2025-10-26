@@ -2,6 +2,8 @@
 
 
 #include "CTPGameLoop.h"
+
+#include "BlendSpaceAnalysis.h"
 #include "CTPCentiNode.h"
 #include "CtpHud.h"
 #include "CtpMushroom.h"
@@ -9,6 +11,7 @@
 #include "Centiped/Public/CTPLog.h"
 #include "Centiped/Public/CtpGameMode.h"
 #include "CTPFlea.h"
+#include "CTPScorpion.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -175,7 +178,6 @@ int ACtpGameLoop::GetSpawnedMushroomsCount() const
 void ACtpGameLoop::SetSpawnedMushroomsCount(const int Count)
 {
 	SpawnedMushroomsCount = Count;
-	// GEngine->AddOnScreenDebugMessage(-1,2.0f,FColor::Red,FString::Printf(TEXT("Set Spawned Mushrooms count %d "), SpawnedMushroomsCount));
 }
 
 void ACtpGameLoop::ResetRound()
@@ -203,7 +205,13 @@ void ACtpGameLoop::OnResetRoundComplete()
 			if (Cast<ACtpBullet>(*It))
 				It->Destroy();
 		}
-	
+		
+		// Reset all Poisonned Mushroom to normal ones
+		for (auto Mushroom : PoisonedMush)
+		{
+			Mushroom->IsPoison = false;	
+		}
+		
 		// Generate a new Centipede
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;

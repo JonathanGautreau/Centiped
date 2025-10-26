@@ -37,6 +37,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Mushroom")
 	int Life = 3;
+
+	UPROPERTY(editAnywhere, Category="Mushroom")
+	bool IsPoison;
 	
 	void InitializePosition(const FVector& InitialPosition);
 

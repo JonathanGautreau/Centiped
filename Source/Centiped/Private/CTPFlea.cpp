@@ -86,6 +86,7 @@ void ACTPFlea::HitBullet(ACtpBullet* Bullet)
 	Super::HitBullet(Bullet);
 	
  	Life--;
+
 	if (Life == 0 )
 	{
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
@@ -95,7 +96,6 @@ void ACTPFlea::HitBullet(ACtpBullet* Bullet)
 				ScoreSystem->SetScore(ScoreSystem->GetScore() + 200);
 			}
 		}
-		this->Destroy();
 	}
 }
 

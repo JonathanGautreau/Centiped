@@ -45,6 +45,9 @@ public:
 
 	UPROPERTY(Category="Centipede",EditAnywhere)
 	bool IsColliding;
+
+	UPROPERTY(category="Centipede",EditAnywhere)
+	bool IsCollidingPoison;
 	
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	float VerticalOffset = MeshScale.Y * 100;
