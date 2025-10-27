@@ -8,7 +8,7 @@
 // Sets default values
 ACTPScorpion::ACTPScorpion()
 {
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Flea.SM_Flea"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Scorpion.SM_Scorpion"));
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
@@ -16,7 +16,7 @@ ACTPScorpion::ACTPScorpion()
 	
 	// ------- Override properties ------- //
 	MeshScale = FVector2D(.4f,.4f);
-	MoveSpeed = 1000;
+	MoveSpeed = 850;
 	Life = 1;
 }
 
@@ -24,9 +24,6 @@ ACTPScorpion::ACTPScorpion()
 void ACTPScorpion::BeginPlay()
 {
 	Super::BeginPlay();
-	IsLeftDirection = FMath::RandBool();
-	if (IsLeftDirection)	SetActorLocation(FVector(GetActorLocation().X,-GetActorLocation().Y,GetActorLocation().Z));
-	else					SetActorLocation(FVector(GetActorLocation().X,GetActorLocation().Y,GetActorLocation().Z));
 }
 
 // Called every frame
@@ -40,7 +37,7 @@ void ACTPScorpion::Move(float Deltatime)
 	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 	FVector2D NewDirection = FVector2D::ZeroVector;
 	if (IsLeftDirection) NewDirection = FVector2D(-1,0);
-	if (IsLeftDirection) NewDirection = FVector2D(1,0);
+	else NewDirection = FVector2D(1,0);
 	NewLocation += NewDirection * Deltatime * MoveSpeed;
 	SetActorLocation(FVector(0,NewLocation.X,NewLocation.Y));
 	
@@ -51,6 +48,7 @@ void ACTPScorpion::Move(float Deltatime)
 			for (auto Mush : MushToPoison)
 			{
 				Mush->IsPoison = true;
+				
 				if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop()) GameLoop->PoisonedMush.Emplace();
 			}
 			Destroy();

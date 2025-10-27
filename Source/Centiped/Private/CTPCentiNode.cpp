@@ -59,17 +59,17 @@ void ACTPCentiNode::Move(float DeltaTime)
 	{
 		if (MovingDirection.X != 0) //When the centiped move on the left or right
 		{
-			if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
-			else if (IsCollidingPoison)
+			if (IsCollidingPoison)
 			{
 				if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 				{
-					HitSwitch = FVector2D(GetActorLocation().Y,GameMode->Bounds.Min.Y);
+					HitSwitch = FVector2D(GetActorLocation().Y,GameMode->Bounds.Min.Y+MeshScale.Y*100);
 					IsFalling = true;
 				}
 			}
+			else if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
 			else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
-			if (IsHead) IsAtTheBounds();
+			if (IsHead && !IsCollidingPoison) IsAtTheBounds();
 			if (NextNode)
 			{
 				NextNode->IsFalling = IsFalling;
@@ -87,7 +87,8 @@ void ACTPCentiNode::Move(float DeltaTime)
 			else MovingDirection = FVector2D(0,1);
 			if (IsColliding) NewLocation =FVector2D(GetActorLocation().Y, GetActorLocation().Z+DistToNextLoc*MovingDirection.Y);
 			else NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
-			IsColliding=false;
+			IsColliding = false;
+			IsCollidingPoison =	false;
 			
 		}
 		else		//When the centiped move down
