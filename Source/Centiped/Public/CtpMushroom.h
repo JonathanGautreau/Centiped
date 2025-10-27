@@ -34,6 +34,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category="Mushroom")
 	FVector2D MeshScale = FVector2D(.8f, .8f);
+	
+	UPROPERTY(editAnywhere, Category="Mushroom")
+	UStaticMesh* NormalMushroom;
+
+	UPROPERTY(EditAnywhere, Category="Mushroom")
+	UStaticMesh* PoisonMushroom;
 
 	UPROPERTY(EditAnywhere, Category="Mushroom")
 	int Life = 3;
@@ -42,6 +48,8 @@ public:
 	bool IsPoison;
 	
 	void InitializePosition(const FVector& InitialPosition);
+	void BecomePoison();
+	void BecomeNormal();
 
 	virtual void Destroyed() override;
 

@@ -224,7 +224,6 @@ void ACtpGameLoop::GenerateSpider()
 			else Spider->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
 			
 
-
 		}
 	}
 }
@@ -269,7 +268,7 @@ void ACtpGameLoop::OnResetRoundComplete()
 		// Reset all Poisonned Mushroom to normal ones
 		for (auto Mushroom : PoisonedMush)
 		{
-			Mushroom->IsPoison = false;	
+			Mushroom->BecomeNormal();	
 		}
 		
 		// Generate a new Centipede

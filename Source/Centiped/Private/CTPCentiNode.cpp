@@ -19,7 +19,14 @@ ACTPCentiNode::ACTPCentiNode()
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
+		NormalNodeMesh = StaticMeshRef.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> HeadStaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Centiped.SM_Centiped"));
+	if (HeadStaticMeshRef.Succeeded())
+	{
+		HeadNodeMesh = HeadStaticMeshRef.Object;
+	}
+	
 }
 
 // Called when the game starts or when spawned
@@ -36,13 +43,7 @@ void ACTPCentiNode::Tick(float DeltaTime)
 	{
 		if (PrevNode == nullptr)
 		{
-			IsHead=true;			//If no Previous node, this node become a head
-
-			// static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Centiped.SM_Centiped"));
-			// if (StaticMeshRef.Succeeded())
-			// {
-			// 	MeshComponent->SetStaticMesh(StaticMeshRef.Object);
-			// }
+			BecomeHead();		//If no Previous node, this node become a head
 		}
 	}
 }
@@ -162,6 +163,12 @@ void ACTPCentiNode::IsAtTheBounds()
 			IsFalling = true;
 		}
 	}
+}
+
+void ACTPCentiNode::BecomeHead()
+{
+	MeshComponent->SetStaticMesh(HeadNodeMesh);
+	IsHead = true;
 }
 
 void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
