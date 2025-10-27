@@ -35,6 +35,7 @@ public:
 	float FindDistToNextHeadHitSwitch() const;
 	float FindDistToNextNodeHitSwitch() const;
 	void IsAtTheBounds();
+	void BecomeHead();
 
 	// ------- Specific properties ------- //
 	UPROPERTY(Category="Centipede", EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
@@ -68,6 +69,12 @@ public:
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	ACTPCentiNode* NextNode;
 
+	UPROPERTY(category = "Centipede", EditAnywhere)
+	UStaticMesh* NormalNodeMesh;
+
+	UPROPERTY(category = "Centipede", EditAnywhere)
+	UStaticMesh* HeadNodeMesh;
+	
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	float DistToNextLoc;
 

@@ -12,6 +12,7 @@
 #include "Centiped/Public/CtpGameMode.h"
 #include "CTPFlea.h"
 #include "CTPScorpion.h"
+#include "CTPSpider.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
@@ -194,9 +195,6 @@ void ACtpGameLoop::GenerateScorpion()
 			Scorpion->IsLeftDirection = FMath::RandBool();
 			if (Scorpion->IsLeftDirection) Scorpion->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
 			else Scorpion->SetActorLocation(FVector(0,GameMode->Bounds.Min.X,SpawnOnZ));
-			
-			
-			
 		}
 	}
 }
@@ -214,7 +212,20 @@ void ACtpGameLoop::CheckSpiderGeneration()
 }
 void ACtpGameLoop::GenerateSpider()
 {
-	
+	if (UWorld* World = GetWorld())
+	{
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+		{
+			IsSpider = true;
+			ACTPSpider* Spider = World->SpawnActor<ACTPSpider>(ACTPSpider::StaticClass());
+			float SpawnOnZ = FMath::RandRange( GameMode->Bounds.Min.Y ,GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5));
+			Spider->IsLeftDirection = FMath::RandBool();
+			if (Spider->IsLeftDirection) Spider->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
+			else Spider->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
+			
+
+		}
+	}
 }
 
 
@@ -257,7 +268,7 @@ void ACtpGameLoop::OnResetRoundComplete()
 		// Reset all Poisonned Mushroom to normal ones
 		for (auto Mushroom : PoisonedMush)
 		{
-			Mushroom->IsPoison = false;	
+			Mushroom->BecomeNormal();	
 		}
 		
 		// Generate a new Centipede

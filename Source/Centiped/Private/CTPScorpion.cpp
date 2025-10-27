@@ -47,8 +47,8 @@ void ACTPScorpion::Move(float Deltatime)
 		{
 			for (auto Mush : MushToPoison)
 			{
-				Mush->IsPoison = true;
-				
+				Mush->BecomePoison();
+								
 				if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop()) GameLoop->PoisonedMush.Emplace();
 			}
 			Destroy();

@@ -25,7 +25,13 @@ ACtpMushroom::ACtpMushroom()
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
+		NormalMushroom = StaticMeshRef.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> PoisonStaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Mushrooms.SM_Mushrooms"));
+	if (PoisonStaticMeshRef.Succeeded())
+	{
+		PoisonMushroom = StaticMeshRef.Object;
+	}	
 
 	MeshComponent->SetGenerateOverlapEvents(true);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -66,6 +72,20 @@ void ACtpMushroom::InitializePosition(const FVector& InitialPosition)
 {
 	SetActorLocation(InitialPosition);
 }
+
+void ACtpMushroom::BecomeNormal()
+{
+	IsPoison = false;
+	MeshComponent->SetStaticMesh(NormalMushroom);
+}
+
+void ACtpMushroom::BecomePoison()
+{
+	IsPoison = true;
+	MeshComponent->SetStaticMesh(PoisonMushroom);
+}
+
+
 
 void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 {

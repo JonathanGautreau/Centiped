@@ -32,6 +32,16 @@ public:
 	virtual void HitBullet(ACtpBullet* Bullet) override;
 
 	// ------- Specific properties ------- //
-	UPROPERTY(EditAnywhere, category = Spider)
+	UPROPERTY(EditAnywhere, category ="Spider")
 	float DistToPlayer;
+
+	UPROPERTY(EditAnywhere, category ="Spider")
+	float FirstLayerPoint;
+
+	UPROPERTY(EditAnywhere, category ="Spider")
+	float LastLayerPoint;
+
+	UPROPERTY(EditAnywhere,Category="Spider")
+	bool  IsLeftDirection;
+	
 };
