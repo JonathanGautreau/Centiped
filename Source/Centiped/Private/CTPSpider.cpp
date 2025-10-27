@@ -15,7 +15,11 @@ ACTPSpider::ACTPSpider()
 	
 	// ------- Override properties ------- //
 	MeshScale = FVector2D(.4f,.4f);
-	MoveSpeed = 1000;
+	MoveSpeed = 250;
+	LastLayerPoint = MeshScale.Y * 100 * 2;
+	FirstLayerPoint = MeshScale.X * 100 * 4;
+	DistToPlayer = 0;
+	IsLeftDirection = false;
 	Life = 1;
 }
 
@@ -55,7 +59,29 @@ void ACTPSpider::HitPlayer(ACtpPlayerPawn* Player)
 void ACTPSpider::HitBullet(ACtpBullet* Bullet)
 {
 	Super::HitBullet(Bullet);
+
+	if (ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(ACtpPlayerPawn::StaticClass()))
+	{
+		if (ACTPScoreSystem* ScoreSystem  = Cast<ACTPScoreSystem>(ACTPScoreSystem::StaticClass()))
+		{
+			HitSwitch = FVector2D(Player->GetActorLocation().Y - GetActorLocation().Y, Player->GetActorLocation().Z - GetActorLocation().Z);
+			DistToPlayer = HitSwitch.Size();
+			if (DistToPlayer > FirstLayerPoint)
+			{
+				ScoreSystem->SetScore(ScoreSystem->GetScore() + 300);
+			}
+			else if (DistToPlayer > LastLayerPoint)
+			{
+				ScoreSystem->SetScore(ScoreSystem->GetScore() + 600);
+			}
+			else
+			{
+				ScoreSystem->SetScore(ScoreSystem->GetScore() + 900);
+			}
+		}
+	}
 }
+
 
 
 
