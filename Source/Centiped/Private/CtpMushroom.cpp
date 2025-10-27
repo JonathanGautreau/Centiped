@@ -106,6 +106,8 @@ void ACtpMushroom::Destroyed()
 		{
 			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushroomsCount() - 1);
 			GameLoop->CheckFleaGeneration();
+			GameLoop->CheckScorpionGeneration();
+			GameLoop->CheckSpiderGeneration();
 		}
 	}
 }

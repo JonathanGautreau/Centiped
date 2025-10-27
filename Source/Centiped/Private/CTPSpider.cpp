@@ -7,8 +7,16 @@
 // Sets default values
 ACTPSpider::ACTPSpider()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Spider.SM_Spider"));
+	if (StaticMeshRef.Succeeded())
+	{
+		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
+	}
+	
+	// ------- Override properties ------- //
+	MeshScale = FVector2D(.4f,.4f);
+	MoveSpeed = 1000;
+	Life = 1;
 }
 
 // Called when the game starts or when spawned

@@ -145,11 +145,11 @@ void ACtpGameLoop::GenerateCentipede(UWorld* World, FActorSpawnParameters& Spawn
 
 void ACtpGameLoop::CheckFleaGeneration()
 {
-	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms / 2.f) && !isFlea)
+	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .25f) && !isFlea)
 	{
 		GenerateFlea();
 	}
-	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms / 2.f))
+	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms * .25f))
 	{
 		isFlea = false;
 	}
@@ -169,6 +169,54 @@ void ACtpGameLoop::GenerateFlea()
 		}
 	}
 }
+
+void ACtpGameLoop::CheckScorpionGeneration()
+{
+	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .5f) && !IsScorpion)
+	{
+		GenerateScorpion();
+	}
+	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms * .5f))
+	{
+		IsScorpion = false;
+	}
+}
+
+void ACtpGameLoop::GenerateScorpion()
+{
+	if (UWorld* World = GetWorld())
+	{
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+		{
+			IsScorpion = true;
+			ACTPScorpion* Scorpion = World->SpawnActor<ACTPScorpion>(ACTPScorpion::StaticClass());
+			float SpawnOnZ = FMath::RandRange( GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5),GameMode->Bounds.Max.Y);
+			Scorpion->IsLeftDirection = FMath::RandBool();
+			if (Scorpion->IsLeftDirection) Scorpion->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
+			else Scorpion->SetActorLocation(FVector(0,GameMode->Bounds.Min.X,SpawnOnZ));
+			
+			
+			
+		}
+	}
+}
+
+void ACtpGameLoop::CheckSpiderGeneration()
+{
+	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .75f) && !IsSpider)
+	{
+		GenerateScorpion();
+	}
+	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms * .75f))
+	{
+		IsSpider = false;
+	}
+}
+void ACtpGameLoop::GenerateSpider()
+{
+	
+}
+
 
 int ACtpGameLoop::GetSpawnedMushroomsCount() const
 {

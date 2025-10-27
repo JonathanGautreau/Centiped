@@ -60,6 +60,10 @@ public:
 	void GenerateCentipede(UWorld* World, FActorSpawnParameters& SpawnParams, ACtpGameMode* GameMode);
 	void CheckFleaGeneration();
 	void GenerateFlea();
+	void CheckScorpionGeneration();
+	void GenerateScorpion();
+	void CheckSpiderGeneration();
+	void GenerateSpider();
 
 	int GetSpawnedMushroomsCount() const;
 	void SetSpawnedMushroomsCount(int Count);
