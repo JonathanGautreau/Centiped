@@ -15,11 +15,6 @@ ACTPScoreSystem::ACTPScoreSystem()
 	
 }
 
-void ACTPScoreSystem::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 int ACTPScoreSystem::GetScore() const
 {
 	return Score;
@@ -52,14 +47,11 @@ void ACTPScoreSystem::ResetScore()
 
 void ACTPScoreSystem::ScoreMushrooms()
 {
-	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	int NumberOfRemainingMushrooms = 0;
+	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
 	{
-		int NumberOfRemainingMushrooms = 0;
-		for (TActorIterator<AActor> It(GetWorld()); It; ++It)
-		{
-			if (Cast<ACtpMushroom>(*It))
-				NumberOfRemainingMushrooms++;
-		}
-		SetScore(GetScore() + NumberOfRemainingMushrooms * 5);
+		if (Cast<ACtpMushroom>(*It))
+			NumberOfRemainingMushrooms++;
 	}
+	SetScore(GetScore() + NumberOfRemainingMushrooms * 5);
 }

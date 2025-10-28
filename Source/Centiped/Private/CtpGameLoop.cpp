@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CTPGameLoop.h"
+#include "CtpGameLoop.h"
 
 #include "BlendSpaceAnalysis.h"
 #include "CTPCentiNode.h"
@@ -17,18 +17,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 
-// Sets default values
 ACtpGameLoop::ACtpGameLoop()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	
 }
 
-// Called when the game starts or when spawned
 void ACtpGameLoop::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (UWorld* World = GetWorld())
 	{
 		FActorSpawnParameters SpawnParams;
@@ -41,13 +37,6 @@ void ACtpGameLoop::BeginPlay()
 		}
 	}
 }
-
-// Called every frame
-void ACtpGameLoop::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 
 void ACtpGameLoop::GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode)
 {
@@ -89,6 +78,24 @@ void ACtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int Mus
 		}
 	}
 	SetSpawnedMushroomsCount(SpawnedMushrooms);
+}
+
+int ACtpGameLoop::CountMushroomInPlayerZone()
+{
+	int CountInPlayerZone = 0;
+	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+	{
+		if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(*It))
+		{
+			if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+			{
+				double PlayerVerticalLimit = GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f));
+				if (Mushroom->GetActorLocation().Z < PlayerVerticalLimit)
+					CountInPlayerZone++;
+			}
+		}
+	}
+	return CountInPlayerZone;
 }
 
 void ACtpGameLoop::GenerateAvailableCells(ACtpGameMode* GameMode)
@@ -146,13 +153,13 @@ void ACtpGameLoop::GenerateCentipede(UWorld* World, FActorSpawnParameters& Spawn
 
 void ACtpGameLoop::CheckFleaGeneration()
 {
-	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .25f) && !isFlea)
+	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .5f) && !IsFlea)
 	{
 		GenerateFlea();
 	}
-	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms * .25f))
+	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms * .5f))
 	{
-		isFlea = false;
+		IsFlea = false;
 	}
 }
 
@@ -162,7 +169,7 @@ void ACtpGameLoop::GenerateFlea()
 	{
 		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 		{
- 			isFlea = true;
+ 			IsFlea = true;
 			ACTPFlea* Flea = World->SpawnActor<ACTPFlea>(ACTPFlea::StaticClass());
 			float SpawnOnY = FMath::RandRange(GameMode->Bounds.Min.X + Flea->MeshScale.X * 100,GameMode->Bounds.Max.X - Flea->MeshScale.X * 100);
 			Flea->SetActorLocation(FVector(0,SpawnOnY,GameMode->Bounds.Max.Y) - Flea->MeshScale.Y * 100);
@@ -173,11 +180,11 @@ void ACtpGameLoop::GenerateFlea()
 
 void ACtpGameLoop::CheckScorpionGeneration()
 {
-	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .5f) && !IsScorpion)
+	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .65f) && !IsScorpion)
 	{
 		GenerateScorpion();
 	}
-	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms * .5f))
+	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms * .65f))
 	{
 		IsScorpion = false;
 	}
@@ -201,15 +208,16 @@ void ACtpGameLoop::GenerateScorpion()
 
 void ACtpGameLoop::CheckSpiderGeneration()
 {
-	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .75f) && !IsSpider)
+	if (CountMushroomInPlayerZone() <= FMath::FloorToInt(InitialNumberOfMushrooms * .15f) && !IsSpider)
 	{
-		GenerateScorpion();
+ 		GenerateSpider();
 	}
-	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms * .75f))
+	else if (CountMushroomInPlayerZone() > FMath::FloorToInt(InitialNumberOfMushrooms * .15f))
 	{
 		IsSpider = false;
 	}
 }
+
 void ACtpGameLoop::GenerateSpider()
 {
 	if (UWorld* World = GetWorld())
@@ -222,12 +230,9 @@ void ACtpGameLoop::GenerateSpider()
 			Spider->IsLeftDirection = FMath::RandBool();
 			if (Spider->IsLeftDirection) Spider->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
 			else Spider->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
-			
-
 		}
 	}
 }
-
 
 int ACtpGameLoop::GetSpawnedMushroomsCount() const
 {
@@ -263,16 +268,12 @@ void ACtpGameLoop::OnResetRoundComplete()
 				It->Destroy();
 			if (Cast<ACtpBullet>(*It))
 				It->Destroy();
+			if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(*It))
+				Mushroom->BecomeNormal();
 		}
 		
-		// Reset all Poisonned Mushroom to normal ones
-		for (auto Mushroom : PoisonedMush)
-		{
-			if (Mushroom)
-			{
-				Mushroom->BecomeNormal();	
-			}
-		}
+		// Reset all Poisoned Mushroom to normal ones
+		PoisonedMush.Empty();
 		
 		// Generate a new Centipede
 		FActorSpawnParameters SpawnParams;

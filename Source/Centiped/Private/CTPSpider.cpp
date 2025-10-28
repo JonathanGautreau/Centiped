@@ -16,18 +16,19 @@ ACTPSpider::ACTPSpider()
 	// ------- Override properties ------- //
 	MeshScale = FVector2D(.4f,.4f);
 	MoveSpeed = 250;
+	Life = 1;
+
+	// ------- Specific properties ------- //
 	LastLayerPoint = MeshScale.Y * 100 * 2;
 	FirstLayerPoint = MeshScale.X * 100 * 4;
 	DistToPlayer = 0;
 	IsLeftDirection = false;
-	Life = 1;
 }
 
 // Called when the game starts or when spawned
 void ACTPSpider::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -38,7 +39,6 @@ void ACTPSpider::Tick(float DeltaTime)
 
 void ACTPSpider::Move(float Deltatime)
 {
-	
 }
 
 void ACTPSpider::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -60,29 +60,33 @@ void ACTPSpider::HitBullet(ACtpBullet* Bullet)
 {
 	Super::HitBullet(Bullet);
 
-	if (ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(ACtpPlayerPawn::StaticClass()))
+	if (UWorld* World = GetWorld())
 	{
-		if (ACTPScoreSystem* ScoreSystem  = Cast<ACTPScoreSystem>(ACTPScoreSystem::StaticClass()))
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 		{
-			HitSwitch = FVector2D(Player->GetActorLocation().Y - GetActorLocation().Y, Player->GetActorLocation().Z - GetActorLocation().Z);
-			DistToPlayer = HitSwitch.Size();
-			if (DistToPlayer > FirstLayerPoint)
+			APlayerController* PlayerController = World->GetFirstPlayerController();
+			if (!PlayerController) return;
+			
+			if (ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(PlayerController->GetPawn()))
 			{
-				ScoreSystem->SetScore(ScoreSystem->GetScore() + 300);
-			}
-			else if (DistToPlayer > LastLayerPoint)
-			{
-				ScoreSystem->SetScore(ScoreSystem->GetScore() + 600);
-			}
-			else
-			{
-				ScoreSystem->SetScore(ScoreSystem->GetScore() + 900);
+				if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+				{
+					HitSwitch = FVector2D(Player->GetActorLocation().Y - GetActorLocation().Y, Player->GetActorLocation().Z - GetActorLocation().Z);
+					DistToPlayer = HitSwitch.Size();
+					if (DistToPlayer > FirstLayerPoint)
+					{
+						ScoreSystem->SetScore(ScoreSystem->GetScore() + 300);
+					}
+					else if (DistToPlayer > LastLayerPoint)
+					{
+						ScoreSystem->SetScore(ScoreSystem->GetScore() + 600);
+					}
+					else
+					{
+						ScoreSystem->SetScore(ScoreSystem->GetScore() + 900);
+					}
+				}
 			}
 		}
 	}
 }
-
-
-
-
-
