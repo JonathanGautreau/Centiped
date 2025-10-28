@@ -25,7 +25,7 @@ ACtpMushroom::ACtpMushroom()
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 		NormalMushroom = StaticMeshRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> PoisonStaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Poison_Mushroom.SM_Poison_Mushroom"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> PoisonStaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_PoisonnedMushrooms.SM_PoisonnedMushrooms"));
 	if (PoisonStaticMeshRef.Succeeded())
 	{
 		PoisonMushroom = PoisonStaticMeshRef.Object;
