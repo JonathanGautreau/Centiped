@@ -268,7 +268,10 @@ void ACtpGameLoop::OnResetRoundComplete()
 		// Reset all Poisonned Mushroom to normal ones
 		for (auto Mushroom : PoisonedMush)
 		{
-			Mushroom->BecomeNormal();	
+			if (Mushroom)
+			{
+				Mushroom->BecomeNormal();	
+			}
 		}
 		
 		// Generate a new Centipede

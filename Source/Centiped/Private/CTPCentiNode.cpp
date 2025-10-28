@@ -21,7 +21,7 @@ ACTPCentiNode::ACTPCentiNode()
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 		NormalNodeMesh = StaticMeshRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> HeadStaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Centiped.SM_Centiped"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> HeadStaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Spider.SM_Spider"));
 	if (HeadStaticMeshRef.Succeeded())
 	{
 		HeadNodeMesh = HeadStaticMeshRef.Object;
