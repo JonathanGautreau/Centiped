@@ -2,13 +2,12 @@
 
 
 #include "Centiped/Public/CtpGameMode.h"
-#include "CTPGameLoop.h"
+#include "CtpGameLoop.h"
 #include "CtpHud.h"
 #include "CTPLog.h"
 #include "CTPScoreSystem.h"
 #include "Centiped/Public/CtpPlayerController.h"
 #include "Centiped/Public/CtpPlayerPawn.h"
-#include "EngineUtils.h"
 
 ACtpGameMode::ACtpGameMode()
 {
@@ -20,11 +19,6 @@ ACtpGameMode::ACtpGameMode()
 void ACtpGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
-	{
-		AActor* Actor = *It;
-	}
 
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;
@@ -36,7 +30,7 @@ void ACtpGameMode::BeginPlay()
 			GameLoop = World->SpawnActor<ACtpGameLoop>(ACtpGameLoop::StaticClass());
 			if (!GameLoop)
 			{
-				UE_LOG(LogTemp, Error, TEXT("GameLoop wasn't instantiated correctly"));
+				UE_LOG(LogCentiped, Error, TEXT("GameLoop wasn't instantiated correctly"));
 			}
 		}
 		
@@ -45,7 +39,7 @@ void ACtpGameMode::BeginPlay()
 			ScoreSystem = World->SpawnActor<ACTPScoreSystem>(ACTPScoreSystem::StaticClass());
 			if (!ScoreSystem)
 			{
-				UE_LOG(LogTemp, Error, TEXT("ScoreSystem wasn't instantiated correctly"));
+				UE_LOG(LogCentiped, Error, TEXT("ScoreSystem wasn't instantiated correctly"));
 			}
 			else
 			{

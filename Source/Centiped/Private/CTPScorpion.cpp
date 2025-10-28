@@ -43,19 +43,19 @@ void ACTPScorpion::Move(float Deltatime)
 	
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		if (NewLocation.X>GameMode->Bounds.Max.X || NewLocation.X<GameMode->Bounds.Min.X)
+		if (FMath::Abs(NewLocation.X) > GameMode->Bounds.Max.X)
 		{
 			for (auto Mush : MushToPoison)
 			{
 				Mush->BecomePoison();
 								
-				if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop()) GameLoop->PoisonedMush.Emplace();
+				if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop()) GameLoop->PoisonedMush.Emplace(Mush);
 			}
+			MushToPoison.Empty();
 			Destroy();
 		}
 	}
 }
-
 
 void ACTPScorpion::NotifyActorBeginOverlap(AActor* OtherActor)
 {
@@ -69,12 +69,10 @@ void ACTPScorpion::HitMushroom(ACtpMushroom* Mushroom)
 	MushToPoison.Emplace(Mushroom);
 }
 
-
 void ACTPScorpion::HitPlayer(ACtpPlayerPawn* Player)
 {
 	Super::HitPlayer(Player);
 }
-
 
 void ACTPScorpion::HitBullet(ACtpBullet* Bullet)
 {
@@ -88,10 +86,4 @@ void ACTPScorpion::HitBullet(ACtpBullet* Bullet)
 		}
 	}
 	this->Destroy();
-		
 }
-
-
-
-
-

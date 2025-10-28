@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "CtpMushroom.h"
-#include "CTPGameLoop.generated.h"
+#include "CtpGameLoop.generated.h"
 
 // Forward declaration avoids circular dependencies 
 class ACtpGameMode;
@@ -17,14 +17,10 @@ class CENTIPED_API ACtpGameLoop : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ACtpGameLoop();
 	
-
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	int SpawnedMushroomsCount;
 
@@ -33,7 +29,12 @@ private:
 	void GenerateAvailableCells(ACtpGameMode* GameMode);
 	void RemoveCellNeighbors(int Col, int Row, int32 NumberOfDeletedCells);
 	void SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int MushroomsCount, int RowMin, int RowMax);
-	
+	int CountMushroomInPlayerZone();
+
+	void GenerateFlea();
+	void GenerateScorpion();
+	void GenerateSpider();
+
 	UFUNCTION()
 	void OnResetRoundComplete();
 	UFUNCTION()
@@ -48,9 +49,6 @@ private:
 	FTimerHandle GameOverTimerHandle;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	
 	UFUNCTION()
 	void ResetRound();
 	UFUNCTION()
@@ -59,11 +57,8 @@ public:
 	
 	void GenerateCentipede(UWorld* World, FActorSpawnParameters& SpawnParams, ACtpGameMode* GameMode);
 	void CheckFleaGeneration();
-	void GenerateFlea();
 	void CheckScorpionGeneration();
-	void GenerateScorpion();
 	void CheckSpiderGeneration();
-	void GenerateSpider();
 
 	int GetSpawnedMushroomsCount() const;
 	void SetSpawnedMushroomsCount(int Count);
@@ -72,10 +67,10 @@ public:
 	int CentipedeSize = 10;
 	
 	UPROPERTY(category = "GameLoop", EditAnywhere)
-	int InitialNumberOfMushrooms = 25;
+	int InitialNumberOfMushrooms = 30;
 	
 	UPROPERTY(category = "GameLoop", EditAnywhere)
-	bool isFlea;
+	bool IsFlea;
 
 	UPROPERTY(Category = "GameLoop", EditAnywhere)
 	bool IsScorpion;

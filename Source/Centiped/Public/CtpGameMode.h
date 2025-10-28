@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CTPGameLoop.h"
+#include "CtpGameLoop.h"
 #include "CTPScoreSystem.h"
 #include "GameFramework/GameModeBase.h"
 #include "CtpGameMode.generated.h"

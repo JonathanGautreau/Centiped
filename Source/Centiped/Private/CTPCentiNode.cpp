@@ -26,7 +26,6 @@ ACTPCentiNode::ACTPCentiNode()
 	{
 		HeadNodeMesh = HeadStaticMeshRef.Object;
 	}
-	
 }
 
 // Called when the game starts or when spawned
@@ -39,6 +38,7 @@ void ACTPCentiNode::BeginPlay()
 void ACTPCentiNode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	if (!IsHead)
 	{
 		if (PrevNode == nullptr)
@@ -46,6 +46,7 @@ void ACTPCentiNode::Tick(float DeltaTime)
 			BecomeHead();		//If no Previous node, this node become a head
 		}
 	}
+	DeleteOutsideBounds();
 }
 
 void ACTPCentiNode::Move(float DeltaTime)
@@ -64,17 +65,19 @@ void ACTPCentiNode::Move(float DeltaTime)
 			{
 				if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 				{
-					HitSwitch = FVector2D(GetActorLocation().Y,GameMode->Bounds.Min.Y+MeshScale.Y*100);
+ 					HitSwitch = FVector2D(GetActorLocation().Y,GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5 + VerticalOffset);
 					IsFalling = true;
 				}
 			}
 			else if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
 			else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
+
 			if (IsHead && !IsCollidingPoison) IsAtTheBounds();
+
 			if (NextNode)
 			{
 				NextNode->IsFalling = IsFalling;
-				if (NextNode->HitSwitch==DefaultVector)
+				if (NextNode->HitSwitch == DefaultVector)
 				{
 					NextNode->HitSwitch = HitSwitch;
 				}
@@ -86,7 +89,7 @@ void ACTPCentiNode::Move(float DeltaTime)
 			LastMovingDirection = MovingDirection;
 			if (IsFalling) MovingDirection = FVector2D(0,-1);//Keep the previous direction for later use 
 			else MovingDirection = FVector2D(0,1);
-			if (IsColliding) NewLocation =FVector2D(GetActorLocation().Y, GetActorLocation().Z+DistToNextLoc*MovingDirection.Y);
+			if (IsColliding) NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z+DistToNextLoc*MovingDirection.Y);
 			else NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
 			IsColliding = false;
 			IsCollidingPoison =	false;
@@ -171,6 +174,17 @@ void ACTPCentiNode::BecomeHead()
 	IsHead = true;
 }
 
+void ACTPCentiNode::DeleteOutsideBounds()
+{
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (FMath::Abs(GetActorLocation().Y) > GameMode->Bounds.Max.X || FMath::Abs(GetActorLocation().Z) > GameMode->Bounds.Max.Y)
+		{
+			this->Destroy();
+		}
+	}
+}
+
 void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor); // method from AEnemy
@@ -181,14 +195,17 @@ void ACTPCentiNode::HitMushroom(ACtpMushroom* Mushroom)
 	// Rotate the centipede
 	if (IsHead)
 	{
-		if ( FMath::Abs(Mushroom->GetActorLocation().Z - GetActorLocation().Z)<70)
+		// When moving horizontally, ignore vertical collisions
+		// When moving vertically, ignore horizontal collisions
+		if ((FMath::Abs(Mushroom->GetActorLocation().Z - GetActorLocation().Z) < 70 && MovingDirection.X != 0) ||
+			(FMath::Abs(Mushroom->GetActorLocation().Y - GetActorLocation().Y) < 70 && MovingDirection.Y != 0))
 		{
-				IsColliding = true;	
-				if (Mushroom->IsPoison)
-				{
-					IsCollidingPoison = true;
-				}			
-			IsColliding = true;				
+			IsColliding = true;
+			
+			if (Mushroom->IsPoison)
+			{
+				IsCollidingPoison = true;
+			}			
 		}
 	}
 }

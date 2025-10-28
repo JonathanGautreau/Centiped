@@ -7,8 +7,6 @@
 #include "CTPLog.h"
 #include "CTPScoreSystem.h"
 
-
-
 // Sets default values
 ACtpMushroom::ACtpMushroom()
 {
@@ -27,10 +25,10 @@ ACtpMushroom::ACtpMushroom()
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 		NormalMushroom = StaticMeshRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> PoisonStaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Mushrooms.SM_Mushrooms"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> PoisonStaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Poison_Mushroom.SM_Poison_Mushroom"));
 	if (PoisonStaticMeshRef.Succeeded())
 	{
-		PoisonMushroom = StaticMeshRef.Object;
+		PoisonMushroom = PoisonStaticMeshRef.Object;
 	}	
 
 	MeshComponent->SetGenerateOverlapEvents(true);
@@ -65,7 +63,6 @@ void ACtpMushroom::BeginPlay()
 void ACtpMushroom::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 }
 
 void ACtpMushroom::InitializePosition(const FVector& InitialPosition)
@@ -84,8 +81,6 @@ void ACtpMushroom::BecomePoison()
 	IsPoison = true;
 	MeshComponent->SetStaticMesh(PoisonMushroom);
 }
-
-
 
 void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 {
@@ -124,6 +119,7 @@ void ACtpMushroom::Destroyed()
 	{
 		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
 		{
+			GameLoop->PoisonedMush.Remove(this);
 			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushroomsCount() - 1);
 			GameLoop->CheckFleaGeneration();
 			GameLoop->CheckScorpionGeneration();

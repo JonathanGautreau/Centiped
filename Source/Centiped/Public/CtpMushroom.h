@@ -19,7 +19,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 private:
@@ -29,6 +28,11 @@ private:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void Destroyed() override;
+
+	void InitializePosition(const FVector& InitialPosition);
+	void BecomePoison();
+	void BecomeNormal();
 
 	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
 	
@@ -46,12 +50,4 @@ public:
 
 	UPROPERTY(editAnywhere, Category="Mushroom")
 	bool IsPoison;
-	
-	void InitializePosition(const FVector& InitialPosition);
-	void BecomePoison();
-	void BecomeNormal();
-
-	virtual void Destroyed() override;
-
-	
 };
