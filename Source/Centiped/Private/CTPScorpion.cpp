@@ -15,7 +15,7 @@ ACTPScorpion::ACTPScorpion()
 	}
 	
 	// ------- Override properties ------- //
-	MeshScale = FVector2D(.4f,.4f);
+	MeshScale = FVector2D(.6f,.6f);
 	MoveSpeed = 850;
 	Life = 1;
 }
@@ -84,6 +84,8 @@ void ACTPScorpion::HitBullet(ACtpBullet* Bullet)
 		{
 			Score->SetScore(Score->GetScore() + 1000);
 		}
+		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+			GameLoop->IsScorpion = false;
+		Destroy();
 	}
-	this->Destroy();
 }

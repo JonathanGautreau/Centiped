@@ -226,10 +226,19 @@ void ACtpGameLoop::GenerateSpider()
 		{
 			IsSpider = true;
 			ACTPSpider* Spider = World->SpawnActor<ACTPSpider>(ACTPSpider::StaticClass());
-			float SpawnOnZ = FMath::RandRange( GameMode->Bounds.Min.Y ,GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5));
-			Spider->IsLeftDirection = FMath::RandBool();
-			if (Spider->IsLeftDirection) Spider->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
-			else Spider->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
+  			float SpawnOnZ = FMath::RandRange(GameMode->Bounds.Min.Y / 2.f, GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5));
+			// Spawn on right, going left
+			if (FMath::RandBool())
+			{
+				Spider->Direction = FVector2D(-1, -1);
+				Spider->SetActorLocation(FVector(0, GameMode->Bounds.Max.X - Spider->MeshScale.X * 100 * 0.5, SpawnOnZ));
+			}
+			// Spawn on left, going right
+			else
+			{
+				Spider->Direction = FVector2D(1, -1);
+				Spider->SetActorLocation(FVector(0, GameMode->Bounds.Min.X + Spider->MeshScale.X * 100 * 0.5, SpawnOnZ));
+			}
 		}
 	}
 }
@@ -261,10 +270,10 @@ void ACtpGameLoop::OnResetRoundComplete()
 {
 	if (UWorld* World = GetWorld())
 	{
-		// Destroy all CentiNodes and Bullets
+		// Destroy all Enemies and Bullets
 		for (TActorIterator<AActor> It(World); It; ++It)
 		{
-			if (Cast<ACTPCentiNode>(*It))
+			if (Cast<ACTPEnemy>(*It))
 				It->Destroy();
 			if (Cast<ACtpBullet>(*It))
 				It->Destroy();
@@ -291,6 +300,11 @@ void ACtpGameLoop::OnResetRoundComplete()
 
 		Player->bIsOverlappedByEnemy = false;
 		Player->SetPlayerInitialPosition();
+
+		// Reset booleans for enemy generations
+		IsFlea = false;
+		IsScorpion = false;
+		IsSpider = false;
 		
 		UGameplayStatics::SetGlobalTimeDilation(World, 1.0f);
 	}
@@ -329,16 +343,21 @@ void ACtpGameLoop::RestartGame()
 {
 	if (UWorld* World = GetWorld())
 	{
-		// Destroy all CentiNodes and Bullets and Mushrooms
+		// Destroy all Enemies and Bullets and Mushrooms
 		for (TActorIterator<AActor> It(World); It; ++It)
 		{
-			if (Cast<ACTPCentiNode>(*It))
+			if (Cast<ACTPEnemy>(*It))
 				It->Destroy();
 			if (Cast<ACtpBullet>(*It))
 				It->Destroy();
 			if (Cast<ACtpMushroom>(*It))
 				It->Destroy();
 		}
+
+		// Reset booleans for enemy generations
+		IsFlea = false;
+		IsScorpion = false;
+		IsSpider = false;
 	
 		// Generate a new centipede and new mushrooms
 		FActorSpawnParameters SpawnParams;

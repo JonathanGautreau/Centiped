@@ -105,16 +105,15 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 						UE_LOG(LogCentiped, Warning, TEXT("ScoreSystem is  null"));
 					}
 					Destroy();
+					CheckOnDestroyed();
 				}
 			}
 		}
 	}
 }
 
-void ACtpMushroom::Destroyed()
+void ACtpMushroom::CheckOnDestroyed()
 {
-	Super::Destroyed();
-	
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())

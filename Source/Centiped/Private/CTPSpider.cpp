@@ -14,15 +14,13 @@ ACTPSpider::ACTPSpider()
 	}
 	
 	// ------- Override properties ------- //
-	MeshScale = FVector2D(.4f,.4f);
-	MoveSpeed = 250;
+	MeshScale = FVector2D(.6f,.6f);
 	Life = 1;
 
 	// ------- Specific properties ------- //
 	LastLayerPoint = MeshScale.Y * 100 * 2;
 	FirstLayerPoint = MeshScale.X * 100 * 4;
 	DistToPlayer = 0;
-	IsLeftDirection = false;
 }
 
 // Called when the game starts or when spawned
@@ -39,6 +37,27 @@ void ACTPSpider::Tick(float DeltaTime)
 
 void ACTPSpider::Move(float Deltatime)
 {
+	if (UWorld* World = GetWorld())
+	{
+		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+		{
+			FVector NewLocation = GetActorLocation();
+			
+			NewLocation.Y += Direction.X * Speed.X * Deltatime;
+			NewLocation.Z += Direction.Y * Speed.Y * Deltatime;
+			
+			SetActorLocation(NewLocation);
+
+			if (NewLocation.Z < GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5)
+				Direction.Y = -Direction.Y;
+			if (NewLocation.Z > GameMode->Bounds.Min.Y / 4)
+				Direction.Y = -Direction.Y;
+			if (NewLocation.Y < GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5)
+				Direction.X = -Direction.X;
+			if (NewLocation.Y > GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5)
+				Direction.X = -Direction.X;
+		}
+	}
 }
 
 void ACTPSpider::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -49,6 +68,9 @@ void ACTPSpider::NotifyActorBeginOverlap(AActor* OtherActor)
 void ACTPSpider::HitMushroom(ACtpMushroom* Mushroom)
 {
 	Super::HitMushroom(Mushroom);
+
+	if (FMath::RandBool())
+		Mushroom->Destroy();
 }
 
 void ACTPSpider::HitPlayer(ACtpPlayerPawn* Player)
@@ -86,6 +108,9 @@ void ACTPSpider::HitBullet(ACtpBullet* Bullet)
 						ScoreSystem->SetScore(ScoreSystem->GetScore() + 900);
 					}
 				}
+				if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+					GameLoop->IsSpider = false;
+				Destroy();
 			}
 		}
 	}
