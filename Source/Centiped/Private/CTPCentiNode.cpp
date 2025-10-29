@@ -240,7 +240,8 @@ void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 		{
 			// Spawn a mushroom
 			ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-			Mushroom->InitializePosition(this->GetActorLocation());
+			float ClampedXLocation = FMath::Clamp(this->GetActorLocation().Y, GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5, GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5);
+			Mushroom->InitializePosition(FVector(GetActorLocation().X, ClampedXLocation, GetActorLocation().Z));
 
 			// Score points
 			if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())

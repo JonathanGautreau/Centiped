@@ -95,6 +95,9 @@ void ACTPFlea::HitBullet(ACtpBullet* Bullet)
 			{
 				ScoreSystem->SetScore(ScoreSystem->GetScore() + 200);
 			}
+			if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+				GameLoop->IsFlea = false;
+			Destroy();
 		}
 	}
 }

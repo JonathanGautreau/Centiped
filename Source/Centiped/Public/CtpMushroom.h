@@ -28,9 +28,9 @@ private:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void Destroyed() override;
 
 	void InitializePosition(const FVector& InitialPosition);
+	void CheckOnDestroyed();
 	void BecomePoison();
 	void BecomeNormal();
 

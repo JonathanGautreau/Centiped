@@ -42,6 +42,8 @@ public:
 	float LastLayerPoint;
 
 	UPROPERTY(EditAnywhere,Category="Spider")
-	bool  IsLeftDirection;
-	
+	FVector2D Direction = FVector2D(0, 0);
+
+	UPROPERTY(EditAnywhere,Category="Spider")
+	FVector2D Speed = FVector2D(150.f, 250.f);
 };
