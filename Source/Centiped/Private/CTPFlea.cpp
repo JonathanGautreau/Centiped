@@ -1,10 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "CTPFlea.h"
 #include "CTPScoreSystem.h"
 #include "CtpGameMode.h"
-#include "CTPScoreSystem.h"
 #include "CtpMushroom.h"
 #include "CtpBullet.h"
 #include "CtpPlayerPawn.h"

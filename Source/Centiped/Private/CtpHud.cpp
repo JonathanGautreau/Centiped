@@ -2,9 +2,12 @@
 
 
 #include "CtpHud.h"
+
+#include "CtpGameMode.h"
 #include "Engine/Canvas.h"
 #include "GameFramework/PlayerController.h"
 #include "CtpPlayerPawn.h"
+#include "CTPScoreSystem.h"
 
 void ACtpHud::DrawHUD()
 {

@@ -2,7 +2,6 @@
 
 
 #include "CTPCentiNode.h"
-
 #include "CtpBullet.h"
 #include "CtpGameMode.h"
 #include "CtpGameLoop.h"
@@ -10,7 +9,6 @@
 #include "CtpMushroom.h"
 #include "CtpPlayerPawn.h"
 #include "EngineUtils.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ACTPCentiNode::ACTPCentiNode()

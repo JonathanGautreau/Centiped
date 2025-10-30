@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "CtpBullet.h"
-#include "CtpGameMode.h"
 #include "GameFramework/Pawn.h"
 #include "CtpPlayerPawn.generated.h"
 
