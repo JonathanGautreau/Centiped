@@ -3,6 +3,8 @@
 
 #include "CTPSpider.h"
 
+#include "CtpGameMode.h"
+
 
 // Sets default values
 ACTPSpider::ACTPSpider()

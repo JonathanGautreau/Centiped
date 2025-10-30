@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CTPScoreSystem.h"
 #include "GameFramework/Actor.h"
 #include "CtpMushroom.generated.h"
 

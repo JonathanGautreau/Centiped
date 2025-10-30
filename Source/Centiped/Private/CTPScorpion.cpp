@@ -2,6 +2,8 @@
 
 
 #include "CTPScorpion.h"
+
+#include "CtpGameMode.h"
 #include "CtpMushroom.h"
 
 

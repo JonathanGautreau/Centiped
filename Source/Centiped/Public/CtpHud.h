@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CtpGameMode.h"
 #include "GameFramework/HUD.h"
 #include "CtpHud.generated.h"
 
