@@ -2,6 +2,8 @@
 
 
 #include "CtpBullet.h"
+
+#include "CTPEnemy.h"
 #include "CtpGameMode.h"
 #include "CTPLog.h"
 #include "CtpMushroom.h"
@@ -86,6 +88,9 @@ void ACtpBullet::NotifyActorBeginOverlap(AActor* OtherActor)
 	if (OtherActor && OtherActor != this)
 	{
 		if (Cast<ACtpMushroom>(OtherActor))
+			Destroy();
+
+		if (Cast<ACTPEnemy>(OtherActor))
 			Destroy();
 		
 		UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());

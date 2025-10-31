@@ -93,6 +93,8 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			if (Cast<ACtpBullet>(OtherActor))
 			{
+				// MeshScale = FVector2D(MeshScale.X - .2f, MeshScale.Y - .2f);
+				// MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 				Life--;
 				if (Life == 0)
 				{
@@ -106,6 +108,8 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 					}
 					Destroy();
 					CheckOnDestroyed();
+					// MeshScale = FVector2D(.8f, .8f);
+					// MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 				}
 			}
 		}

@@ -55,6 +55,8 @@ void ACTPScorpion::Move(float Deltatime)
 			}
 			MushToPoison.Empty();
 			Destroy();
+			if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+				GameLoop->IsScorpion = false;
 		}
 	}
 }

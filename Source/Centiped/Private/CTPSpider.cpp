@@ -45,11 +45,6 @@ void ACTPSpider::Move(float Deltatime)
 		{
 			FVector NewLocation = GetActorLocation();
 			
-			NewLocation.Y += Direction.X * Speed.X * Deltatime;
-			NewLocation.Z += Direction.Y * Speed.Y * Deltatime;
-			
-			SetActorLocation(NewLocation);
-
 			if (NewLocation.Z < GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5)
 				Direction.Y = -Direction.Y;
 			if (NewLocation.Z > GameMode->Bounds.Min.Y / 4)
@@ -58,6 +53,11 @@ void ACTPSpider::Move(float Deltatime)
 				Direction.X = -Direction.X;
 			if (NewLocation.Y > GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5)
 				Direction.X = -Direction.X;
+			
+			NewLocation.Y += Direction.X * Speed.X * Deltatime;
+			NewLocation.Z += Direction.Y * Speed.Y * Deltatime;
+			
+			SetActorLocation(NewLocation);
 		}
 	}
 }
