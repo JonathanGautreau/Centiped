@@ -94,6 +94,8 @@ void ACTPEnemy::HitPlayer(ACtpPlayerPawn* Player)
 	if (Player->bIsOverlappedByEnemy)
 		return;
 	
+	Player->bIsOverlappedByEnemy = true;
+	
 	// Loose one life
 	Player->LoseLife();
 	

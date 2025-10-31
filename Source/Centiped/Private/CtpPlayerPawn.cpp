@@ -226,13 +226,7 @@ void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 		if (Cast<ACtpMushroom>(OtherActor))
 		{
 			bIsOverlappingMushroom = true;
-
 			SetActorLocation(LastSafeLocation);
-		}
-
-		if (Cast<ACTPCentiNode>(OtherActor) || Cast<ACTPEnemy>(OtherActor))
-		{
-			bIsOverlappedByEnemy = true;
 		}
 	}
 }

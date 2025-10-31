@@ -44,7 +44,7 @@ void ACTPCentiNode::Tick(float DeltaTime)
 			BecomeHead();		//If no Previous node, this node become a head
 		}
 	}
-	DeleteOutsideBounds();
+	// DeleteOutsideBounds();
 }
 
 void ACTPCentiNode::Move(float DeltaTime)
@@ -52,9 +52,10 @@ void ACTPCentiNode::Move(float DeltaTime)
 	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 	NewLocation += MovingDirection * DeltaTime * MoveSpeed;
 	DistToNextLoc = DeltaTime * MoveSpeed;							//The distance to the next Location
+
 	if (IsHead)	DistToNextSwitch = FindDistToNextHeadHitSwitch();	//To check the distance to the next border of the map
 	else DistToNextSwitch = FindDistToNextNodeHitSwitch();			//To check the distance to the next switch
-
+	
 	if (DistToNextLoc > DistToNextSwitch || IsColliding )			//If the location is further than the next switch point or if there is a collision with a mushroom
 	{
 		if (MovingDirection.X != 0) //When the centiped move on the left or right
@@ -69,9 +70,9 @@ void ACTPCentiNode::Move(float DeltaTime)
 			}
 			else if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
 			else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
-
+	
 			if (IsHead && !IsCollidingPoison) IsAtTheBounds();
-
+	
 			if (NextNode)
 			{
 				NextNode->IsFalling = IsFalling;
@@ -217,7 +218,6 @@ void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 {
 	Super::HitBullet(Bullet);
 	
-	Bullet->Destroy(); // Destroying the bullet here avoids to hit the new mushroom
 	// Split the centipede
 	if (PrevNode)
 	{
@@ -238,8 +238,13 @@ void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 		{
 			// Spawn a mushroom
 			ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-			float ClampedXLocation = FMath::Clamp(this->GetActorLocation().Y, GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5, GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5);
-			Mushroom->InitializePosition(FVector(GetActorLocation().X, ClampedXLocation, GetActorLocation().Z));
+			float ClampedYLocation = FMath::Clamp(this->GetActorLocation().Y, GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5, GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5);
+
+			// Snap Z location on the nearest row
+			float ApproximativeRow = (GameMode->Bounds.Max.Y - this->GetActorLocation().Z - Mushroom->MeshScale.Y * 100 * 0.5) / GameMode->SquareSize.Y;
+			float CorrectedZLocation = GameMode->Bounds.Max.Y - (FMath::RoundToInt(ApproximativeRow) * GameMode->SquareSize.Y) - Mushroom->MeshScale.Y * 100 * 0.5;
+
+			Mushroom->InitializePosition(FVector(GetActorLocation().X, ClampedYLocation, CorrectedZLocation));
 
 			// Score points
 			if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())

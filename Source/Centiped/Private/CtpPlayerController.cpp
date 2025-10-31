@@ -10,16 +10,16 @@
 
 ACtpPlayerController::ACtpPlayerController()
 {
-	// static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(TEXT("/Game/Centiped/Inputs/IMC_Default.IMC_Default"));
-	// if (InputMappingContextRef.Succeeded())
-	// {
-	// 	InputMapping = InputMappingContextRef.Object;
-	// 	UE_LOG(LogCentiped, Log, TEXT("Input Mapping Context loaded successfully in constructor"));
-	// }
-	// else
-	// {
-	// 	UE_LOG(LogCentiped, Error, TEXT("Failed to load Input Mapping Context from /Game/Centiped/Inputs/IMC_Default.IMC_Default"));
-	// }
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(TEXT("/Game/Centiped/Inputs/IMC_Default.IMC_Default"));
+	if (InputMappingContextRef.Succeeded())
+	{
+		InputMapping = InputMappingContextRef.Object;
+		UE_LOG(LogCentiped, Log, TEXT("Input Mapping Context loaded successfully in constructor"));
+	}
+	else
+	{
+		UE_LOG(LogCentiped, Error, TEXT("Failed to load Input Mapping Context from /Game/Centiped/Inputs/IMC_Default.IMC_Default"));
+	}
 }
 
 void ACtpPlayerController::BeginPlay()
