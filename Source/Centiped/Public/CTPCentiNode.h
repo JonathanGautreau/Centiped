@@ -25,6 +25,7 @@ protected:
 public:
 	// ------- Common functions ------- //
 	virtual void Tick(float DeltaTime) override;
+	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 	virtual void Move(float DeltaTime) override;
@@ -33,7 +34,11 @@ public:
 	virtual void HitBullet(ACtpBullet* Bullet) override;
 
 	// ------- Specific functions ------- //
-	float FindDistToNextHeadHitSwitch() const;
+	FVector2D DetectNextMushroom(float& DistToNextBound);
+
+
+	
+	float FindDistToNextBound() const;
 	float FindDistToNextNodeHitSwitch() const;
 	void IsAtTheBounds();
 	void BecomeHead();
