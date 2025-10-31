@@ -102,11 +102,11 @@ void ACTPEnemy::HitPlayer(ACtpPlayerPawn* Player)
 	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
  		// Score mushrooms
- 		if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+ 		if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
  			ScoreSystem->ScoreMushrooms();
 	
  		// Reset round/game
- 		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+ 		if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
  		{
  			if (Player->GetLife() == 0)
  			{

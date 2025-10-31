@@ -31,6 +31,9 @@ public:
 	virtual void HitPlayer(ACtpPlayerPawn* Player) override;
 	virtual void HitBullet(ACtpBullet* Bullet) override;
 
+	// ------- Specific fucntions ------- //
+	void RandomSpeedOnX();
+	
 	// ------- Specific properties ------- //
 	UPROPERTY(EditAnywhere, category ="Spider")
 	float DistToPlayer;

@@ -349,7 +349,7 @@ void ACTPCentiNode::HitMushroom(ACtpMushroom* Mushroom)
 		{
 			IsColliding = true;
 			
-			if (Mushroom->IsPoison)
+			if (Mushroom->bIsPoison)
 			{
 				IsCollidingPoison = true;
 			}			
@@ -395,7 +395,7 @@ void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 			Mushroom->InitializePosition(FVector(GetActorLocation().X, ClampedYLocation, CorrectedZLocation));
 
 			// Score points
-			if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+			if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
 			{
 				if (IsHead)
 					ScoreSystem->SetScore(ScoreSystem->GetScore() +  100);
@@ -415,7 +415,7 @@ void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 			}
 			if (!bCentipedeExists)
 			{
-				if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+				if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
 				{
 					FActorSpawnParameters SpawnParams;
 					SpawnParams.Owner = this;

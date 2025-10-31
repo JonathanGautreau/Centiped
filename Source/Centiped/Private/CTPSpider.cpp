@@ -4,6 +4,7 @@
 #include "CTPSpider.h"
 
 #include "CtpGameMode.h"
+#include "CtpLog.h"
 
 
 // Sets default values
@@ -46,13 +47,25 @@ void ACTPSpider::Move(float Deltatime)
 			FVector NewLocation = GetActorLocation();
 			
 			if (NewLocation.Z < GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5)
+			{
+				RandomSpeedOnX();
 				Direction.Y = -Direction.Y;
+			}
 			if (NewLocation.Z > GameMode->Bounds.Min.Y / 4)
+			{
+				RandomSpeedOnX();
 				Direction.Y = -Direction.Y;
+			}
 			if (NewLocation.Y < GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5)
+			{
+				RandomSpeedOnX();
 				Direction.X = -Direction.X;
+			}
 			if (NewLocation.Y > GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5)
+			{
+				RandomSpeedOnX();
 				Direction.X = -Direction.X;
+			}
 			
 			NewLocation.Y += Direction.X * Speed.X * Deltatime;
 			NewLocation.Z += Direction.Y * Speed.Y * Deltatime;
@@ -93,7 +106,7 @@ void ACTPSpider::HitBullet(ACtpBullet* Bullet)
 			
 			if (ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(PlayerController->GetPawn()))
 			{
-				if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+				if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
 				{
 					HitSwitch = FVector2D(Player->GetActorLocation().Y - GetActorLocation().Y, Player->GetActorLocation().Z - GetActorLocation().Z);
 					DistToPlayer = HitSwitch.Size();
@@ -110,10 +123,19 @@ void ACTPSpider::HitBullet(ACtpBullet* Bullet)
 						ScoreSystem->SetScore(ScoreSystem->GetScore() + 900);
 					}
 				}
-				if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
-					GameLoop->IsSpider = false;
+				if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
+					GameLoop->bIsSpider = false;
 				Destroy();
 			}
 		}
 	}
+}
+
+void ACTPSpider::RandomSpeedOnX()
+{
+
+		Speed.X = FMath::RandRange(0, 250);
+
+		UE_LOG(LogCentiped, Log, TEXT("Modify X speed : %f"), Speed.X);
+	
 }

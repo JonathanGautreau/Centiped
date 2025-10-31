@@ -52,7 +52,7 @@ void ACtpMushroom::BeginPlay()
 
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+		if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
 		{
 			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushroomsCount() + 1);
 		}
@@ -72,13 +72,13 @@ void ACtpMushroom::InitializePosition(const FVector& InitialPosition)
 
 void ACtpMushroom::BecomeNormal()
 {
-	IsPoison = false;
+	bIsPoison = false;
 	MeshComponent->SetStaticMesh(NormalMushroom);
 }
 
 void ACtpMushroom::BecomePoison()
 {
-	IsPoison = true;
+	bIsPoison = true;
 	MeshComponent->SetStaticMesh(PoisonMushroom);
 }
 
@@ -98,7 +98,7 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 				Life--;
 				if (Life == 0)
 				{
-					if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+					if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
 					{
 						ScoreSystem->SetScore(ScoreSystem->GetScore() + 1);
 					}
@@ -120,7 +120,7 @@ void ACtpMushroom::CheckOnDestroyed()
 {
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+		if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
 		{
 			GameLoop->PoisonedMush.Remove(this);
 			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushroomsCount() - 1);
