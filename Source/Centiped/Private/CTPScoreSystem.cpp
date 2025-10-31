@@ -10,17 +10,13 @@
 
 class ACtpPlayerPawn;
 
-ACTPScoreSystem::ACTPScoreSystem()
-{
-	
-}
 
-int ACTPScoreSystem::GetScore() const
+int UCTPScoreSystem::GetScore() const
 {
 	return Score;
 }
 
-void ACTPScoreSystem::SetScore(const int NewScore)
+void UCTPScoreSystem::SetScore(const int NewScore)
 {
 	// Add one player life every 10 000 points
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
@@ -40,12 +36,12 @@ void ACTPScoreSystem::SetScore(const int NewScore)
 	UE_LOG(LogCentiped, Log, TEXT("New Score: %d"), Score);
 }
 
-void ACTPScoreSystem::ResetScore()
+void UCTPScoreSystem::ResetScore()
 {
 	SetScore(0);
 }
 
-void ACTPScoreSystem::ScoreMushrooms()
+void UCTPScoreSystem::ScoreMushrooms()
 {
 	int NumberOfRemainingMushrooms = 0;
 	for (TActorIterator<AActor> It(GetWorld()); It; ++It)

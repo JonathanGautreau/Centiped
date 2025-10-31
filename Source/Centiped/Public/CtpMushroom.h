@@ -48,5 +48,5 @@ public:
 	int Life = 3;
 
 	UPROPERTY(editAnywhere, Category="Mushroom")
-	bool IsPoison;
+	bool bIsPoison;
 };

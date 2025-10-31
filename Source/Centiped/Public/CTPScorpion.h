@@ -34,7 +34,7 @@ public:
 
 	// ------- Specific properties ------- //
 	UPROPERTY(EditAnywhere,Category="Scorpion")
-	bool  IsLeftDirection;
+	bool  bIsLeftDirection;
 	
 	UPROPERTY(EditAnywhere,Category="Scorpion")
 	TArray<ACtpMushroom*> MushToPoison;

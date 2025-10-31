@@ -48,14 +48,15 @@ public:
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	FBox2D BoundsScreen = FBox2D(FVector2D(-(WidthScreen / 2), -(HeightScreen / 2)), FVector2D(WidthScreen / 2, HeightScreen / 2));
 
-	ACtpGameLoop* GetGameLoop() const { return GameLoop; };
-	ACTPScoreSystem* GetScoreSystem() const { return ScoreSystem; };
+	UCtpGameLoop* GetGameLoop() const { return GameLoop; };
+	UCTPScoreSystem* GetScoreSystem() const { return ScoreSystem; };
 
 protected:
 	
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	ACtpGameLoop* GameLoop;
+	UCtpGameLoop* GameLoop;
 	
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	ACTPScoreSystem* ScoreSystem;
+	UCTPScoreSystem* ScoreSystem;
 };
+

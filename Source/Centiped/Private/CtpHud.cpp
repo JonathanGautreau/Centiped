@@ -18,7 +18,7 @@ void ACtpHud::DrawHUD()
 
 	const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
 	if (!GameMode) return;
-	const ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem();
+	const UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem();
 	if (!ScoreSystem) return;
 
 	const float LifeCount = Player->GetLife();

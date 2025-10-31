@@ -208,7 +208,7 @@ void ACtpPlayerPawn::RestartGame(const FInputActionInstance& Instance)
 
 	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
+		if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
 		{
 			GameLoop->RestartGame();
 		}
@@ -227,6 +227,8 @@ void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 		{
 			bIsOverlappingMushroom = true;
 			SetActorLocation(LastSafeLocation);
+			// GetWorld()->SweepMultiByChannel()
+			// GetWorld()->LineTraceMultiByChannel()
 		}
 	}
 }
