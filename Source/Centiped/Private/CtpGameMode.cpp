@@ -25,26 +25,20 @@ void ACtpGameMode::BeginPlay()
 
 	if (UWorld* World = GetWorld())
 	{
+		GameLoop = World->GetSubsystem<UCtpGameLoop>();
 		if (!GameLoop)
 		{
-			GameLoop = World->SpawnActor<ACtpGameLoop>(ACtpGameLoop::StaticClass());
-			if (!GameLoop)
-			{
-				UE_LOG(LogCentiped, Error, TEXT("GameLoop wasn't instantiated correctly"));
-			}
+			UE_LOG(LogCentiped, Error, TEXT("GameLoop wasn't instantiated correctly"));
 		}
 		
-		if (!ScoreSystem)
+		ScoreSystem = World->GetSubsystem<UCTPScoreSystem>();
+		if (ScoreSystem)
 		{
-			ScoreSystem = World->SpawnActor<ACTPScoreSystem>(ACTPScoreSystem::StaticClass());
-			if (!ScoreSystem)
-			{
-				UE_LOG(LogCentiped, Error, TEXT("ScoreSystem wasn't instantiated correctly"));
-			}
-			else
-			{
-				ScoreSystem->ResetScore();
-			}
+			ScoreSystem->ResetScore();
+		}
+		else
+		{
+			UE_LOG(LogCentiped, Error, TEXT("ScoreSubsystem wasn't instantiated correctly"));
 		}
 	}
 }

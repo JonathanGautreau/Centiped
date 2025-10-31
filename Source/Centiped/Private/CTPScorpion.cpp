@@ -38,7 +38,7 @@ void ACTPScorpion::Move(float Deltatime)
 {
 	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 	FVector2D NewDirection = FVector2D::ZeroVector;
-	if (IsLeftDirection) NewDirection = FVector2D(-1,0);
+	if (bIsLeftDirection) NewDirection = FVector2D(-1,0);
 	else NewDirection = FVector2D(1,0);
 	NewLocation += NewDirection * Deltatime * MoveSpeed;
 	SetActorLocation(FVector(0,NewLocation.X,NewLocation.Y));
@@ -51,12 +51,12 @@ void ACTPScorpion::Move(float Deltatime)
 			{
 				Mush->BecomePoison();
 								
-				if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop()) GameLoop->PoisonedMush.Emplace(Mush);
+				if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop()) GameLoop->PoisonedMush.Emplace(Mush);
 			}
 			MushToPoison.Empty();
 			Destroy();
-			if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
-				GameLoop->IsScorpion = false;
+			if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
+				GameLoop->bIsScorpion = false;
 		}
 	}
 }
@@ -84,12 +84,12 @@ void ACTPScorpion::HitBullet(ACtpBullet* Bullet)
 	
 	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		if (ACTPScoreSystem* Score = GameMode->GetScoreSystem())
+		if (UCTPScoreSystem* Score = GameMode->GetScoreSystem())
 		{
 			Score->SetScore(Score->GetScore() + 1000);
 		}
-		if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
-			GameLoop->IsScorpion = false;
+		if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
+			GameLoop->bIsScorpion = false;
 		Destroy();
 	}
 }

@@ -89,12 +89,12 @@ void ACTPFlea::HitBullet(ACtpBullet* Bullet)
 	{
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
-			if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+			if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
 			{
 				ScoreSystem->SetScore(ScoreSystem->GetScore() + 200);
 			}
-			if (ACtpGameLoop* GameLoop = GameMode->GetGameLoop())
-				GameLoop->IsFlea = false;
+			if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
+				GameLoop->bIsFlea = false;
 			Destroy();
 		}
 	}

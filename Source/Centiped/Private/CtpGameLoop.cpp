@@ -8,40 +8,46 @@
 #include "EngineUtils.h"
 #include "Centiped/Public/CtpGameMode.h"
 #include "CTPFlea.h"
+#include "CtpLog.h"
 #include "CTPScorpion.h"
 #include "CTPSpider.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "CTPScoreSystem.h"
+#include "Engine/Engine.h"
 
-ACtpGameLoop::ACtpGameLoop()
-{
-}
 
-void ACtpGameLoop::BeginPlay()
+void UCtpGameLoop::Initialize(FSubsystemCollectionBase& Collection)
 {
-	Super::BeginPlay();
+	Super::Initialize(Collection);
 
 	if (UWorld* World = GetWorld())
 	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		
-		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+		World->GetTimerManager().SetTimerForNextTick([this]()
 		{
-			GenerateMushrooms(World, GameMode);
-			GenerateCentipede(World, SpawnParams, GameMode);
-		}
+			if (UWorld* World = GetWorld())
+			{
+				if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
+				{
+					FActorSpawnParameters SpawnParams;
+					SpawnParams.Owner = GameMode;
+					
+					GenerateMushrooms(World, GameMode);
+					GenerateCentipede(World, SpawnParams, GameMode);
+				}
+			}
+		});
 	}
 }
 
-void ACtpGameLoop::GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode)
+void UCtpGameLoop::GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode)
 {
 	GenerateAvailableCells(GameMode);
 	SpawnMushrooms(World, GameMode, InitialNumberOfMushrooms, 1, FMath::RoundToInt(GameMode->Rows * 0.85f));
 }
 
-void ACtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int MushroomsCount, int RowMin, int RowMax)
+void UCtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int MushroomsCount, int RowMin, int RowMax)
 {
 	int SpawnedMushrooms = 0;
 	
@@ -77,7 +83,7 @@ void ACtpGameLoop::SpawnMushrooms(UWorld* World, ACtpGameMode* GameMode, int Mus
 	SetSpawnedMushroomsCount(SpawnedMushrooms);
 }
 
-int ACtpGameLoop::CountMushroomInPlayerZone()
+int UCtpGameLoop::CountMushroomInPlayerZone()
 {
 	int CountInPlayerZone = 0;
 	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
@@ -95,7 +101,7 @@ int ACtpGameLoop::CountMushroomInPlayerZone()
 	return CountInPlayerZone;
 }
 
-void ACtpGameLoop::GenerateAvailableCells(ACtpGameMode* GameMode)
+void UCtpGameLoop::GenerateAvailableCells(ACtpGameMode* GameMode)
 {
 	AvailableCells.Empty();
 	
@@ -108,7 +114,7 @@ void ACtpGameLoop::GenerateAvailableCells(ACtpGameMode* GameMode)
 	}
 }
 
-void ACtpGameLoop::RemoveCellNeighbors(int Col, int Row, int32 NumberOfDeletedCells)
+void UCtpGameLoop::RemoveCellNeighbors(int Col, int Row, int32 NumberOfDeletedCells)
 {
 	if (NumberOfDeletedCells > 0)
 	{
@@ -123,7 +129,7 @@ void ACtpGameLoop::RemoveCellNeighbors(int Col, int Row, int32 NumberOfDeletedCe
 	}
 }
 
-void ACtpGameLoop::GenerateCentipede(UWorld* World, FActorSpawnParameters& SpawnParams, ACtpGameMode* GameMode)
+void UCtpGameLoop::GenerateCentipede(UWorld* World, FActorSpawnParameters& SpawnParams, ACtpGameMode* GameMode)
 {
 	ACTPCentiNode* Prev = nullptr;
 	
@@ -148,25 +154,25 @@ void ACtpGameLoop::GenerateCentipede(UWorld* World, FActorSpawnParameters& Spawn
 	}
 }
 
-void ACtpGameLoop::CheckFleaGeneration()
+void UCtpGameLoop::CheckFleaGeneration()
 {
-	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .5f) && !IsFlea)
+	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .5f) && !bIsFlea)
 	{
 		GenerateFlea();
 	}
 	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms * .5f))
 	{
-		IsFlea = false;
+		bIsFlea = false;
 	}
 }
 
-void ACtpGameLoop::GenerateFlea()
+void UCtpGameLoop::GenerateFlea()
 {
 	if (UWorld* World = GetWorld())
 	{
 		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 		{
- 			IsFlea = true;
+ 			bIsFlea = true;
 			ACTPFlea* Flea = World->SpawnActor<ACTPFlea>(ACTPFlea::StaticClass());
 			float SpawnOnY = FMath::RandRange(GameMode->Bounds.Min.X + Flea->MeshScale.X * 100,GameMode->Bounds.Max.X - Flea->MeshScale.X * 100);
 			Flea->SetActorLocation(FVector(0,SpawnOnY,GameMode->Bounds.Max.Y) - Flea->MeshScale.Y * 100);
@@ -175,95 +181,99 @@ void ACtpGameLoop::GenerateFlea()
 	}
 }
 
-void ACtpGameLoop::CheckScorpionGeneration()
+void UCtpGameLoop::CheckScorpionGeneration()
 {
-	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .65f) && !IsScorpion)
+	if (GetSpawnedMushroomsCount() <= FMath::FloorToInt(InitialNumberOfMushrooms * .65f) && !bIsScorpion)
 	{
 		GenerateScorpion();
 	}
 	else if (GetSpawnedMushroomsCount() > FMath::FloorToInt(InitialNumberOfMushrooms * .65f))
 	{
-		IsScorpion = false;
+		bIsScorpion = false;
 	}
 }
 
-void ACtpGameLoop::GenerateScorpion()
+void UCtpGameLoop::GenerateScorpion()
 {
 	if (UWorld* World = GetWorld())
 	{
 		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 		{
-			IsScorpion = true;
+			bIsScorpion = true;
 			ACTPScorpion* Scorpion = World->SpawnActor<ACTPScorpion>(ACTPScorpion::StaticClass());
 			float SpawnOnZ = FMath::RandRange( GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5),GameMode->Bounds.Max.Y);
-			Scorpion->IsLeftDirection = FMath::RandBool();
-			if (Scorpion->IsLeftDirection) Scorpion->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
+			Scorpion->bIsLeftDirection = FMath::RandBool();
+			if (Scorpion->bIsLeftDirection) Scorpion->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
 			else Scorpion->SetActorLocation(FVector(0,GameMode->Bounds.Min.X,SpawnOnZ));
 		}
 	}
 }
 
-void ACtpGameLoop::CheckSpiderGeneration()
+void UCtpGameLoop::CheckSpiderGeneration()
 {
-	if (CountMushroomInPlayerZone() <= FMath::FloorToInt(InitialNumberOfMushrooms * .15f) && !IsSpider)
+	UE_LOG(LogCentiped, VeryVerbose, TEXT("bIsSpider : %d"), bIsSpider);
+	if (CountMushroomInPlayerZone() <= FMath::FloorToInt(InitialNumberOfMushrooms * .15f) && !bIsSpider)
 	{
  		GenerateSpider();
 	}
 	else if (CountMushroomInPlayerZone() > FMath::FloorToInt(InitialNumberOfMushrooms * .15f))
 	{
-		IsSpider = false;
+		bIsSpider = false;
 	}
 }
 
-void ACtpGameLoop::GenerateSpider()
+void UCtpGameLoop::GenerateSpider()
 {
 	if (UWorld* World = GetWorld())
 	{
 		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 		{
-			IsSpider = true;
+			bIsSpider = true;
 			ACTPSpider* Spider = World->SpawnActor<ACTPSpider>(ACTPSpider::StaticClass());
-  			float SpawnOnZ = FMath::RandRange(GameMode->Bounds.Min.Y / 2.f, GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5));
+  			float SpawnOnZ = FMath::RandRange(
+  				GameMode->Bounds.Min.Y / 1.5f,
+  				GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5));
+			int randomYPosition = FMath::RandBool() ? 1 : -1;
 			// Spawn on right, going left
 			if (FMath::RandBool())
 			{
-				Spider->Direction = FVector2D(-1, -1);
+				Spider->Direction = FVector2D(-1, randomYPosition);
 				Spider->SetActorLocation(FVector(0, GameMode->Bounds.Max.X - Spider->MeshScale.X * 100 * 0.5, SpawnOnZ));
 			}
 			// Spawn on left, going right
 			else
 			{
-				Spider->Direction = FVector2D(1, -1);
+				Spider->Direction = FVector2D(1, randomYPosition);
 				Spider->SetActorLocation(FVector(0, GameMode->Bounds.Min.X + Spider->MeshScale.X * 100 * 0.5, SpawnOnZ));
 			}
 		}
 	}
 }
 
-int ACtpGameLoop::GetSpawnedMushroomsCount() const
+int UCtpGameLoop::GetSpawnedMushroomsCount() const
 {
 	return SpawnedMushroomsCount;
 }
 
-void ACtpGameLoop::SetSpawnedMushroomsCount(const int Count)
+void UCtpGameLoop::SetSpawnedMushroomsCount(const int Count)
 {
 	SpawnedMushroomsCount = Count;
 }
 
-void ACtpGameLoop::ResetRound()
+void UCtpGameLoop::ResetRound()
 {
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
 
 	GetWorld()->GetTimerManager().SetTimer(
 		ResetTimerHandle,
 		this,
-		&ACtpGameLoop::OnResetRoundComplete,
+		&UCtpGameLoop::OnResetRoundComplete,
 		.3f,
 		false
 	);
 }
 
-void ACtpGameLoop::OnResetRoundComplete()
+void UCtpGameLoop::OnResetRoundComplete()
 {
 	if (UWorld* World = GetWorld())
 	{
@@ -282,10 +292,11 @@ void ACtpGameLoop::OnResetRoundComplete()
 		PoisonedMush.Empty();
 		
 		// Generate a new Centipede
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
 		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = GameMode;
+			
 			GenerateCentipede(World, SpawnParams, GameMode);
 		}
 		
@@ -299,28 +310,28 @@ void ACtpGameLoop::OnResetRoundComplete()
 		Player->SetPlayerInitialPosition();
 
 		// Reset booleans for enemy generations
-		IsFlea = false;
-		IsScorpion = false;
-		IsSpider = false;
+		bIsFlea = false;
+		bIsScorpion = false;
+		bIsSpider = false;
 		
 		UGameplayStatics::SetGlobalTimeDilation(World, 1.0f);
 	}
 }
 
-void ACtpGameLoop::GameOver()
+void UCtpGameLoop::GameOver()
 {
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .1f);
 	
 	GetWorld()->GetTimerManager().SetTimer(
 		GameOverTimerHandle,
 		this,
-		&ACtpGameLoop::OnGameOverComplete,
+		&UCtpGameLoop::OnGameOverComplete,
 		.3f,
 		false
 	);
 }
 
-void ACtpGameLoop::OnGameOverComplete()
+void UCtpGameLoop::OnGameOverComplete()
 {
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .0f);
 	
@@ -336,7 +347,7 @@ void ACtpGameLoop::OnGameOverComplete()
 	}
 }
 
-void ACtpGameLoop::RestartGame()
+void UCtpGameLoop::RestartGame()
 {
 	if (UWorld* World = GetWorld())
 	{
@@ -352,15 +363,16 @@ void ACtpGameLoop::RestartGame()
 		}
 
 		// Reset booleans for enemy generations
-		IsFlea = false;
-		IsScorpion = false;
-		IsSpider = false;
+		bIsFlea = false;
+		bIsScorpion = false;
+		bIsSpider = false;
 	
 		// Generate a new centipede and new mushrooms
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
 		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = GameMode;
+			
 			GenerateMushrooms(World, GameMode);
 			GenerateCentipede(World, SpawnParams, GameMode);
 		}
@@ -379,7 +391,7 @@ void ACtpGameLoop::RestartGame()
 		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 		{
 			// Score mushrooms
-			if (ACTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+			if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
 				ScoreSystem->ResetScore();
 		}
 		

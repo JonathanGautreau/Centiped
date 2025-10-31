@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Subsystems/WorldSubsystem.h"
 #include "CtpMushroom.h"
 #include "CtpGameLoop.generated.h"
 
@@ -12,19 +12,17 @@ class ACtpGameMode;
 
 
 UCLASS()
-class CENTIPED_API ACtpGameLoop : public AActor
+class CENTIPED_API UCtpGameLoop : public UWorldSubsystem
 {
 	GENERATED_BODY()
-
-public:
-	ACtpGameLoop();
 	
 protected:
-	virtual void BeginPlay() override;
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	int SpawnedMushroomsCount;
 
 private:
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	
 	void GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode);
 	void GenerateAvailableCells(ACtpGameMode* GameMode);
 	void RemoveCellNeighbors(int Col, int Row, int32 NumberOfDeletedCells);
@@ -70,13 +68,13 @@ public:
 	int InitialNumberOfMushrooms = 30;
 	
 	UPROPERTY(category = "GameLoop", EditAnywhere)
-	bool IsFlea;
+	bool bIsFlea;
 
 	UPROPERTY(Category = "GameLoop", EditAnywhere)
-	bool IsScorpion;
+	bool bIsScorpion;
 
 	UPROPERTY(category = "GameLoop", EditAnywhere)
-	bool IsSpider;
+	bool bIsSpider;
 
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	TArray<ACtpMushroom*> PoisonedMush;
