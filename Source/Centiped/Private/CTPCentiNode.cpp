@@ -73,14 +73,14 @@ FVector2d ACTPCentiNode::DetectNextMushroom(float& DistToNextBound)
 			float DistToNextMush = FMath::Abs((ActorHitted->GetActorLocation() - GetActorLocation()).Length());
 			if (DistToNextMush < DistToNextBound)
 			{
-				if (Mushroom->IsPoison)
+				if (Mushroom->bIsPoison)
 				{
 					
 				}
 				else
 				{
-					return FVector2D(ActorHitted->GetActorLocation().Y + MeshScale.X * 100 * -MovingDirection.X,
-									  ActorHitted->GetActorLocation().Z + MeshScale.Y * 100 * -MovingDirection.Y);
+					return FVector2D(ActorHitted->GetActorLocation().Y + MeshScale.X * 100.f * -MovingDirection.X,
+									  ActorHitted->GetActorLocation().Z + MeshScale.Y * 100.f * -MovingDirection.Y);
 			
 				}
 			}
@@ -97,17 +97,18 @@ void ACTPCentiNode::Move(float DeltaTime)
 	
 	float DistToNextBound = FindDistToNextBound();
 
-	
+	// If Hitswitch's set find the next Location of the hitswitche (either in front of a mushroom, or the next border), excecution not clean at all
 	if (HitSwitch == DefaultVector)
 	{
 		HitSwitch = DetectNextMushroom(DistToNextBound);
 	}
 	if (HitSwitch == DefaultVector)
 	{
-		HitSwitch = FVector2D(NewLocation.X + DistToNextBound * MovingDirection.X + MeshScale.X * 100 * -MovingDirection.X,
-								NewLocation.Y + DistToNextBound * MovingDirection.Y + MeshScale.X * 100 * -MovingDirection.Y);
+		HitSwitch = FVector2D(NewLocation.X + DistToNextBound * MovingDirection.X ,
+								NewLocation.Y + DistToNextBound * MovingDirection.Y );
 	}
-	//Gives switches to next node
+	
+	//check if the node reach the hitswitch and make the node change direction or just make it moveon the next point
 	DistToNextSwitch = FMath::Abs((HitSwitch - NewLocation).Size());
 	if (DistToNextSwitch < DistToNextLoc)
 	{
