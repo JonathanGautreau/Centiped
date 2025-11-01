@@ -110,36 +110,32 @@ void ACtpPlayerPawn::PlayerMovements(float DeltaTime)
 	{
 		FVector InitialLocation = GetActorLocation();
 		FVector NewLocation = InitialLocation + FVector(0.f, MoveDirection.X, MoveDirection.Y) * DeltaTime * MoveSpeed;
-
-		DrawDebugLine(GetWorld(), InitialLocation, NewLocation, FColor::Green, false, 1.0f, 0, 2.f);
-		UE_LOG(LogTemp, Warning, TEXT("Trace Start: %s, End: %s"), *InitialLocation.ToString(), *NewLocation.ToString());
 		
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this);
 
-		bool bHit = GetWorld()->LineTraceSingleByChannel(
+		bool bHit = GetWorld()->SweepSingleByChannel(
 			HitResult,
 			InitialLocation,
 			NewLocation,
-			ECC_WorldStatic,
+			FQuat::Identity,
+			ECC_Visibility,
+			FCollisionShape::MakeBox(FVector(0.f, MeshScale.X * 100.f * 0.5f, MeshScale.Y * 100.f * 0.5f)),
 			Params
 		);
-
-		if (bHit)
+		
+		if (bHit && HitResult.GetActor() && Cast<ACtpMushroom>(HitResult.GetActor()))
 		{
-			AActor* HitActor = HitResult.GetActor();
-			if (HitResult.GetActor() && Cast<ACtpMushroom>(HitResult.GetActor()))
-			{
-				return;
-			}
+			// Diagonal movement is not allowed in the event of a collision because the player could slip between two obstacles
+			return;
 		}
-
+		
 		// Limits of the Player zone
 		NewLocation.Y = FMath::Clamp(NewLocation.Y, GameMode->Bounds.Min.X + 0.5f * MeshScale.X * 100, GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100);
 		NewLocation.Z = FMath::Clamp(NewLocation.Z, GameMode->Bounds.Min.Y + 0.5f * MeshScale.Y * 100, GameMode->Bounds.Min.Y / 3);
 
-		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
+		SetActorLocation(NewLocation);
 		MoveDirection = FVector2D::Zero();
 	}
 }
