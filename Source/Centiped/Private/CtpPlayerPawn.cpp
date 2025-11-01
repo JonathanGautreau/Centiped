@@ -88,12 +88,6 @@ void ACtpPlayerPawn::BeginPlay()
 void ACtpPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (!bIsOverlappingMushroom)
-	{
-		LastSafeLocation = GetActorLocation();
-	}
-	bIsOverlappingMushroom = false;
 
 	PlayerMovements(DeltaTime);
 }
@@ -114,18 +108,38 @@ void ACtpPlayerPawn::PlayerMovements(float DeltaTime)
 {
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
-		NewLocation += MoveDirection * DeltaTime * MoveSpeed;
+		FVector InitialLocation = GetActorLocation();
+		FVector NewLocation = InitialLocation + FVector(0.f, MoveDirection.X, MoveDirection.Y) * DeltaTime * MoveSpeed;
 
-		NewLocation = NewLocation.Clamp(
+		DrawDebugLine(GetWorld(), InitialLocation, NewLocation, FColor::Green, false, 1.0f, 0, 2.f);
+		UE_LOG(LogTemp, Warning, TEXT("Trace Start: %s, End: %s"), *InitialLocation.ToString(), *NewLocation.ToString());
+		
+		FHitResult HitResult;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+
+		bool bHit = GetWorld()->LineTraceSingleByChannel(
+			HitResult,
+			InitialLocation,
 			NewLocation,
-			GameMode->Bounds.Min + 0.5f * MeshScale * 100,
-			FVector2D(
-				GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100,
-				GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5)
-			));
-		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
+			ECC_WorldStatic,
+			Params
+		);
 
+		if (bHit)
+		{
+			AActor* HitActor = HitResult.GetActor();
+			if (HitResult.GetActor() && Cast<ACtpMushroom>(HitResult.GetActor()))
+			{
+				return;
+			}
+		}
+
+		// Limits of the Player zone
+		NewLocation.Y = FMath::Clamp(NewLocation.Y, GameMode->Bounds.Min.X + 0.5f * MeshScale.X * 100, GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100);
+		NewLocation.Z = FMath::Clamp(NewLocation.Z, GameMode->Bounds.Min.Y + 0.5f * MeshScale.Y * 100, GameMode->Bounds.Min.Y / 3);
+
+		SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
 		MoveDirection = FVector2D::Zero();
 	}
 }
@@ -218,19 +232,6 @@ void ACtpPlayerPawn::RestartGame(const FInputActionInstance& Instance)
 void ACtpPlayerPawn::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	
-	// UKismetSystemLibrary::QuitGame(GetWorld(), Cast<APlayerController>(GetController()), EQuitPreference::Quit, false);
-	if (OtherActor && OtherActor != this)
-	{
-		UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
-		if (Cast<ACtpMushroom>(OtherActor))
-		{
-			bIsOverlappingMushroom = true;
-			SetActorLocation(LastSafeLocation);
-			// GetWorld()->SweepMultiByChannel()
-			// GetWorld()->LineTraceMultiByChannel()
-		}
-	}
 }
 
 void ACtpPlayerPawn::LoseLife()

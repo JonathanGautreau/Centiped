@@ -45,16 +45,16 @@ public:
 
 	// ------- Specific properties ------- //
 	UPROPERTY(Category="Centipede", EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	bool IsHead;
+	bool bIsHead;
 
 	UPROPERTY(Category="Centipede",EditAnywhere)
-	bool IsFalling = true;
+	bool bIsFalling = true;
 
 	UPROPERTY(Category="Centipede",EditAnywhere)
-	bool IsColliding;
+	bool bIsColliding;
 
 	UPROPERTY(category="Centipede",EditAnywhere)
-	bool IsCollidingPoison;
+	bool bIsCollidingPoison;
 	
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	float VerticalOffset = MeshScale.Y * 100;
