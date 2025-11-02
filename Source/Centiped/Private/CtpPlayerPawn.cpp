@@ -121,7 +121,7 @@ void ACtpPlayerPawn::PlayerMovements(float DeltaTime)
 			NewLocation,
 			FQuat::Identity,
 			ECC_Visibility,
-			FCollisionShape::MakeBox(FVector(0.f, MeshScale.X * 100.f * 0.5f, MeshScale.Y * 100.f * 0.5f)),
+			FCollisionShape::MakeBox(FVector(5.f, MeshScale.X * 100.f * 0.5f, MeshScale.Y * 100.f * 0.5f)),
 			Params
 		);
 		

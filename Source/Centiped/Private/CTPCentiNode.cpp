@@ -35,8 +35,8 @@ void ACTPCentiNode::BeginPlay()
 // Called every frame
 void ACTPCentiNode::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-	
+	// Super::Tick(DeltaTime);
+	MoveTheHead(DeltaTime);
 	if (!bIsHead)
 	{
 		if (PrevNode == nullptr)
@@ -45,6 +45,119 @@ void ACTPCentiNode::Tick(float DeltaTime)
 		}
 	}
 	// DeleteOutsideBounds();
+}
+
+
+void ACTPCentiNode::MoveTheHead(float DeltaTime)
+{
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		FVector InitialLocation = GetActorLocation();
+
+		// ------- Vertical step handling ------- //
+		if (bIsMovingVertically)
+		{
+			float Step = MoveSpeed * DeltaTime;
+
+			if (FMath::Abs(RemainingVerticalOffset) <= Step)
+			{
+				InitialLocation.Z += RemainingVerticalOffset;
+				SetActorLocation(InitialLocation);
+
+				bIsMovingVertically = false;
+				RemainingVerticalOffset = 0.f;
+
+				// ordre de priorité : -LastMovingDirection sinon LastMovingDirection sinon on descend
+				
+				// je viens de finir de descendre, je veux inverser la direction horizontale
+				// mais je dois checker si ya une collision juste a côté
+				FVector NextHorizontalLocation = InitialLocation + FVector(0.f, -LastMovingDirection.X, -LastMovingDirection.Y) * DeltaTime * MoveSpeed;
+				if (CheckCollisionAt(NextHorizontalLocation))
+				{
+					// si oui, je fais le même check dans la direction opposée
+					NextHorizontalLocation = InitialLocation + FVector(0.f, LastMovingDirection.X, LastMovingDirection.Y) * DeltaTime * MoveSpeed;
+
+					// si c'est pas bloqué, je privilégie la direction opposée à celle où je devais aller
+					if (!CheckCollisionAt(NextHorizontalLocation))
+						MovingDirection = LastMovingDirection;
+					// si c'est toujours bloqué alors je redescend d'une step
+					// pas besoin d'ajouter quoi que ce soit l'algo fait en sorte de descendre
+					
+				}
+				else
+				{
+					MovingDirection = -LastMovingDirection;
+				}
+			}
+			else
+			{
+				// Déplacement progressif vertical
+				InitialLocation.Z += Step * MovingDirection.Y;
+				RemainingVerticalOffset -= Step * MovingDirection.Y;
+
+				SetActorLocation(InitialLocation);
+			}
+			return;
+		}
+
+
+		
+		// ------- Collisions handling ------- //
+		FVector NewLocation = InitialLocation + FVector(0.f, MovingDirection.X, MovingDirection.Y) * DeltaTime * MoveSpeed;
+		if ((CheckCollisionAt(NewLocation) || FindDistToNextBound() == 0) && !bIsMovingVertically)
+		{
+			// if current move is horizontal
+			if (MovingDirection.X != 0)
+			{
+				LastMovingDirection = MovingDirection;
+				
+				FVector DownLocation = InitialLocation;
+				DownLocation.Z -= VerticalOffset;
+				
+				if (DownLocation.Z >= GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5f)
+					MovingDirection = FVector2D(0, -1);
+				else
+					MovingDirection = FVector2D(0, 1);
+
+				bIsMovingVertically = true;
+				RemainingVerticalOffset = VerticalOffset * MovingDirection.Y;
+				
+				if (CheckCollisionAt(DownLocation))
+					RemainingVerticalOffset += VerticalOffset * MovingDirection.Y;
+			}
+
+			// if current move is vertical
+			else if (MovingDirection.Y != 0)
+			{
+				MovingDirection = -LastMovingDirection;
+			}
+		}
+
+		// Limits of the game zone
+		NewLocation.Y = FMath::Clamp(NewLocation.Y, GameMode->Bounds.Min.X + 0.5f * MeshScale.X * 100, GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100);
+		NewLocation.Z = FMath::Clamp(NewLocation.Z, GameMode->Bounds.Min.Y + 0.5f * MeshScale.Y * 100, GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100);
+		
+		SetActorLocation(NewLocation);
+	}
+}
+
+bool ACTPCentiNode::CheckCollisionAt(FVector Location)
+{
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	bool bHit =  GetWorld()->SweepSingleByChannel(
+		Hit,
+		GetActorLocation(),
+		Location,
+		FQuat::Identity,
+		ECC_Visibility,
+		FCollisionShape::MakeBox(FVector(5.f, MeshScale.X * 100.f * 0.5f - 2, MeshScale.Y * 100.f * 0.5f - 2)),
+		Params
+	);
+
+	return bHit;
 }
 
 void ACTPCentiNode::Move(float DeltaTime)
