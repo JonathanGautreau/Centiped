@@ -42,19 +42,22 @@ public:
 	float FindDistToNextNodeHitSwitch() const;
 	void IsAtTheBounds();
 	void BecomeHead();
+	
+	void MoveTheHead(float DeltaTime);
+	bool CheckCollisionAt(FVector Location);
 
 	// ------- Specific properties ------- //
 	UPROPERTY(Category="Centipede", EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	bool IsHead;
+	bool bIsHead;
 
 	UPROPERTY(Category="Centipede",EditAnywhere)
-	bool IsFalling = true;
+	bool bIsFalling = true;
 
 	UPROPERTY(Category="Centipede",EditAnywhere)
-	bool IsColliding;
+	bool bIsColliding;
 
 	UPROPERTY(category="Centipede",EditAnywhere)
-	bool IsCollidingPoison;
+	bool bIsCollidingPoison;
 	
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	float VerticalOffset = MeshScale.Y * 100;
@@ -89,4 +92,10 @@ public:
 
 	UPROPERTY(Category="Centipede",EditAnywhere)
 	bool bCentipedeExists = false;
+
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	bool bIsMovingVertically = false;
+
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	float RemainingVerticalOffset = 0.f;
 };

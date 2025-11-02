@@ -36,7 +36,7 @@ ACtpMushroom::ACtpMushroom()
 	MeshComponent->SetCollisionProfileName(UCollisionProfile::CustomCollisionProfileName);
 	MeshComponent->SetCollisionObjectType(ECC_WorldStatic);
 	MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap); // Collisions with Player
+	MeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block); // Collisions with Player
 	MeshComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); // Collisions with Bullets
 	MeshComponent->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Overlap); // Collisions with Centipede
 	
@@ -88,7 +88,7 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 	
 	if (OtherActor && OtherActor != this)
 	{
-		UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
+		// UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
 			if (Cast<ACtpBullet>(OtherActor))

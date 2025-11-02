@@ -35,9 +35,9 @@ void ACTPCentiNode::BeginPlay()
 // Called every frame
 void ACTPCentiNode::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-	
-	if (!IsHead)
+	// Super::Tick(DeltaTime);
+	MoveTheHead(DeltaTime);
+	if (!bIsHead)
 	{
 		if (PrevNode == nullptr)
 		{
@@ -45,6 +45,167 @@ void ACTPCentiNode::Tick(float DeltaTime)
 		}
 	}
 	// DeleteOutsideBounds();
+}
+
+
+void ACTPCentiNode::MoveTheHead(float DeltaTime)
+{
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		FVector InitialLocation = GetActorLocation();
+
+		// ------- Vertical step handling ------- //
+		if (bIsMovingVertically)
+		{
+			float Step = MoveSpeed * DeltaTime;
+
+			if (FMath::Abs(RemainingVerticalOffset) <= Step)
+			{
+				InitialLocation.Z += RemainingVerticalOffset;
+				SetActorLocation(InitialLocation);
+
+				bIsMovingVertically = false;
+				RemainingVerticalOffset = 0.f;
+
+				// ordre de priorité : -LastMovingDirection sinon LastMovingDirection sinon on descend
+				
+				// je viens de finir de descendre, je veux inverser la direction horizontale
+				// mais je dois checker si ya une collision juste a côté
+				FVector NextHorizontalLocation = InitialLocation + FVector(0.f, -LastMovingDirection.X, -LastMovingDirection.Y) * DeltaTime * MoveSpeed;
+				if (CheckCollisionAt(NextHorizontalLocation))
+				{
+					// si oui, je fais le même check dans la direction opposée
+					NextHorizontalLocation = InitialLocation + FVector(0.f, LastMovingDirection.X, LastMovingDirection.Y) * DeltaTime * MoveSpeed;
+
+					// si c'est pas bloqué, je privilégie la direction opposée à celle où je devais aller
+					if (!CheckCollisionAt(NextHorizontalLocation))
+						MovingDirection = LastMovingDirection;
+					// si c'est toujours bloqué alors je redescend d'une step
+					// pas besoin d'ajouter quoi que ce soit l'algo fait en sorte de descendre
+					
+				}
+				else
+				{
+					MovingDirection = -LastMovingDirection;
+				}
+			}
+			else
+			{
+				// Déplacement progressif vertical
+				InitialLocation.Z += Step * MovingDirection.Y;
+				RemainingVerticalOffset -= Step * MovingDirection.Y;
+
+				SetActorLocation(InitialLocation);
+			}
+			return;
+		}
+
+
+		
+		// ------- Collisions handling ------- //
+		FVector NewLocation = InitialLocation + FVector(0.f, MovingDirection.X, MovingDirection.Y) * DeltaTime * MoveSpeed;
+		if ((CheckCollisionAt(NewLocation) || FindDistToNextBound() == 0) && !bIsMovingVertically)
+		{
+			// if current move is horizontal
+			if (MovingDirection.X != 0)
+			{
+				LastMovingDirection = MovingDirection;
+				
+				FVector DownLocation = InitialLocation;
+				DownLocation.Z -= VerticalOffset;
+				
+				if (DownLocation.Z >= GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5f)
+					MovingDirection = FVector2D(0, -1);
+				else
+					MovingDirection = FVector2D(0, 1);
+
+				bIsMovingVertically = true;
+				RemainingVerticalOffset = VerticalOffset * MovingDirection.Y;
+				
+				if (CheckCollisionAt(DownLocation))
+					RemainingVerticalOffset += VerticalOffset * MovingDirection.Y;
+			}
+
+			// if current move is vertical
+			else if (MovingDirection.Y != 0)
+			{
+				MovingDirection = -LastMovingDirection;
+			}
+		}
+
+		// Limits of the game zone
+		NewLocation.Y = FMath::Clamp(NewLocation.Y, GameMode->Bounds.Min.X + 0.5f * MeshScale.X * 100, GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100);
+		NewLocation.Z = FMath::Clamp(NewLocation.Z, GameMode->Bounds.Min.Y + 0.5f * MeshScale.Y * 100, GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100);
+		
+		SetActorLocation(NewLocation);
+	}
+}
+
+bool ACTPCentiNode::CheckCollisionAt(FVector Location)
+{
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	bool bHit =  GetWorld()->SweepSingleByChannel(
+		Hit,
+		GetActorLocation(),
+		Location,
+		FQuat::Identity,
+		ECC_Visibility,
+		FCollisionShape::MakeBox(FVector(5.f, MeshScale.X * 100.f * 0.5f - 2, MeshScale.Y * 100.f * 0.5f - 2)),
+		Params
+	);
+
+	return bHit;
+}
+
+void ACTPCentiNode::Move(float DeltaTime)
+{
+	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
+
+	DistToNextLoc = DeltaTime * MoveSpeed;							//The distance to the next Location
+	
+	float DistToNextBound = FindDistToNextBound();
+
+	// If Hitswitch's set find the next Location of the hitswitche (either in front of a mushroom, or the next border), excecution not clean at all
+	if (HitSwitch == DefaultVector)
+	{
+		HitSwitch = DetectNextMushroom(DistToNextBound);
+	}
+	if (HitSwitch == DefaultVector)
+	{
+		HitSwitch = FVector2D(NewLocation.X + DistToNextBound * MovingDirection.X ,
+								NewLocation.Y + DistToNextBound * MovingDirection.Y );
+	}
+	
+	//check if the node reach the hitswitch and make the node change direction or just make it moveon the next point
+	DistToNextSwitch = FMath::Abs((HitSwitch - NewLocation).Size());
+	if (DistToNextSwitch < DistToNextLoc)
+	{
+		if (MovingDirection.X != 0)
+		{
+			LastMovingDirection.X = MovingDirection.X;
+			if (bIsFalling)	MovingDirection = FVector2D(0,-1);
+			else MovingDirection = FVector2D(0,1);
+			NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
+			HitSwitch=DefaultVector;
+		}
+			
+		else
+		{
+			LastMovingDirection.Y = MovingDirection.Y;
+			MovingDirection = FVector2D(-LastMovingDirection.X,0);
+			NewLocation = FVector2D(GetActorLocation().Y + (DistToNextLoc - DistToNextSwitch)*MovingDirection.X, HitSwitch.Y);
+			HitSwitch=DefaultVector;
+		}
+	}
+	else
+	{
+		NewLocation += MovingDirection * DistToNextLoc;
+	}
+	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
+
 }
 
 FVector2d ACTPCentiNode::DetectNextMushroom(float& DistToNextBound)
@@ -88,69 +249,21 @@ FVector2d ACTPCentiNode::DetectNextMushroom(float& DistToNextBound)
 	}
 	return DefaultVector;
 }
-
-void ACTPCentiNode::Move(float DeltaTime)
-{
-	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
-
-	DistToNextLoc = DeltaTime * MoveSpeed;							//The distance to the next Location
-	
-	float DistToNextBound = FindDistToNextBound();
-
-	// If Hitswitch's set find the next Location of the hitswitche (either in front of a mushroom, or the next border), excecution not clean at all
-	if (HitSwitch == DefaultVector)
-	{
-		HitSwitch = DetectNextMushroom(DistToNextBound);
-	}
-	if (HitSwitch == DefaultVector)
-	{
-		HitSwitch = FVector2D(NewLocation.X + DistToNextBound * MovingDirection.X ,
-								NewLocation.Y + DistToNextBound * MovingDirection.Y );
-	}
-	
-	//check if the node reach the hitswitch and make the node change direction or just make it moveon the next point
-	DistToNextSwitch = FMath::Abs((HitSwitch - NewLocation).Size());
-	if (DistToNextSwitch < DistToNextLoc)
-	{
-		if (MovingDirection.X != 0)
-		{
-			LastMovingDirection.X = MovingDirection.X;
-			if (IsFalling)	MovingDirection = FVector2D(0,-1);
-			else MovingDirection = FVector2D(0,1);
-			NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
-			HitSwitch=DefaultVector;
-		}
-			
-		else
-		{
-			LastMovingDirection.Y = MovingDirection.Y;
-			MovingDirection = FVector2D(-LastMovingDirection.X,0);
-			NewLocation = FVector2D(GetActorLocation().Y + (DistToNextLoc - DistToNextSwitch)*MovingDirection.X, HitSwitch.Y);
-			HitSwitch=DefaultVector;
-		}
-	}
-	else
-	{
-		NewLocation += MovingDirection * DistToNextLoc;
-	}
-	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
-
-}
 				
 		// 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		// 		{
  	// 				HitSwitch = FVector2D(GetActorLocation().Y,GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5 + VerticalOffset);
-		// 			IsFalling = true;
+		// 			bIsFalling = true;
 		// 		}
 		// 	}
-		// 	else if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
-		// 	else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
+		// 	else if (bIsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
+		// 	else if (bIsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
 		//
-		// 	if (IsHead && !IsCollidingPoison) IsAtTheBounds();
+		// 	if (bIsHead && !bIsCollidingPoison) IsAtTheBounds();
 		//
 		// 	if (NextNode)
 		// 	{
-		// 		NextNode->IsFalling = IsFalling;
+		// 		NextNode->bIsFalling = bIsFalling;
 		// 		if (NextNode->HitSwitch == DefaultVector)
 		// 		{
 		// 			NextNode->HitSwitch = HitSwitch;
@@ -161,12 +274,12 @@ void ACTPCentiNode::Move(float DeltaTime)
 		// 		}
 		// 	}
 		// 	LastMovingDirection = MovingDirection;
-		// 	if (IsFalling) MovingDirection = FVector2D(0,-1);//Keep the previous direction for later use 
+		// 	if (bIsFalling) MovingDirection = FVector2D(0,-1);//Keep the previous direction for later use 
 		// 	else MovingDirection = FVector2D(0,1);
-		// 	if (IsColliding) NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z+DistToNextLoc*MovingDirection.Y);
+		// 	if (bIsColliding) NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z+DistToNextLoc*MovingDirection.Y);
 		// 	else NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
-		// 	IsColliding = false;
-		// 	IsCollidingPoison =	false;
+		// 	bIsColliding = false;
+		// 	bIsCollidingPoison =	false;
 		// 	
 		// }
 		// else		//When the centiped move down
@@ -175,7 +288,7 @@ void ACTPCentiNode::Move(float DeltaTime)
 			// going down
 			// NewLocation = FVector2D(GetActorLocation().Y + (DistToNextLoc - DistToNextSwitch) * -LastMovingDirection.X,HitSwitch.Y +  VerticalOffset * MovingDirection.Y);
 			// MovingDirection = -LastMovingDirection; //Use of the previous value to turn back in the good direction
-			// if (IsHead)
+			// if (bIsHead)
 			// {
 			// 	ACtpGameMode *GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
 			// 	HitSwitch = FVector2D(GameMode->Bounds.Max);	// After the changing of direction, move away enough the hitswitch to not get the node lock around it.
@@ -193,29 +306,29 @@ void ACTPCentiNode::Move(float DeltaTime)
 			// 		HitSwitch = HitSwitches[0];
 			// 		HitSwitches.Remove(HitSwitch);
 			// 	}
-	//if (IsHead)		//To check the distance to the next border of the map
+	//if (bIsHead)		//To check the distance to the next border of the map
 	//	else DistToNextSwitch = FindDistToNextNodeHitSwitch();			//To check the distance to the next switch
 	//
-	// if (DistToNextLoc > DistToNextSwitch || IsColliding )			//If the location is further than the next switch point or if there is a collision with a mushroom
+	// if (DistToNextLoc > DistToNextSwitch || bIsColliding )			//If the location is further than the next switch point or if there is a collision with a mushroom
 	// {
 	// 	if (MovingDirection.X != 0) //When the centiped move on the left or right
 	// 	{
-	// 		if (IsCollidingPoison)
+	// 		if (bIsCollidingPoison)
 	// 		{
 	// 			if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	// 			{
 	// 				HitSwitch = FVector2D(GetActorLocation().Y,GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5 + VerticalOffset);
-	// 				IsFalling = true;
+	// 				bIsFalling = true;
 	// 			}
 	// 		}
-	// 		else if (IsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
-	// 		else if (IsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
+	// 		else if (bIsColliding) HitSwitch = FVector2D(GetActorLocation().Y, GetActorLocation().Z); //In case of the colliding take the actual position (head only)
+	// 		else if (bIsHead) HitSwitch = FVector2D(GetActorLocation().Y + DistToNextSwitch * MovingDirection.X,GetActorLocation().Z); //Otherwise set to the theorical next hitswitch
 	//
-	// 		if (IsHead && !IsCollidingPoison) IsAtTheBounds();
+	// 		if (bIsHead && !bIsCollidingPoison) IsAtTheBounds();
 	//
 	// 		if (NextNode)
 	// 		{
-	// 			NextNode->IsFalling = IsFalling;
+	// 			NextNode->bIsFalling = bIsFalling;
 	// 			if (NextNode->HitSwitch == DefaultVector)
 	// 			{
 	// 				NextNode->HitSwitch = HitSwitch;
@@ -227,14 +340,14 @@ void ACTPCentiNode::Move(float DeltaTime)
 	// 		}
 	// 		LastMovingDirection = MovingDirection;
 	// 		
-	// 		if (IsFalling) MovingDirection = FVector2D(0,-1);//Keep the previous direction for later use 
+	// 		if (bIsFalling) MovingDirection = FVector2D(0,-1);//Keep the previous direction for later use 
 	// 		else MovingDirection = FVector2D(0,1);
 	// 		
-	// 		if (IsColliding) NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z+DistToNextLoc*MovingDirection.Y);
+	// 		if (bIsColliding) NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z+DistToNextLoc*MovingDirection.Y);
 	// 		else NewLocation = FVector2D(HitSwitch.X, GetActorLocation().Z + (DistToNextLoc - DistToNextSwitch)*MovingDirection.Y);
 	//
-	// 		IsColliding = false;
-	// 		IsCollidingPoison =	false;
+	// 		bIsColliding = false;
+	// 		bIsCollidingPoison =	false;
 	// 		
 	// 	}
 	// 	else		//When the centiped move down
@@ -242,7 +355,7 @@ void ACTPCentiNode::Move(float DeltaTime)
 	// 				
 	// 		NewLocation = FVector2D(GetActorLocation().Y + (DistToNextLoc - DistToNextSwitch) * -LastMovingDirection.X,HitSwitch.Y +  VerticalOffset * MovingDirection.Y);
 	// 		MovingDirection = -LastMovingDirection; //Use of the previous value to turn back in the good direction
-	// 		if (IsHead)
+	// 		if (bIsHead)
 	// 		{
 	// 			ACtpGameMode *GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
 	// 			HitSwitch = FVector2D(GameMode->Bounds.Max);	// After the changing of direction, move away enough the hitswitch to not get the node lock around it.
@@ -300,18 +413,18 @@ float ACTPCentiNode::FindDistToNextNodeHitSwitch() const
 void ACTPCentiNode::IsAtTheBounds()
 {
 	ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode());
-	if (IsFalling)
+	if (bIsFalling)
 	{
 		if (HitSwitch.Y <= GameMode->Bounds.Min.Y + MeshScale.Y * 100)
 		{
-			IsFalling = false;			
+			bIsFalling = false;			
 		}
 	}
 	else
 	{
 		if (HitSwitch.Y >= GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5))
 		{
-			IsFalling = true;
+			bIsFalling = true;
 		}
 	}
 }
@@ -319,7 +432,7 @@ void ACTPCentiNode::IsAtTheBounds()
 void ACTPCentiNode::BecomeHead()
 {
 	MeshComponent->SetStaticMesh(HeadNodeMesh);
-	IsHead = true;
+	bIsHead = true;
 }
 
 void ACTPCentiNode::DeleteOutsideBounds()
@@ -341,18 +454,18 @@ void ACTPCentiNode::NotifyActorBeginOverlap(AActor* OtherActor)
 void ACTPCentiNode::HitMushroom(ACtpMushroom* Mushroom)
 {
 	// Rotate the centipede
-	if (IsHead)
+	if (bIsHead)
 	{
 		// When moving horizontally, ignore vertical collisions
 		// When moving vertically, ignore horizontal collisions
 		if ((FMath::Abs(Mushroom->GetActorLocation().Z - GetActorLocation().Z) < 70 && MovingDirection.X != 0) ||
 			(FMath::Abs(Mushroom->GetActorLocation().Y - GetActorLocation().Y) < 70 && MovingDirection.Y != 0))
 		{
-			IsColliding = true;
+			bIsColliding = true;
 			
 			if (Mushroom->bIsPoison)
 			{
-				IsCollidingPoison = true;
+				bIsCollidingPoison = true;
 			}			
 		}
 	}
@@ -375,7 +488,7 @@ void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 	if (NextNode)
 	{
 		NextNode->PrevNode = nullptr;
-		NextNode->IsColliding = true;
+		NextNode->bIsColliding = true;
 	}
 	
 	// Delete the hit node, then create mushroom
@@ -398,7 +511,7 @@ void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 			// Score points
 			if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
 			{
-				if (IsHead)
+				if (bIsHead)
 					ScoreSystem->SetScore(ScoreSystem->GetScore() +  100);
 				else
 					ScoreSystem->SetScore(ScoreSystem->GetScore() + 10);

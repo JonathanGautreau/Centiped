@@ -93,6 +93,6 @@ void ACtpBullet::NotifyActorBeginOverlap(AActor* OtherActor)
 		if (Cast<ACTPEnemy>(OtherActor))
 			Destroy();
 		
-		UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
+		// UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
 	}
 }

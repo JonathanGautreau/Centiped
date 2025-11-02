@@ -69,9 +69,6 @@ public:
 	FVector2D MeshScale = FVector2D(0.8f, 1.2f);
 	
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	bool bIsOverlappingMushroom = false;
-
-	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	bool bIsOverlappedByEnemy = false;
 	
 	int GetLife() const { return LifeLeft; };

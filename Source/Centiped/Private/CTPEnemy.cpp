@@ -65,20 +65,20 @@ void ACTPEnemy::NotifyActorBeginOverlap(AActor* OtherActor)
 	
 	if (OtherActor && OtherActor != this)
 	{
-		UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
+		// UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
 		if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
 		{
-			UE_LOG(LogCentiped, Log, TEXT("Mushroom detected"));
+			// UE_LOG(LogCentiped, Log, TEXT("Mushroom detected"));
 			HitMushroom(Mushroom);
 		}
 		if (ACtpPlayerPawn* PlayerPawn = Cast<ACtpPlayerPawn>(OtherActor))
 		{
-			UE_LOG(LogCentiped, Log, TEXT("Player detected"));
+			// UE_LOG(LogCentiped, Log, TEXT("Player detected"));
 			HitPlayer(PlayerPawn);
 		}
 		if (ACtpBullet* Bullet = Cast<ACtpBullet>(OtherActor))
 		{
-			UE_LOG(LogCentiped, Log, TEXT("Bullet detected"));
+			// UE_LOG(LogCentiped, Log, TEXT("Bullet detected"));
 			HitBullet(Bullet);
 		}
 	}
