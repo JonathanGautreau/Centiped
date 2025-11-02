@@ -36,10 +36,11 @@ public:
 	// ------- Specific functions ------- //
 	FVector2D DetectNextMushroom(float& DistToNextBound);
 
+	void GiveSwitchToTheNextNode(FVector NewHitSwitch);
+	void SetNextHitswitch();
 
-	
 	float FindDistToNextBound() const;
-	float FindDistToNextNodeHitSwitch() const;
+	float FindDistToNextHitSwitch() const;
 	void IsAtTheBounds();
 	void BecomeHead();
 	
