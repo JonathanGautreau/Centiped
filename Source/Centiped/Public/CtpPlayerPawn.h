@@ -66,6 +66,15 @@ public:
 	float MoveSpeed = 1000.f;
 
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
+	float ReloadTimeForShoot = .25f;
+
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
+	float TimerLeftBeforeShoot;
+	
+	UPROPERTY(editAnywhere, Category="PlayerPawn")
+	bool bIsPlayerCanShoot = true;
+
+	UPROPERTY(EditAnywhere, Category="PlayerPawn")
 	FVector2D MeshScale = FVector2D(0.8f, 1.2f);
 	
 	UPROPERTY(EditAnywhere, Category="PlayerPawn")
