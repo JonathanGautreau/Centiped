@@ -39,7 +39,7 @@ public:
 	void GiveSwitchToTheNextNode(FVector NewHitSwitch);
 	void SetNextHitswitch();
 
-	float FindDistToNextBound() const;
+	float FindDistToNextBound(FVector NewLocation) const;
 	float FindDistToNextHitSwitch() const;
 	void IsAtTheBounds();
 	void BecomeHead();
