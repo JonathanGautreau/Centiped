@@ -62,7 +62,7 @@ public:
 	void SetSpawnedMushroomsCount(int Count);
 	
 	UPROPERTY(Category = "GameLoop", EditAnywhere)
-	int CentipedeSize = 1;
+	int CentipedeSize = 6;
 	
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	int InitialNumberOfMushrooms = 30;

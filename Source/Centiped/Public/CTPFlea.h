@@ -38,4 +38,7 @@ public:
 	// ------- Specific properties ------- //
 	UPROPERTY(category = "Flea", EditAnywhere)
 	float VerticalOffset = 80.f;
+
+	UPROPERTY(category = "Flea", EditAnywhere)
+	UStaticMesh* DamagedMesh;
 };

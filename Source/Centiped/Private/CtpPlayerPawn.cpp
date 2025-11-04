@@ -24,7 +24,7 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Player.SM_Player"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Player.Player"));
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
@@ -214,10 +214,6 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 				World->SpawnActor<ACtpBullet>(ProjectileClass, InitialPosition, FRotator(), SpawnParams);
 			}
 		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(1 , 15.f, FColor::Red, "shoot reloading");
 	}
 }
 

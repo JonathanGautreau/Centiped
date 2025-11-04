@@ -101,11 +101,11 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 				// je viens de finir de descendre, je veux inverser la direction horizontale
 				// mais je dois checker si ya une collision juste a côté
 				
-				FVector NextHorizontalLocation = InitialLocation + FVector(0.f, -LastMovingDirection.X, 0) * Step;
+				FVector NextHorizontalLocation = InitialLocation + FVector(0.f, -LastMovingDirection.X, -LastMovingDirection.Y) * Step;
 				if (CheckCollisionAt(NextHorizontalLocation))
 				{
 					// si oui, je fais le même check dans la direction opposée
-					NextHorizontalLocation = InitialLocation + FVector(0.f, LastMovingDirection.X, 0) * Step;
+					NextHorizontalLocation = InitialLocation + FVector(0.f, LastMovingDirection.X, LastMovingDirection.Y) * Step;
 
 					// si c'est pas bloqué, je privilégie la direction opposée à celle où je devais aller
 					if (!CheckCollisionAt(NextHorizontalLocation))
@@ -113,7 +113,9 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 						MovingDirection = LastMovingDirection;
 						GiveSwitchToTheNextNode(InitialLocation);
 					}
-						
+
+
+
 						
 					// si c'est toujours bloqué alors je redescend d'une step
 					// pas besoin d'ajouter quoi que ce soit l'algo fait en sorte de descendre
@@ -249,10 +251,8 @@ void ACTPCentiNode::Move(float DeltaTime)
 			
 			NewLocation = FVector(0,HitSwitch.X,HitSwitch.Y + MovingDirection.Y * (Step - DistToNextSwitch));
 		}
-		if (NextNode)
-		{
-			GiveSwitchToTheNextNode(NewLocation);
-		}
+		
+		GiveSwitchToTheNextNode(NewLocation);
 		SetNextHitswitch();
 	}
 	else

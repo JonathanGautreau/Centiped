@@ -40,9 +40,13 @@ public:
 	
 	UPROPERTY(editAnywhere, Category="Mushroom")
 	UStaticMesh* NormalMushroom;
-
+	UPROPERTY(editAnywhere, Category="Mushroom")
+	UStaticMesh* NormalMushroom2;
+	UPROPERTY(editAnywhere, Category="Mushroom")
+	UStaticMesh* NormalMushroom3;
+	
 	UPROPERTY(EditAnywhere, Category="Mushroom")
-	UStaticMesh* PoisonMushroom;
+	UMaterialInstance* PoisonnedMushroom;
 
 	UPROPERTY(EditAnywhere, Category="Mushroom")
 	int Life = 3;

@@ -19,16 +19,27 @@ ACtpMushroom::ACtpMushroom()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Mushrooms.SM_Mushrooms"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Mushroom.Mushroom"));
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 		NormalMushroom = StaticMeshRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> PoisonStaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_PoisonnedMushrooms.SM_PoisonnedMushrooms"));
-	if (PoisonStaticMeshRef.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefBase2(TEXT("/Game/Centiped/Meshes/Mushroom2.Mushroom2"));
+	if (StaticMeshRefBase2.Succeeded())
 	{
-		PoisonMushroom = PoisonStaticMeshRef.Object;
+		NormalMushroom2 = StaticMeshRefBase2.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefBase3(TEXT("/Game/Centiped/Meshes/Mushroom3.Mushroom3"));
+	if (StaticMeshRefBase3.Succeeded())
+	{
+
+		NormalMushroom3 = StaticMeshRefBase3.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PoisonMatInstanceRef(TEXT("/Game/Centiped/Materials/MI_DefaultMat_White.MI_DefaultMat_White"));
+	if (PoisonMatInstanceRef.Succeeded())
+	{
+		PoisonnedMushroom = PoisonMatInstanceRef.Object;
 	}	
 
 	MeshComponent->SetGenerateOverlapEvents(true);
@@ -79,7 +90,7 @@ void ACtpMushroom::BecomeNormal()
 void ACtpMushroom::BecomePoison()
 {
 	bIsPoison = true;
-	MeshComponent->SetStaticMesh(PoisonMushroom);
+	MeshComponent->SetMaterial(0,PoisonnedMushroom);
 }
 
 void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -96,6 +107,16 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 				// MeshScale = FVector2D(MeshScale.X - .2f, MeshScale.Y - .2f);
 				// MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 				Life--;
+
+				if (Life == 2)
+				{
+					MeshComponent->SetStaticMesh(NormalMushroom2);
+				}
+				else if (Life == 1)
+				{
+					MeshComponent->SetStaticMesh(NormalMushroom3);
+				}
+				
 				if (Life == 0)
 				{
 					if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
