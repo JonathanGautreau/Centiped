@@ -25,12 +25,17 @@ protected:
 public:
 	// ------- Common functions ------- //
 	virtual void Tick(float DeltaTime) override;
-	
+	void FollowPrevNode(float DeltaTime);
+	AActor* DetectNextObstacle();
+	void AddHitSwitch(FVector Position, ACTPCentiNode* Node);
+
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 	virtual void Move(float DeltaTime) override;
 	virtual void HitMushroom(ACtpMushroom* Mushroom) override;
 	virtual void HitPlayer(ACtpPlayerPawn* Player) override;
+	void ClearHitSwitches(ACTPCentiNode* Node);
+	void ResetHeadProperties(ACTPCentiNode* Node);
 	virtual void HitBullet(ACtpBullet* Bullet) override;
 
 	// ------- Specific functions ------- //
@@ -41,6 +46,7 @@ public:
 
 	float FindDistToNextBound() const;
 	float FindDistToNextHitSwitch() const;
+	void SetNewHeadPosition(ACTPCentiNode* Node);
 	void IsAtTheBounds();
 	void BecomeHead();
 	
@@ -70,7 +76,7 @@ public:
 	
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	TArray<FVector2D> HitSwitches;
-
+	
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	FVector2D DefaultVector;
 
@@ -99,4 +105,22 @@ public:
 
 	UPROPERTY(Category="Centipede",EditAnywhere)
 	float RemainingVerticalOffset = 0.f;
+
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	int SegmentIndex = 0;
+
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	int FollowIndex = 0;
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	float DistanceAlongPath = 0.f;
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	float MaxCatchupDistance = 20.f;
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	int CurrentHitSwitchIndex = 0;
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	TArray<FVector> PositionHistory;
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	float SmoothedDeltaTime = 0.f;
+	UPROPERTY(Category="Centipede",EditAnywhere)
+	FVector NewHeadPosition;
 };

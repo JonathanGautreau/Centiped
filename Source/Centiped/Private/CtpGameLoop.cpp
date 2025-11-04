@@ -136,13 +136,15 @@ void UCtpGameLoop::GenerateCentipede(UWorld* World, FActorSpawnParameters& Spawn
 	for (int i = 0; i < CentipedeSize ; ++i )
 	{
 		ACTPCentiNode* Curr = World->SpawnActor<ACTPCentiNode>(SpawnParams);
-				
+
+		Curr->SegmentIndex = i;
 		Curr-> PrevNode = Prev;
 		Curr-> DefaultVector = FVector2D(2000,2000);
 		Curr-> HitSwitch = FVector2D(2000,2000); ;//GameMode->Bounds.Max.X - Curr->MeshScale.X * 100 * 0.5, GameMode->Bounds.Max.Y - Curr->MeshScale.Y * 100 * 0.5
 		
 		if (Prev)
 		{
+			Curr->PositionHistory.EmplaceAt(0, FVector(0.f, GameMode->Bounds.Min.X + Curr->MeshScale.Y * 100 * 0.5,GameMode->Bounds.Max.Y - Curr->MeshScale.Y * 100 * 0.5));
 			Prev->NextNode = Curr;
 			Curr->SetActorLocation(FVector(0, Prev->GetActorLocation().Y + Curr->MeshScale.X * 100, Prev->GetActorLocation().Z));
 		}

@@ -182,9 +182,7 @@ void ACtpPlayerPawn::Move(const FInputActionInstance& Instance)
 
 void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
-	UE_LOG(LogCentiped, Log, TEXT("Shoot"));
-
-	if (bIsOverlappedByEnemy)
+ 	if (bIsOverlappedByEnemy)
 		return;
 
 	if (ProjectileClass)
