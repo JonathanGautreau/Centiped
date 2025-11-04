@@ -90,6 +90,19 @@ void ACtpPlayerPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	PlayerMovements(DeltaTime);
+
+	if (!bIsPlayerCanShoot)
+	{
+		if (ReloadTimeForShoot < TimerLeftBeforeShoot)
+		{
+			TimerLeftBeforeShoot = 0.0f;
+			bIsPlayerCanShoot = true;
+		}
+		else
+		{
+			TimerLeftBeforeShoot += DeltaTime;
+		}
+	}
 }
 
 void ACtpPlayerPawn::SetPlayerInitialPosition()
@@ -182,19 +195,29 @@ void ACtpPlayerPawn::Move(const FInputActionInstance& Instance)
 
 void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
- 	if (bIsOverlappedByEnemy)
-		return;
-
-	if (ProjectileClass)
+	if (bIsPlayerCanShoot)
 	{
-		if (UWorld* World = GetWorld())
-		{
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = this;
+		bIsPlayerCanShoot = false;
+		UE_LOG(LogCentiped, Log, TEXT("Shoot"));
 
-			const FVector InitialPosition = FVector(0, GetActorLocation().Y, GetActorLocation().Z + MeshScale.Y * 100 * 0.5f);
-			World->SpawnActor<ACtpBullet>(ProjectileClass, InitialPosition, FRotator(), SpawnParams);
+		if (bIsOverlappedByEnemy)
+			return;
+
+		if (ProjectileClass)
+		{
+			if (UWorld* World = GetWorld())
+			{
+				FActorSpawnParameters SpawnParams;
+				SpawnParams.Owner = this;
+
+				const FVector InitialPosition = FVector(0, GetActorLocation().Y, GetActorLocation().Z + MeshScale.Y * 100 * 0.5f);
+				World->SpawnActor<ACtpBullet>(ProjectileClass, InitialPosition, FRotator(), SpawnParams);
+			}
 		}
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(1 , 15.f, FColor::Red, "shoot reloading");
 	}
 }
 
