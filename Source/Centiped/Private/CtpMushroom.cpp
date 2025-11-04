@@ -3,9 +3,11 @@
 
 #include "CtpMushroom.h"
 #include "CtpBullet.h"
+#include "CTPCentiNode.h"
 #include "CtpGameMode.h"
 #include "CTPLog.h"
 #include "CTPScoreSystem.h"
+#include "EngineUtils.h"
 
 // Sets default values
 ACtpMushroom::ACtpMushroom()
@@ -124,9 +126,15 @@ void ACtpMushroom::CheckOnDestroyed()
 		{
 			GameLoop->PoisonedMush.Remove(this);
 			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushroomsCount() - 1);
-			GameLoop->CheckFleaGeneration();
-			GameLoop->CheckScorpionGeneration();
-			GameLoop->CheckSpiderGeneration();
+			// GameLoop->CheckFleaGeneration();
+			// GameLoop->CheckScorpionGeneration();
+			// GameLoop->CheckSpiderGeneration();
+			for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+			{
+				if (ACTPCentiNode* Head = Cast<ACTPCentiNode>(*It))
+					if (Head->bIsHead && Head->MovingDirection.X != 0)
+						Head->DetectNextObstacle();
+			}
 		}
 	}
 }

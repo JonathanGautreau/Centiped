@@ -32,8 +32,6 @@ void UCTPScoreSystem::SetScore(const int NewScore)
 		Score = 0;
 	else
 		Score = NewScore;
-	
-	UE_LOG(LogCentiped, Log, TEXT("New Score: %d"), Score);
 }
 
 void UCTPScoreSystem::ResetScore()
