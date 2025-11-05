@@ -92,8 +92,8 @@ public:
 	UFMODEvent* SOUNDTOPLAY;
 
 	//UPROPERTY(editAnywhere, Category="PlayerPawn")
-	FMOD::Studio::EventDescription* AudioDescription;
-	FMOD::Studio::EventInstance* AudioInstance;
+	FMOD::Studio::EventDescription* AudioDescription_SHOOT;
+	FMOD::Studio::EventInstance* AudioInstance_SHOOT;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")

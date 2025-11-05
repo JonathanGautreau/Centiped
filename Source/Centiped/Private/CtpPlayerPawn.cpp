@@ -78,10 +78,12 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 		UE_LOG(LogCentiped, Error, TEXT("Failed to load RestartAction from /Game/Centiped/Inputs/IA_Restart"));
 	}
 
-	AudioDescription = nullptr;
-	IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Player/Shoot", &AudioDescription);
-	AudioInstance = nullptr;
-	AudioDescription->createInstance(&AudioInstance);
+	AudioDescription_SHOOT = nullptr;
+	AudioInstance_SHOOT = nullptr;
+	IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Player/Shoot", &AudioDescription_SHOOT);
+	AudioDescription_SHOOT->createInstance(&AudioInstance_SHOOT);
+	
+	
 
 
 	
@@ -208,7 +210,7 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
 	if (bIsPlayerCanShoot)
 	{
-		AudioInstance->start();
+		
 		bIsPlayerCanShoot = false;
 		UE_LOG(LogCentiped, Log, TEXT("Shoot"));
 
@@ -226,6 +228,13 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 				World->SpawnActor<ACtpBullet>(ProjectileClass, InitialPosition, FRotator(), SpawnParams);
 			}
 		}
+		if (!AudioInstance_SHOOT)
+		{
+			AudioDescription_SHOOT->createInstance(&AudioInstance_SHOOT);
+		}
+		AudioInstance_SHOOT->start();
+		AudioInstance_SHOOT->release();
+		AudioInstance_SHOOT = nullptr;
 	}
 }
 
