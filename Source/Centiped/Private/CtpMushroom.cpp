@@ -39,7 +39,7 @@ ACtpMushroom::ACtpMushroom()
 		MeshMushroomHeavilyDamaged = StaticMeshRefBase3.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> NormalMatInstanceRef(TEXT("/Game/Centiped/Materials/MI_DefaultMat_White.MI_DefaultMat_White"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> NormalMatInstanceRef(TEXT("/Game/Centiped/Materials/MI_DefaultLit_Green.MI_DefaultLit_Green"));
 	if (NormalMatInstanceRef.Succeeded())
 	{
 		MatInstNormalMushroom = NormalMatInstanceRef.Object;
