@@ -33,8 +33,8 @@ void ACTPEnemy::PostInitializeComponents()
 	CollisionBox->SetCollisionObjectType(ECC_Vehicle);
 	CollisionBox->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap); // Collisions with Player
-	MeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap); // Collisions with Mushrooms
-	MeshComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); // Collisions with Bullets
+	CollisionBox->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap); // Collisions with Mushrooms
+	CollisionBox->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); // Collisions with Bullets
 
 	// ----- Mesh visuel -----
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); // Juste visuel
@@ -69,6 +69,7 @@ void ACTPEnemy::NotifyActorBeginOverlap(AActor* OtherActor)
 	{
 		if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
 		{
+			GEngine->AddOnScreenDebugMessage(1,1,FColor::Red,"hitdetected");
 			HitMushroom(Mushroom);
 		}
 		if (ACtpPlayerPawn* PlayerPawn = Cast<ACtpPlayerPawn>(OtherActor))

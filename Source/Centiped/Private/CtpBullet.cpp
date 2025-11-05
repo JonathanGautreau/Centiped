@@ -7,6 +7,7 @@
 #include "CtpGameMode.h"
 #include "CTPLog.h"
 #include "CtpMushroom.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
