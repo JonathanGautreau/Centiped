@@ -4,10 +4,13 @@
 #include "Centiped/Public/CtpPlayerPawn.h"
 #include "CTPCentiNode.h"
 #include "CTPEnemy.h"
+
 #include "CtpHud.h"
 #include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
 #include "EnhancedInputComponent.h"
+#include "FMODStudioModule.h"
+#include "fmod_studio.hpp"
 #include "Centiped/Public/CtpGameMode.h"
 #include "Centiped/Public/CtpBullet.h"
 
@@ -74,6 +77,14 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	{
 		UE_LOG(LogCentiped, Error, TEXT("Failed to load RestartAction from /Game/Centiped/Inputs/IA_Restart"));
 	}
+
+	AudioDescription = nullptr;
+	IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Player/Shoot", &AudioDescription);
+	AudioInstance = nullptr;
+	AudioDescription->createInstance(&AudioInstance);
+
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -197,6 +208,7 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
 	if (bIsPlayerCanShoot)
 	{
+		AudioInstance->start();
 		bIsPlayerCanShoot = false;
 		UE_LOG(LogCentiped, Log, TEXT("Shoot"));
 
