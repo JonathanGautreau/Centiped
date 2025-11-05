@@ -17,7 +17,8 @@ ACTPEnemy::ACTPEnemy(): MoveSpeed(500)
 	PrimaryActorTick.bStartWithTickEnabled = true;
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
+	RootComponent = CollisionBox;
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetupAttachment(RootComponent);
 }
@@ -26,17 +27,18 @@ void ACTPEnemy::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	// ------- Collisions ------- //
-	MeshComponent->SetGenerateOverlapEvents(true);
-	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	MeshComponent->SetCollisionProfileName(UCollisionProfile::CustomCollisionProfileName);
-	MeshComponent->SetCollisionObjectType(ECC_Vehicle);
-	MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	// ----- Collider -----
+	CollisionBox->SetGenerateOverlapEvents(true);
+	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	CollisionBox->SetCollisionObjectType(ECC_Vehicle);
+	CollisionBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+	CollisionBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap); // Collisions with Player
 	MeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap); // Collisions with Mushrooms
 	MeshComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); // Collisions with Bullets
-	MeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap); // Collisions with Player
-	
-	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
+
+	// ----- Mesh visuel -----
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); // Juste visuel
+	MeshComponent->SetRelativeScale3D(FVector(0.8f, 0.8f, 0.8f));
 	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
 }
 
@@ -65,20 +67,16 @@ void ACTPEnemy::NotifyActorBeginOverlap(AActor* OtherActor)
 	
 	if (OtherActor && OtherActor != this)
 	{
-		// UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
 		if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
 		{
-			// UE_LOG(LogCentiped, Log, TEXT("Mushroom detected"));
 			HitMushroom(Mushroom);
 		}
 		if (ACtpPlayerPawn* PlayerPawn = Cast<ACtpPlayerPawn>(OtherActor))
 		{
-			// UE_LOG(LogCentiped, Log, TEXT("Player detected"));
 			HitPlayer(PlayerPawn);
 		}
 		if (ACtpBullet* Bullet = Cast<ACtpBullet>(OtherActor))
 		{
-			// UE_LOG(LogCentiped, Log, TEXT("Bullet detected"));
 			HitBullet(Bullet);
 		}
 	}
@@ -122,5 +120,4 @@ void ACTPEnemy::HitPlayer(ACtpPlayerPawn* Player)
 
 void ACTPEnemy::HitBullet(ACtpBullet* Bullet)
 {
-	
 }

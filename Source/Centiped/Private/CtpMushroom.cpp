@@ -90,7 +90,6 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 	
 	if (OtherActor && OtherActor != this)
 	{
-		// UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
 			if (Cast<ACtpBullet>(OtherActor))
@@ -126,9 +125,9 @@ void ACtpMushroom::CheckOnDestroyed()
 		{
 			GameLoop->PoisonedMush.Remove(this);
 			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushroomsCount() - 1);
-			// GameLoop->CheckFleaGeneration();
-			// GameLoop->CheckScorpionGeneration();
-			// GameLoop->CheckSpiderGeneration();
+			GameLoop->CheckFleaGeneration();
+			GameLoop->CheckScorpionGeneration();
+			GameLoop->CheckSpiderGeneration();
 			for (TActorIterator<AActor> It(GetWorld()); It; ++It)
 			{
 				if (ACTPCentiNode* Head = Cast<ACTPCentiNode>(*It))
