@@ -23,24 +23,32 @@ ACtpMushroom::ACtpMushroom()
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
-		NormalMushroom = StaticMeshRef.Object;
+		MeshMushroom = StaticMeshRef.Object;
 	}
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefBase2(TEXT("/Game/Centiped/Meshes/Mushroom2.Mushroom2"));
 	if (StaticMeshRefBase2.Succeeded())
 	{
-		NormalMushroom2 = StaticMeshRefBase2.Object;
+		MeshMushroomDamaged = StaticMeshRefBase2.Object;
 	}
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefBase3(TEXT("/Game/Centiped/Meshes/Mushroom3.Mushroom3"));
 	if (StaticMeshRefBase3.Succeeded())
 	{
 
-		NormalMushroom3 = StaticMeshRefBase3.Object;
+		MeshMushroomHeavilyDamaged = StaticMeshRefBase3.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> NormalMatInstanceRef(TEXT("/Game/Centiped/Materials/MI_DefaultMat_White.MI_DefaultMat_White"));
+	if (NormalMatInstanceRef.Succeeded())
+	{
+		MatInstNormalMushroom = NormalMatInstanceRef.Object;
+	}
+	
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PoisonMatInstanceRef(TEXT("/Game/Centiped/Materials/MI_DefaultMat_White.MI_DefaultMat_White"));
 	if (PoisonMatInstanceRef.Succeeded())
 	{
-		PoisonnedMushroom = PoisonMatInstanceRef.Object;
-	}	
+		MatInstPoisonnedMushroom = PoisonMatInstanceRef.Object;
+	}
+	
 
 	MeshComponent->SetGenerateOverlapEvents(true);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -84,13 +92,13 @@ void ACtpMushroom::InitializePosition(const FVector& InitialPosition)
 void ACtpMushroom::BecomeNormal()
 {
 	bIsPoison = false;
-	MeshComponent->SetStaticMesh(NormalMushroom);
+	MeshComponent->SetMaterial(0,MatInstNormalMushroom);
 }
 
 void ACtpMushroom::BecomePoison()
 {
 	bIsPoison = true;
-	MeshComponent->SetMaterial(0,PoisonnedMushroom);
+	MeshComponent->SetMaterial(0,MatInstPoisonnedMushroom);
 }
 
 void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -110,11 +118,11 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 
 				if (Life == 2)
 				{
-					MeshComponent->SetStaticMesh(NormalMushroom2);
+					MeshComponent->SetStaticMesh(MeshMushroomDamaged);
 				}
 				else if (Life == 1)
 				{
-					MeshComponent->SetStaticMesh(NormalMushroom3);
+					MeshComponent->SetStaticMesh(MeshMushroomHeavilyDamaged);
 				}
 				
 				if (Life == 0)
