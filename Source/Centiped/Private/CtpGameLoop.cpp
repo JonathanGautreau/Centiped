@@ -137,14 +137,11 @@ void UCtpGameLoop::GenerateCentipede(UWorld* World, FActorSpawnParameters& Spawn
 	{
 		ACTPCentiNode* Curr = World->SpawnActor<ACTPCentiNode>(SpawnParams);
 
-		Curr->SegmentIndex = i;
 		Curr-> PrevNode = Prev;
-		Curr-> DefaultVector = FVector2D(2000,2000);
-		Curr-> HitSwitch = FVector2D(2000,2000); ;//GameMode->Bounds.Max.X - Curr->MeshScale.X * 100 * 0.5, GameMode->Bounds.Max.Y - Curr->MeshScale.Y * 100 * 0.5
 		
 		if (Prev)
 		{
-			Curr->PositionHistory.EmplaceAt(0, FVector(0.f, GameMode->Bounds.Min.X + Curr->MeshScale.Y * 100 * 0.5,GameMode->Bounds.Max.Y - Curr->MeshScale.Y * 100 * 0.5));
+			Curr->HitSwitches.EmplaceAt(0, FVector(0.f, GameMode->Bounds.Min.X + Curr->MeshScale.Y * 100 * 0.5,GameMode->Bounds.Max.Y - Curr->MeshScale.Y * 100 * 0.5));
 			Prev->NextNode = Curr;
 			Curr->SetActorLocation(FVector(0, Prev->GetActorLocation().Y + Curr->MeshScale.X * 100, Prev->GetActorLocation().Z));
 		}
@@ -203,6 +200,7 @@ void UCtpGameLoop::GenerateScorpion()
 		{
 			bIsScorpion = true;
 			ACTPScorpion* Scorpion = World->SpawnActor<ACTPScorpion>(ACTPScorpion::StaticClass());
+			if (!Scorpion) return;
 			float SpawnOnZ = FMath::RandRange( GameMode->Bounds.Max.Y - round(GameMode->SquareSize.Y * FMath::RoundToInt(GameMode->Rows * 0.7f)) - round(GameMode->SquareSize.Y * 0.5),GameMode->Bounds.Max.Y);
 			Scorpion->bIsLeftDirection = FMath::RandBool();
 			if (Scorpion->bIsLeftDirection) Scorpion->SetActorLocation(FVector(0,GameMode->Bounds.Max.X,SpawnOnZ));
@@ -213,7 +211,6 @@ void UCtpGameLoop::GenerateScorpion()
 
 void UCtpGameLoop::CheckSpiderGeneration()
 {
-	UE_LOG(LogCentiped, VeryVerbose, TEXT("bIsSpider : %d"), bIsSpider);
 	if (CountMushroomInPlayerZone() <= FMath::FloorToInt(InitialNumberOfMushrooms * .15f) && !bIsSpider)
 	{
  		GenerateSpider();

@@ -198,7 +198,6 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 	if (bIsPlayerCanShoot)
 	{
 		bIsPlayerCanShoot = false;
-		UE_LOG(LogCentiped, Log, TEXT("Shoot"));
 
 		if (bIsOverlappedByEnemy)
 			return;

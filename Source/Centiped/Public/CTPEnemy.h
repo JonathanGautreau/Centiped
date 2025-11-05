@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "CtpPlayerPawn.h"
 #include "CtpMushroom.h"
+#include "Components/BoxComponent.h"
 #include "CTPEnemy.generated.h"
 
 UCLASS()
@@ -26,6 +27,9 @@ protected:
 	UPROPERTY(Category="Enemy", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
+	UPROPERTY(Category="Enemy", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UBoxComponent* CollisionBox;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -44,7 +48,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy")
 	FVector2D MeshScale = FVector2D(.8f, .8f);
-
+	
 	UPROPERTY(category = "Enemy", EditAnywhere)
 	FVector2D HitSwitch = FVector2D::Zero();
 };

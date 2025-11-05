@@ -19,6 +19,12 @@ ACtpGameMode::ACtpGameMode()
 void ACtpGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->EngineShowFlags.SetLighting(false);
+		GEngine->GameViewport->EngineShowFlags.SetPostProcessing(false);
+	}
 
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;

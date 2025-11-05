@@ -18,6 +18,7 @@ ACTPScorpion::ACTPScorpion()
 	
 	// ------- Override properties ------- //
 	MeshScale = FVector2D(.6f,.6f);
+	CollisionBox->SetBoxExtent(FVector(50.f, MeshScale.X * 100 * 0.5f, MeshScale.Y * 100 * 0.5f));
 	MoveSpeed = 850;
 	Life = 1;
 }
