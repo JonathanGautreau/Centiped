@@ -37,6 +37,7 @@ public:
 	AActor* DetectNextObstacle();
 	bool CheckCollisionAt(FVector Location);
 	float FindDistToNextBound(FVector NewLocation) const;
+	void DeleteOutsideBounds();
 	
 	void BecomeHead();
 	void CleanFuturePositions(ACTPCentiNode* NewHeadNode);
@@ -70,12 +71,12 @@ public:
 	FVector2D LastMovingDirection = FVector2D(-1, 0);
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
-	ACTPCentiNode* PrevNode;
+	TObjectPtr<ACTPCentiNode> PrevNode;
 	UPROPERTY(category = "Centipede", EditAnywhere)
-	ACTPCentiNode* NextNode;
+	TObjectPtr<ACTPCentiNode> NextNode;
 
 	UPROPERTY(category = "Centipede", EditAnywhere)
-	UStaticMesh* NormalNodeMesh;
+	TObjectPtr<UStaticMesh> NormalNodeMesh;
 	UPROPERTY(category = "Centipede", EditAnywhere)
-	UStaticMesh* HeadNodeMesh;
+	TObjectPtr<UStaticMesh> HeadNodeMesh;
 };
