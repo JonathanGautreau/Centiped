@@ -40,4 +40,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Bullet")
 	float Radius = .2f;
+
+	
 };

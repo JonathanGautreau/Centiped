@@ -10,10 +10,15 @@
 // Sets default values
 ACTPFlea::ACTPFlea()
 {
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Flea.SM_Flea"));
-	if (StaticMeshRef.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefBase(TEXT("/Game/Centiped/Meshes/flea.flea"));
+	if (StaticMeshRefBase.Succeeded())
 	{
-		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
+		MeshComponent->SetStaticMesh(StaticMeshRefBase.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefDamaged(TEXT("/Game/Centiped/Meshes/flea2.flea2"));
+	if (StaticMeshRefDamaged.Succeeded())
+	{
+		DamagedMesh = StaticMeshRefDamaged.Object;
 	}
 	
 	// ------- Override properties ------- //
@@ -98,6 +103,10 @@ void ACTPFlea::HitBullet(ACtpBullet* Bullet)
 				GameLoop->bIsFlea = false;
 			Destroy();
 		}
+	}
+	else
+	{
+		MeshComponent->SetStaticMesh(DamagedMesh);
 	}
 }
 

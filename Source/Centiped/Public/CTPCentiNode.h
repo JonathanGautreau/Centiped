@@ -37,6 +37,7 @@ public:
 	AActor* DetectNextObstacle();
 	bool CheckCollisionAt(FVector Location);
 	float FindDistToNextBound(FVector NewLocation) const;
+	void DeleteOutsideBounds();
 	
 	void BecomeHead();
 	void CleanFuturePositions(ACTPCentiNode* NewHeadNode);
