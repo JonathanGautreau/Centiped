@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{eaf73345-8b28-4279-976c-5d60838f9b5f}">
+		<property name="assetPath">
+			<value>Dirt &amp; Sand, Crash &amp; Debris, Gravel Drop On Ground SND1138.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.95495833333333335</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{e5e3d7d2-e8ec-47c2-b9e9-507161cf1239}</destination>
+		</relationship>
+	</object>
+</objects>

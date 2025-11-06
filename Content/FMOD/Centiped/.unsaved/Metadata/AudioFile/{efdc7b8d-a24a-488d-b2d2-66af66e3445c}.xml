@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{efdc7b8d-a24a-488d-b2d2-66af66e3445c}">
+		<property name="assetPath">
+			<value>Magic, Evil, Dark, Magic, Spell, Arcane, Fantasy, Impact, Deep, Hit SND114697.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.97197916666666662</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{e5e3d7d2-e8ec-47c2-b9e9-507161cf1239}</destination>
+		</relationship>
+	</object>
+</objects>

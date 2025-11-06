@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPreset" id="{f39d76ed-4506-4cc0-ad3e-c09639cd26f9}">
+		<property name="name">
+			<value>IsDestroyed</value>
+		</property>
+		<relationship name="folder">
+			<destination>{74a5e39b-23c9-46bd-934c-dc51deff18e0}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{01ec88d2-2360-4e0a-a873-2e5f39a2cc00}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{01ec88d2-2360-4e0a-a873-2e5f39a2cc00}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>False</value>
+			<value>True</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
