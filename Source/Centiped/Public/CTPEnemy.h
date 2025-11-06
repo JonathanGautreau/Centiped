@@ -28,7 +28,7 @@ protected:
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 	UPROPERTY(Category="Enemy", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	UBoxComponent* CollisionBox;
+	TObjectPtr<UBoxComponent> CollisionBox;
 
 public:
 	// Called every frame

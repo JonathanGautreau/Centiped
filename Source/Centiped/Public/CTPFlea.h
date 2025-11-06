@@ -40,5 +40,5 @@ public:
 	float VerticalOffset = 80.f;
 
 	UPROPERTY(category = "Flea", EditAnywhere)
-	UStaticMesh* DamagedMesh;
+	TObjectPtr<UStaticMesh> DamagedMesh;
 };
