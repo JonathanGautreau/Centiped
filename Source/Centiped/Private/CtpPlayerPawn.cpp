@@ -4,10 +4,13 @@
 #include "Centiped/Public/CtpPlayerPawn.h"
 #include "CTPCentiNode.h"
 #include "CTPEnemy.h"
+#include "fmod_studio.hpp"
 #include "CtpHud.h"
 #include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
 #include "EnhancedInputComponent.h"
+#include "FMODStudioModule.h"
+#include "fmod_studio.hpp"
 #include "Centiped/Public/CtpGameMode.h"
 #include "Centiped/Public/CtpBullet.h"
 
@@ -74,6 +77,7 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	{
 		UE_LOG(LogCentiped, Error, TEXT("Failed to load RestartAction from /Game/Centiped/Inputs/IA_Restart"));
 	}
+		
 }
 
 // Called when the game starts or when spawned
@@ -197,6 +201,7 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 {
 	if (bIsPlayerCanShoot)
 	{
+		
 		bIsPlayerCanShoot = false;
 
 		if (bIsOverlappedByEnemy)
@@ -213,6 +218,16 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 				World->SpawnActor<ACtpBullet>(ProjectileClass, InitialPosition, FRotator(), SpawnParams);
 			}
 		}
+		
+		FMOD::Studio::EventDescription* AudioDesc_SHOOT =nullptr;
+		FMOD::Studio::EventInstance* AudioInst_SHOOT =nullptr;
+		IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Player/Shoot", &AudioDesc_SHOOT);
+		AudioDesc_SHOOT->createInstance(&AudioInst_SHOOT);
+		AudioInst_SHOOT->start();
+		AudioInst_SHOOT->release();
+		AudioDesc_SHOOT =nullptr;
+		AudioInst_SHOOT = nullptr;
+		
 	}
 }
 

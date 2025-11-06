@@ -8,6 +8,8 @@
 #include "CTPLog.h"
 #include "CTPScoreSystem.h"
 #include "EngineUtils.h"
+#include "FMODStudioModule.h"
+#include "fmod_studio.hpp"
 
 // Sets default values
 ACtpMushroom::ACtpMushroom()
@@ -116,6 +118,18 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 				// MeshScale = FVector2D(MeshScale.X - .2f, MeshScale.Y - .2f);
 				// MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
 				Life--;
+
+				
+				FMOD::Studio::EventDescription* AudioDesc_MUSHROOMDESTROY =nullptr;
+				FMOD::Studio::EventInstance* AudioInst_MUSHROOMDESTROY =nullptr;
+				IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Mushroom/Mushroom_Destroy", &AudioDesc_MUSHROOMDESTROY);
+				AudioDesc_MUSHROOMDESTROY->createInstance(&AudioInst_MUSHROOMDESTROY);
+				AudioInst_MUSHROOMDESTROY->setParameterByName("LifeLeft",Life);
+				AudioInst_MUSHROOMDESTROY->start();
+				AudioInst_MUSHROOMDESTROY->release();
+				AudioDesc_MUSHROOMDESTROY = nullptr;
+				AudioInst_MUSHROOMDESTROY = nullptr;
+	
 
 				if (Life == 2)
 				{

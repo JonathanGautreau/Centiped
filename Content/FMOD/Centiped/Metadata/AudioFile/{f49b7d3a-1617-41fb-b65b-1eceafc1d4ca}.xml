@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{f49b7d3a-1617-41fb-b65b-1eceafc1d4ca}">
+		<property name="assetPath">
+			<value>Games, Video, Retro, 8 Bit, Bassy Hits SND57438 2.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.18416666666666667</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{e5e3d7d2-e8ec-47c2-b9e9-507161cf1239}</destination>
+		</relationship>
+	</object>
+</objects>
