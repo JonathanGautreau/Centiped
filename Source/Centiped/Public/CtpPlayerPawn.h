@@ -89,8 +89,5 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")
 	TSubclassOf<ACtpBullet> ProjectileClass = ACtpBullet::StaticClass();
 	
-	UPROPERTY(EditAnywhere, Category="PlayerPawn")
-	FVector LastSafeLocation;
-	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 };
