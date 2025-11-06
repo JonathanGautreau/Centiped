@@ -49,7 +49,7 @@ void ACtpHud::DrawHUD()
 	if (bDisplayText)
 	{
 		FString Text1 = TEXT("GAME OVER");
-		FString Text2 = TEXT("Press ENTER");
+		FString Text2 = TEXT("Insert a coin");
 		FString Text3 = TEXT("to restart the game");
 		float Text1Width;
 		float Text2Width;
