@@ -293,6 +293,11 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 				AddHitSwitch(NextVerticalLocation, NextNode);
 			}
 		}
+
+		// Limits of the game zone
+		NewLocation.Y = FMath::Clamp(NewLocation.Y, GameMode->Bounds.Min.X + 0.5f * MeshScale.X * 100, GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100);
+		NewLocation.Z = FMath::Clamp(NewLocation.Z, GameMode->Bounds.Min.Y + 0.5f * MeshScale.Y * 100, GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100);
+		
 		SetActorLocation(NewLocation);
 	}
 }
