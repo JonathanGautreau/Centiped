@@ -39,16 +39,16 @@ public:
 	FVector2D MeshScale = FVector2D(.8f, .8f);
 	
 	UPROPERTY(editAnywhere, Category="Mushroom")
-	UStaticMesh* MeshMushroom;
+	TObjectPtr<UStaticMesh> MeshMushroom;
 	UPROPERTY(editAnywhere, Category="Mushroom")
-	UStaticMesh* MeshMushroomDamaged;
+	TObjectPtr<UStaticMesh> MeshMushroomDamaged;
 	UPROPERTY(editAnywhere, Category="Mushroom")
-	UStaticMesh* MeshMushroomHeavilyDamaged;
+	TObjectPtr<UStaticMesh> MeshMushroomHeavilyDamaged;
 
 	UPROPERTY(EditAnywhere, Category="Mushroom")
-	UMaterialInstance* MatInstNormalMushroom;
+	TObjectPtr<UMaterialInstance> MatInstNormalMushroom;
 	UPROPERTY(EditAnywhere, Category="Mushroom")
-	UMaterialInstance* MatInstPoisonnedMushroom;
+	TObjectPtr<UMaterialInstance> MatInstPoisonnedMushroom;
 
 	UPROPERTY(EditAnywhere, Category="Mushroom")
 	int Life = 3;
