@@ -33,7 +33,7 @@ public:
 
 	// ------- Specific fucntions ------- //
 	void RandomSpeedOnX();
-	
+
 	// ------- Specific properties ------- //
 	UPROPERTY(EditAnywhere, category ="Spider")
 	float DistToPlayer;
@@ -44,9 +44,9 @@ public:
 	UPROPERTY(EditAnywhere, category ="Spider")
 	float LastLayerPoint;
 
-	UPROPERTY(EditAnywhere,Category="Spider")
+	UPROPERTY(EditAnywhere, Category="Spider")
 	FVector2D Direction = FVector2D(0, 0);
 
-	UPROPERTY(EditAnywhere,Category="Spider")
+	UPROPERTY(EditAnywhere, Category="Spider")
 	FVector2D Speed = FVector2D(150.f, 250.f);
 };

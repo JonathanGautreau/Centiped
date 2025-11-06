@@ -10,7 +10,8 @@
 
 ACtpPlayerController::ACtpPlayerController()
 {
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(TEXT("/Game/Centiped/Inputs/IMC_Default.IMC_Default"));
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(
+		TEXT("/Game/Centiped/Inputs/IMC_Default.IMC_Default"));
 	if (InputMappingContextRef.Succeeded())
 	{
 		InputMapping = InputMappingContextRef.Object;
@@ -18,7 +19,8 @@ ACtpPlayerController::ACtpPlayerController()
 	}
 	else
 	{
-		UE_LOG(LogCentiped, Error, TEXT("Failed to load Input Mapping Context from /Game/Centiped/Inputs/IMC_Default.IMC_Default"));
+		UE_LOG(LogCentiped, Error,
+		       TEXT("Failed to load Input Mapping Context from /Game/Centiped/Inputs/IMC_Default.IMC_Default"));
 	}
 }
 
@@ -63,7 +65,8 @@ void ACtpPlayerController::SetupInputComponent()
 
 	if (const ULocalPlayer* LocalPlayer = GetLocalPlayer())
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>())
 		{
 			if (!InputMapping.IsNull())
 			{

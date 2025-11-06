@@ -19,7 +19,7 @@ public:
 	void SetScore(int NewScore);
 	void ResetScore();
 	void ScoreMushrooms();
-	
+
 private:
 	UPROPERTY(Category="ScoreSystem", VisibleAnywhere, meta=(AllowPrivateAccess = "true"))
 	int Score;

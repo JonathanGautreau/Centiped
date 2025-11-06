@@ -33,8 +33,8 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void  NotifyActorBeginOverlap(AActor* OtherActor) override;
-	
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
 	virtual void Move(float Deltatime);
 	virtual void HitMushroom(ACtpMushroom* OtherActor);
 	virtual void HitPlayer(ACtpPlayerPawn* OtherActor);
@@ -48,7 +48,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy")
 	FVector2D MeshScale = FVector2D(.8f, .8f);
-	
+
 	UPROPERTY(category = "Enemy", EditAnywhere)
 	FVector2D HitSwitch = FVector2D::Zero();
 };

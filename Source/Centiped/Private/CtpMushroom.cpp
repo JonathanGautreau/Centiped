@@ -15,42 +15,46 @@ ACtpMushroom::ACtpMushroom()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-	
+
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	
+
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Mushroom.Mushroom"));
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>
+		StaticMeshRef(TEXT("/Game/Centiped/Meshes/Mushroom.Mushroom"));
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 		MeshMushroom = StaticMeshRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefBase2(TEXT("/Game/Centiped/Meshes/Mushroom2.Mushroom2"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefBase2(
+		TEXT("/Game/Centiped/Meshes/Mushroom2.Mushroom2"));
 	if (StaticMeshRefBase2.Succeeded())
 	{
 		MeshMushroomDamaged = StaticMeshRefBase2.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefBase3(TEXT("/Game/Centiped/Meshes/Mushroom3.Mushroom3"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefBase3(
+		TEXT("/Game/Centiped/Meshes/Mushroom3.Mushroom3"));
 	if (StaticMeshRefBase3.Succeeded())
 	{
-
 		MeshMushroomHeavilyDamaged = StaticMeshRefBase3.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> NormalMatInstanceRef(TEXT("/Game/Centiped/Materials/MI_DefaultMat_Green.MI_DefaultMat_Green"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> NormalMatInstanceRef(
+		TEXT("/Game/Centiped/Materials/MI_DefaultMat_Green.MI_DefaultMat_Green"));
 	if (NormalMatInstanceRef.Succeeded())
 	{
 		MatInstNormalMushroom = NormalMatInstanceRef.Object;
 	}
-	
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PoisonMatInstanceRef(TEXT("/Game/Centiped/Materials/MI_DefaultMat_White.MI_DefaultMat_White"));
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> PoisonMatInstanceRef(
+		TEXT("/Game/Centiped/Materials/MI_DefaultMat_White.MI_DefaultMat_White"));
 	if (PoisonMatInstanceRef.Succeeded())
 	{
 		MatInstPoisonnedMushroom = PoisonMatInstanceRef.Object;
 	}
-	
+
 
 	MeshComponent->SetGenerateOverlapEvents(true);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -60,9 +64,9 @@ ACtpMushroom::ACtpMushroom()
 	MeshComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block); // Collisions with Player
 	MeshComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); // Collisions with Bullets
 	MeshComponent->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Overlap); // Collisions with Centipede
-	
+
 	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
-	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
+	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0, FVector4(0.2f, 0.2f, 0, 1.0f));
 	MeshComponent->SetupAttachment(RootComponent);
 }
 
@@ -94,19 +98,19 @@ void ACtpMushroom::InitializePosition(const FVector& InitialPosition)
 void ACtpMushroom::BecomeNormal()
 {
 	bIsPoison = false;
-	MeshComponent->SetMaterial(0,MatInstNormalMushroom);
+	MeshComponent->SetMaterial(0, MatInstNormalMushroom);
 }
 
 void ACtpMushroom::BecomePoison()
 {
 	bIsPoison = true;
-	MeshComponent->SetMaterial(0,MatInstPoisonnedMushroom);
+	MeshComponent->SetMaterial(0, MatInstPoisonnedMushroom);
 }
 
 void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	
+
 	if (OtherActor && OtherActor != this)
 	{
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
@@ -125,7 +129,7 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 				{
 					MeshComponent->SetStaticMesh(MeshMushroomHeavilyDamaged);
 				}
-				
+
 				if (Life == 0)
 				{
 					if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())

@@ -16,7 +16,7 @@ class CENTIPED_API ACTPCentiNode : public ACTPEnemy
 public:
 	// Sets default values for this actor's properties
 	ACTPCentiNode();
-	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -38,33 +38,34 @@ public:
 	bool CheckCollisionAt(FVector Location);
 	float FindDistToNextBound(FVector NewLocation) const;
 	void DeleteOutsideBounds();
-	
+
 	void BecomeHead();
 	void CleanFuturePositions(ACTPCentiNode* NewHeadNode);
-	bool ShouldKeepPosition(ACTPCentiNode* Node, const FVector& NewHeadPos, int32 PositionIndex, ACTPCentiNode* NewHeadNode);
+	bool ShouldKeepPosition(ACTPCentiNode* Node, const FVector& NewHeadPos, int32 PositionIndex,
+	                        ACTPCentiNode* NewHeadNode);
 
 	// ------- Specific properties ------- //
 	UPROPERTY(Category="Centipede", EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	bool bIsHead;
-	UPROPERTY(Category="Centipede",EditAnywhere)
+	UPROPERTY(Category="Centipede", EditAnywhere)
 	bool bIsFalling = true;
-	UPROPERTY(category="Centipede",EditAnywhere)
+	UPROPERTY(category="Centipede", EditAnywhere)
 	bool bIsCollidingPoison = false;
-	UPROPERTY(Category="Centipede",EditAnywhere)
+	UPROPERTY(Category="Centipede", EditAnywhere)
 	bool bCentipedeExists = false;
-	UPROPERTY(Category="Centipede",EditAnywhere)
+	UPROPERTY(Category="Centipede", EditAnywhere)
 	bool bIsMovingVertically = false;
 
-	UPROPERTY(Category="Centipede",EditAnywhere)
+	UPROPERTY(Category="Centipede", EditAnywhere)
 	float SmoothedDeltaTime = 0.f;
-	UPROPERTY(Category="Centipede",EditAnywhere)
+	UPROPERTY(Category="Centipede", EditAnywhere)
 	float RemainingVerticalOffset = 0.f;
 	UPROPERTY(category = "Centipede", EditAnywhere)
 	float Offset = MeshScale.Y * 100;
-	
-	UPROPERTY(Category="Centipede",EditAnywhere)
+
+	UPROPERTY(Category="Centipede", EditAnywhere)
 	TArray<FVector> HitSwitches;
-	
+
 	UPROPERTY(Category = "Centipede", EditAnywhere)
 	FVector2D MovingDirection = FVector2D(-1, 0);
 	UPROPERTY(category = "Centipede", EditAnywhere)

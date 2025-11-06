@@ -15,14 +15,14 @@ UCLASS()
 class CENTIPED_API UCtpGameLoop : public UWorldSubsystem
 {
 	GENERATED_BODY()
-	
+
 protected:
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	int SpawnedMushroomsCount;
 
 private:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	
+
 	void GenerateMushrooms(UWorld* World, ACtpGameMode* GameMode);
 	void GenerateAvailableCells(ACtpGameMode* GameMode);
 	void RemoveCellNeighbors(int Col, int Row, int32 NumberOfDeletedCells);
@@ -37,7 +37,7 @@ private:
 	void OnResetRoundComplete();
 	UFUNCTION()
 	void OnGameOverComplete();
-	
+
 	UPROPERTY(Category="GameLoop", EditAnywhere)
 	TArray<FIntPoint> AvailableCells;
 
@@ -52,7 +52,7 @@ public:
 	UFUNCTION()
 	void RestartGame();
 	void GameOver();
-	
+
 	void GenerateCentipede(UWorld* World, FActorSpawnParameters& SpawnParams, ACtpGameMode* GameMode);
 	void CheckFleaGeneration();
 	void CheckScorpionGeneration();
@@ -60,13 +60,13 @@ public:
 
 	int GetSpawnedMushroomsCount() const;
 	void SetSpawnedMushroomsCount(int Count);
-	
+
 	UPROPERTY(Category = "GameLoop", EditAnywhere)
 	int CentipedeSize = 10;
-	
+
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	int InitialNumberOfMushrooms = 20;
-	
+
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	bool bIsFlea;
 

@@ -19,7 +19,7 @@ ACtpGameMode::ACtpGameMode()
 void ACtpGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (GEngine && GEngine->GameViewport)
 	{
 		GEngine->GameViewport->EngineShowFlags.SetLighting(false);
@@ -36,7 +36,7 @@ void ACtpGameMode::BeginPlay()
 		{
 			UE_LOG(LogCentiped, Error, TEXT("GameLoop wasn't instantiated correctly"));
 		}
-		
+
 		ScoreSystem = World->GetSubsystem<UCTPScoreSystem>();
 		if (ScoreSystem)
 		{

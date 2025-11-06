@@ -66,7 +66,7 @@ void ACtpHud::DrawHUD()
 		float X2 = ScreenX - (Text2Width / 2.f);
 		float X3 = ScreenX - (Text3Width / 2.f);
 		FLinearColor BackgroundColor = FLinearColor(0.f, 0.f, 0.f, 0.7f);
-		
+
 		DrawRect(BackgroundColor, X3 - 10, Canvas->SizeY / 2.f - 60, Text3Width + 20, 150);
 		DrawText(Text1, TextColor, X1, Canvas->SizeY / 2.f - 50, CustomFont, 1.0f, false);
 		DrawText(Text2, TextColor, X2, Canvas->SizeY / 2.f, CustomFont, 1.0f, false);
