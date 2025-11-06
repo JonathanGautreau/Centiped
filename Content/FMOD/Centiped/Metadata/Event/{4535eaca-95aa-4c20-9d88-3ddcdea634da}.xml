@@ -5,7 +5,7 @@
 			<value>Spider_Destroy</value>
 		</property>
 		<property name="outputFormat">
-			<value>0</value>
+			<value>1</value>
 		</property>
 		<relationship name="folder">
 			<destination>{84c02b69-9a1e-47ab-aafc-b14f6203b7da}</destination>
@@ -59,11 +59,20 @@
 	<object class="EventAutomatableProperties" id="{528e0e45-0d39-430e-bab2-734a85c19274}" />
 	<object class="MarkerTrack" id="{30323dd3-945a-4aa5-9ec0-bf71e6c3d6bc}" />
 	<object class="GroupTrack" id="{4b8d67e5-0a02-449d-941d-70ff5f71314d}">
+		<relationship name="modules">
+			<destination>{25c228c9-21c3-4bf7-9727-7a1240daf674}</destination>
+			<destination>{0d5cea51-8b1b-4973-aa01-b12f627606fd}</destination>
+		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{879e0382-7f1d-428b-aa44-b311d4bb4c97}</destination>
 		</relationship>
 	</object>
-	<object class="Timeline" id="{9c597c89-9d45-4e0b-818c-535b4b7f589f}" />
+	<object class="Timeline" id="{9c597c89-9d45-4e0b-818c-535b4b7f589f}">
+		<relationship name="modules">
+			<destination>{25c228c9-21c3-4bf7-9727-7a1240daf674}</destination>
+			<destination>{0d5cea51-8b1b-4973-aa01-b12f627606fd}</destination>
+		</relationship>
+	</object>
 	<object class="EventMixerMaster" id="{1877aa39-856f-44dc-b80c-dbc4abe204ad}">
 		<relationship name="effectChain">
 			<destination>{35e5d33b-289e-4315-83d6-8f93ac07ad57}</destination>
@@ -81,7 +90,35 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{11377a5b-15f6-4748-b575-0783532a058a}" />
+	<object class="SingleSound" id="{25c228c9-21c3-4bf7-9727-7a1240daf674}">
+		<property name="length">
+			<value>0.79866586282960572</value>
+		</property>
+		<property name="volume">
+			<value>-24</value>
+		</property>
+		<property name="pitch">
+			<value>3.4000001</value>
+		</property>
+		<relationship name="audioFile">
+			<destination>{efdc7b8d-a24a-488d-b2d2-66af66e3445c}</destination>
+		</relationship>
+	</object>
+	<object class="SingleSound" id="{0d5cea51-8b1b-4973-aa01-b12f627606fd}">
+		<property name="length">
+			<value>0.63735822120256291</value>
+		</property>
+		<property name="pitch">
+			<value>7</value>
+		</property>
+		<relationship name="audioFile">
+			<destination>{eaf73345-8b28-4279-976c-5d60838f9b5f}</destination>
+		</relationship>
+	</object>
 	<object class="EventMixerGroup" id="{879e0382-7f1d-428b-aa44-b311d4bb4c97}">
+		<property name="volume">
+			<value>-12</value>
+		</property>
 		<property name="name">
 			<value>Audio 1</value>
 		</property>
