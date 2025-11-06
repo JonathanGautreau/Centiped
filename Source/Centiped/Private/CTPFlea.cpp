@@ -6,6 +6,8 @@
 #include "CtpMushroom.h"
 #include "CtpBullet.h"
 #include "CtpPlayerPawn.h"
+#include "FMODStudioModule.h"
+#include "fmod_studio.hpp"
 
 // Sets default values
 ACTPFlea::ACTPFlea()
@@ -90,9 +92,20 @@ void ACTPFlea::HitBullet(ACtpBullet* Bullet)
 	Super::HitBullet(Bullet);
 	
  	Life--;
-
+	
+	FMOD::Studio::EventDescription* AudioDesc_FLEADESTROY =nullptr;
+	FMOD::Studio::EventInstance* AudioInst_FLEADESTROY =nullptr;
+	IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Ennemy/Flea_Destroy", &AudioDesc_FLEADESTROY);
+	AudioDesc_FLEADESTROY->createInstance(&AudioInst_FLEADESTROY);
+	
 	if (Life == 0 )
 	{
+		AudioInst_FLEADESTROY->setParameterByName("bIsDestroyed",1);
+		AudioInst_FLEADESTROY->start();
+		AudioInst_FLEADESTROY->release();
+		AudioDesc_FLEADESTROY = nullptr;
+		AudioInst_FLEADESTROY = nullptr;
+		
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
 			if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
@@ -106,6 +119,12 @@ void ACTPFlea::HitBullet(ACtpBullet* Bullet)
 	}
 	else
 	{
+		AudioInst_FLEADESTROY->setParameterByName("bIsDestroyed",0);
+		AudioInst_FLEADESTROY->start();
+		AudioInst_FLEADESTROY->release();
+		AudioDesc_FLEADESTROY =nullptr;
+		AudioInst_FLEADESTROY = nullptr;
+		
 		MeshComponent->SetStaticMesh(DamagedMesh);
 	}
 }

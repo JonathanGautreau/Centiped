@@ -15,6 +15,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "CTPScoreSystem.h"
+#include "FMODStudioModule.h"
+#include "fmod_studio.hpp"
 #include "Engine/Engine.h"
 
 
@@ -333,6 +335,15 @@ void UCtpGameLoop::GameOver()
 void UCtpGameLoop::OnGameOverComplete()
 {
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), .0f);
+
+	FMOD::Studio::EventDescription* AudioDesc_GAMEOVER=nullptr;
+	FMOD::Studio::EventInstance* AudioInst_GAMEOVER =nullptr;
+	IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/GameLoop/GameOver", &AudioDesc_GAMEOVER);
+	AudioDesc_GAMEOVER->createInstance(&AudioInst_GAMEOVER);
+	AudioInst_GAMEOVER->start();
+	AudioInst_GAMEOVER->release();
+	AudioDesc_GAMEOVER = nullptr;
+	AudioInst_GAMEOVER = nullptr;
 	
 	// Display Game Over text
 	if (UWorld* World = GetWorld())
@@ -360,6 +371,15 @@ void UCtpGameLoop::RestartGame()
 			if (Cast<ACtpMushroom>(*It))
 				It->Destroy();
 		}
+
+		FMOD::Studio::EventDescription* AudioDesc_NEWGAME=nullptr;
+		FMOD::Studio::EventInstance* AudioInst_NEWGAME =nullptr;
+		IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/GameLoop/NewGame", &AudioDesc_NEWGAME);
+		AudioDesc_NEWGAME->createInstance(&AudioInst_NEWGAME);
+		AudioInst_NEWGAME->start();
+		AudioInst_NEWGAME->release();
+		AudioDesc_NEWGAME = nullptr;
+		AudioInst_NEWGAME = nullptr;
 
 		// Reset booleans for enemy generations
 		bIsFlea = false;

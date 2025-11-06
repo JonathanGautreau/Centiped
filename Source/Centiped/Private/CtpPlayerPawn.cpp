@@ -4,7 +4,7 @@
 #include "Centiped/Public/CtpPlayerPawn.h"
 #include "CTPCentiNode.h"
 #include "CTPEnemy.h"
-
+#include "fmod_studio.hpp"
 #include "CtpHud.h"
 #include "CtpMushroom.h"
 #include "Centiped/Public/CTPLog.h"
@@ -77,16 +77,7 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	{
 		UE_LOG(LogCentiped, Error, TEXT("Failed to load RestartAction from /Game/Centiped/Inputs/IA_Restart"));
 	}
-
-	AudioDescription_SHOOT = nullptr;
-	AudioInstance_SHOOT = nullptr;
-	IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Player/Shoot", &AudioDescription_SHOOT);
-	AudioDescription_SHOOT->createInstance(&AudioInstance_SHOOT);
-	
-	
-
-
-	
+		
 }
 
 // Called when the game starts or when spawned
@@ -227,13 +218,16 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 				World->SpawnActor<ACtpBullet>(ProjectileClass, InitialPosition, FRotator(), SpawnParams);
 			}
 		}
-		if (!AudioInstance_SHOOT)
-		{
-			AudioDescription_SHOOT->createInstance(&AudioInstance_SHOOT);
-		}
-		AudioInstance_SHOOT->start();
-		AudioInstance_SHOOT->release();
-		AudioInstance_SHOOT = nullptr;
+		
+		FMOD::Studio::EventDescription* AudioDesc_SHOOT =nullptr;
+		FMOD::Studio::EventInstance* AudioInst_SHOOT =nullptr;
+		IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Player/Shoot", &AudioDesc_SHOOT);
+		AudioDesc_SHOOT->createInstance(&AudioInst_SHOOT);
+		AudioInst_SHOOT->start();
+		AudioInst_SHOOT->release();
+		AudioDesc_SHOOT =nullptr;
+		AudioInst_SHOOT = nullptr;
+		
 	}
 }
 

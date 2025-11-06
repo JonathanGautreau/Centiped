@@ -4,9 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "CtpBullet.h"
-#include "FMODEvent.h"
-
-#include "fmod_studio.hpp"
 #include "GameFramework/Pawn.h"
 #include "CtpPlayerPawn.generated.h"
 
@@ -88,12 +85,6 @@ public:
 	void LoseLife();
 	void GainLife();
 
-	UPROPERTY(editAnywhere, Category="PlayerPawn")
-	UFMODEvent* SOUNDTOPLAY;
-
-	//UPROPERTY(editAnywhere, Category="PlayerPawn")
-	FMOD::Studio::EventDescription* AudioDescription_SHOOT;
-	FMOD::Studio::EventInstance* AudioInstance_SHOOT;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")

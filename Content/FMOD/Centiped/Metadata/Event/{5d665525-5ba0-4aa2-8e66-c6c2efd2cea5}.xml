@@ -5,7 +5,7 @@
 			<value>Centiped_Destroy</value>
 		</property>
 		<property name="outputFormat">
-			<value>0</value>
+			<value>1</value>
 		</property>
 		<relationship name="folder">
 			<destination>{84c02b69-9a1e-47ab-aafc-b14f6203b7da}</destination>
@@ -65,12 +65,20 @@
 		<relationship name="automationTracks">
 			<destination>{2de885f8-3f0c-4ed2-beaf-1881b3ea01c9}</destination>
 		</relationship>
+		<relationship name="modules">
+			<destination>{54a0d9f2-b250-4816-a478-f311c3d0a041}</destination>
+			<destination>{7b65eedb-4a7c-43f9-bb29-fc488ec00858}</destination>
+		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{45c4b516-8d25-4545-b74a-63ef6c30e572}</destination>
 		</relationship>
 	</object>
 	<object class="Timeline" id="{34a348a5-9dac-48b0-9368-27c87ff6d1b5}" />
 	<object class="ParameterProxy" id="{a0cbfe4a-bb84-4866-9935-e47590242bdd}">
+		<relationship name="modules">
+			<destination>{54a0d9f2-b250-4816-a478-f311c3d0a041}</destination>
+			<destination>{7b65eedb-4a7c-43f9-bb29-fc488ec00858}</destination>
+		</relationship>
 		<relationship name="preset">
 			<destination>{84ccb230-efb8-4118-9084-412a388c2ab1}</destination>
 		</relationship>
@@ -95,6 +103,19 @@
 	<object class="AutomationTrack" id="{2de885f8-3f0c-4ed2-beaf-1881b3ea01c9}">
 		<relationship name="automator">
 			<destination>{28631741-5e34-4acc-affc-40a0d3ea4ee8}</destination>
+		</relationship>
+	</object>
+	<object class="SingleSound" id="{54a0d9f2-b250-4816-a478-f311c3d0a041}">
+		<property name="start">
+			<value>1</value>
+		</property>
+		<relationship name="audioFile">
+			<destination>{5035e0ec-8b17-4e98-b1cb-553ca334d55d}</destination>
+		</relationship>
+	</object>
+	<object class="SingleSound" id="{7b65eedb-4a7c-43f9-bb29-fc488ec00858}">
+		<relationship name="audioFile">
+			<destination>{f49b7d3a-1617-41fb-b65b-1eceafc1d4ca}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{45c4b516-8d25-4545-b74a-63ef6c30e572}">
@@ -147,6 +168,9 @@
 		</relationship>
 	</object>
 	<object class="FlangerEffect" id="{50bc334a-b8a1-4c7b-aff6-e5db7a58be79}">
+		<property name="bypass">
+			<value>true</value>
+		</property>
 		<property name="rate">
 			<value>20</value>
 		</property>
@@ -160,7 +184,7 @@
 			<value>0</value>
 		</property>
 		<property name="value">
-			<value>-12</value>
+			<value>0</value>
 		</property>
 		<property name="curveShape">
 			<value>0.14343892</value>
@@ -171,7 +195,7 @@
 			<value>1.0051878078817733</value>
 		</property>
 		<property name="value">
-			<value>-80</value>
+			<value>-36</value>
 		</property>
 	</object>
 </objects>
