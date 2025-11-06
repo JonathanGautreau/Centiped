@@ -69,6 +69,7 @@ void ACTPEnemy::NotifyActorBeginOverlap(AActor* OtherActor)
 	{
 		if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
 		{
+			GEngine->AddOnScreenDebugMessage(1,1,FColor::Red,"hitdetected");
 			HitMushroom(Mushroom);
 		}
 		if (ACtpPlayerPawn* PlayerPawn = Cast<ACtpPlayerPawn>(OtherActor))
