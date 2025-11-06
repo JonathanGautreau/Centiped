@@ -34,10 +34,10 @@ public:
 	void BecomeNormal();
 
 	UStaticMeshComponent* GetMeshComponent() const { return MeshComponent; }
-	
+
 	UPROPERTY(EditAnywhere, Category="Mushroom")
 	FVector2D MeshScale = FVector2D(.8f, .8f);
-	
+
 	UPROPERTY(editAnywhere, Category="Mushroom")
 	TObjectPtr<UStaticMesh> MeshMushroom;
 	UPROPERTY(editAnywhere, Category="Mushroom")

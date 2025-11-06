@@ -18,10 +18,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	void DestroyOutsideBounds();
 	void BulletVelocity(float DeltaTime);
-	
+
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 public:
@@ -40,6 +40,4 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Bullet")
 	float Radius = .2f;
-
-	
 };

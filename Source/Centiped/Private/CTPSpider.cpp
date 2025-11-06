@@ -17,9 +17,9 @@ ACTPSpider::ACTPSpider()
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 	}
-	
+
 	// ------- Override properties ------- //
-	MeshScale = FVector2D(.6f,.6f);
+	MeshScale = FVector2D(.6f, .6f);
 	CollisionBox->SetBoxExtent(FVector(50.f, MeshScale.X * 100 * 0.5f, MeshScale.Y * 100 * 0.5f));
 	Life = 1;
 
@@ -48,7 +48,7 @@ void ACTPSpider::Move(float Deltatime)
 		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))
 		{
 			FVector NewLocation = GetActorLocation();
-			
+
 			if (NewLocation.Z < GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5)
 			{
 				RandomSpeedOnX();
@@ -69,10 +69,10 @@ void ACTPSpider::Move(float Deltatime)
 				RandomSpeedOnX();
 				Direction.X = -Direction.X;
 			}
-			
+
 			NewLocation.Y += Direction.X * Speed.X * Deltatime;
 			NewLocation.Z += Direction.Y * Speed.Y * Deltatime;
-			
+
 			SetActorLocation(NewLocation);
 		}
 	}
@@ -115,12 +115,13 @@ void ACTPSpider::HitBullet(ACtpBullet* Bullet)
 		{
 			APlayerController* PlayerController = World->GetFirstPlayerController();
 			if (!PlayerController) return;
-			
+
 			if (ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(PlayerController->GetPawn()))
 			{
 				if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
 				{
-					HitSwitch = FVector2D(Player->GetActorLocation().Y - GetActorLocation().Y, Player->GetActorLocation().Z - GetActorLocation().Z);
+					HitSwitch = FVector2D(Player->GetActorLocation().Y - GetActorLocation().Y,
+					                      Player->GetActorLocation().Z - GetActorLocation().Z);
 					DistToPlayer = HitSwitch.Size();
 					if (DistToPlayer > FirstLayerPoint)
 					{

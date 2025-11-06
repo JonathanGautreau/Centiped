@@ -13,11 +13,11 @@ UCLASS()
 class CENTIPED_API ACtpHud : public AHUD
 {
 	GENERATED_BODY()
-	
+
 public:
 	ACtpHud();
 	void ShowGameOverText(bool bDisplayGameOverText);
-	
+
 protected:
 	virtual void DrawHUD() override;
 

@@ -6,4 +6,4 @@
 
 DEFINE_LOG_CATEGORY(LogCentiped);
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Centiped, "Centiped" );
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, Centiped, "Centiped");

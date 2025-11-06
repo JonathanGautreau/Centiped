@@ -33,9 +33,9 @@ public:
 	virtual void HitBullet(ACtpBullet* Bullet) override;
 
 	// ------- Specific properties ------- //
-	UPROPERTY(EditAnywhere,Category="Scorpion")
-	bool  bIsLeftDirection;
-	
-	UPROPERTY(EditAnywhere,Category="Scorpion")
+	UPROPERTY(EditAnywhere, Category="Scorpion")
+	bool bIsLeftDirection;
+
+	UPROPERTY(EditAnywhere, Category="Scorpion")
 	TArray<ACtpMushroom*> MushToPoison;
 };

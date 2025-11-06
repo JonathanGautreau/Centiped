@@ -12,14 +12,15 @@
 // Sets default values
 ACTPScorpion::ACTPScorpion()
 {
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Scorpion.Scorpion"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>
+		StaticMeshRef(TEXT("/Game/Centiped/Meshes/Scorpion.Scorpion"));
 	if (StaticMeshRef.Succeeded())
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 	}
-	
+
 	// ------- Override properties ------- //
-	MeshScale = FVector2D(.6f,.6f);
+	MeshScale = FVector2D(.6f, .6f);
 	CollisionBox->SetBoxExtent(FVector(50.f, MeshScale.X * 100 * 0.5f, MeshScale.Y * 100 * 0.5f));
 	MoveSpeed = 850;
 	Life = 1;
@@ -41,11 +42,11 @@ void ACTPScorpion::Move(float Deltatime)
 {
 	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 	FVector2D NewDirection = FVector2D::ZeroVector;
-	if (bIsLeftDirection) NewDirection = FVector2D(-1,0);
-	else NewDirection = FVector2D(1,0);
+	if (bIsLeftDirection) NewDirection = FVector2D(-1, 0);
+	else NewDirection = FVector2D(1, 0);
 	NewLocation += NewDirection * Deltatime * MoveSpeed;
-	SetActorLocation(FVector(0,NewLocation.X,NewLocation.Y));
-	
+	SetActorLocation(FVector(0, NewLocation.X, NewLocation.Y));
+
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		if (FMath::Abs(NewLocation.X) > GameMode->Bounds.Max.X)
@@ -53,7 +54,7 @@ void ACTPScorpion::Move(float Deltatime)
 			for (auto Mush : MushToPoison)
 			{
 				Mush->BecomePoison();
-								
+
 				if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop()) GameLoop->PoisonedMush.Emplace(Mush);
 			}
 			MushToPoison.Empty();
@@ -72,7 +73,7 @@ void ACTPScorpion::NotifyActorBeginOverlap(AActor* OtherActor)
 void ACTPScorpion::HitMushroom(ACtpMushroom* Mushroom)
 {
 	Super::HitMushroom(Mushroom);
-	
+
 	MushToPoison.Emplace(Mushroom);
 }
 

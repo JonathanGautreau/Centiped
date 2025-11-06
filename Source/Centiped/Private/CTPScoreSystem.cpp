@@ -23,10 +23,10 @@ void UCTPScoreSystem::SetScore(const int NewScore)
 	if (!PlayerController) return;
 	ACtpPlayerPawn* Player = Cast<ACtpPlayerPawn>(PlayerController->GetPawn());
 	if (!Player) return;
-	
+
 	if (FMath::FloorToInt(NewScore / 10000.0f) > FMath::FloorToInt(Score / 10000.0f))
 		Player->GainLife();
-		
+
 	// Max value for standard difficulty
 	if (NewScore > 999999)
 		Score = 0;

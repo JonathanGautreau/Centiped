@@ -23,13 +23,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int Height = 1920;
-	
+
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int Width = 1600;
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int HeightScreen = 2304;
-	
+
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int WidthScreen = 1920;
 
@@ -38,25 +38,24 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int Rows = static_cast<int>(Height / SquareSize.Y);
-	
+
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	int Columns = static_cast<int>(Width / SquareSize.X);
-	
+
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	FBox2D Bounds = FBox2D(FVector2D(-(Width / 2), -(Height / 2)), FVector2D(Width / 2, Height / 2));
 
 	UPROPERTY(VisibleAnywhere, Category="Game")
-	FBox2D BoundsScreen = FBox2D(FVector2D(-(WidthScreen / 2), -(HeightScreen / 2)), FVector2D(WidthScreen / 2, HeightScreen / 2));
+	FBox2D BoundsScreen = FBox2D(FVector2D(-(WidthScreen / 2), -(HeightScreen / 2)),
+	                             FVector2D(WidthScreen / 2, HeightScreen / 2));
 
 	UCtpGameLoop* GetGameLoop() const { return GameLoop; };
 	UCTPScoreSystem* GetScoreSystem() const { return ScoreSystem; };
 
 protected:
-	
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	UCtpGameLoop* GameLoop;
-	
+
 	UPROPERTY(VisibleAnywhere, Category="Game")
 	UCTPScoreSystem* ScoreSystem;
 };
-

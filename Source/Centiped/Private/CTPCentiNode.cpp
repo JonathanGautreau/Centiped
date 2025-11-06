@@ -38,7 +38,7 @@ void ACTPCentiNode::Tick(float DeltaTime)
 {
 	float ClampedDeltaTime = FMath::Clamp(DeltaTime, 0.0f, 1.f / 30.f);
 	SmoothedDeltaTime = FMath::Lerp(ClampedDeltaTime, DeltaTime, 0.1f);
-	
+
 	Super::Tick(SmoothedDeltaTime);
 }
 
@@ -49,10 +49,10 @@ void ACTPCentiNode::Move(float DeltaTime)
 		if (PrevNode == nullptr)
 		{
 			MeshComponent->SetStaticMesh(HeadNodeMesh);
-			bIsHead = true;		//If no Previous node, this node become a head
+			bIsHead = true; //If no Previous node, this node become a head
 		}
 	}
-	
+
 	if (bIsHead)
 	{
 		MoveTheHead(DeltaTime);
@@ -83,23 +83,24 @@ void ACTPCentiNode::Move(float DeltaTime)
 void ACTPCentiNode::FollowPrevNode(float DeltaTime)
 {
 	if (!PrevNode || HitSwitches.Num() == 0) return;
-	
+
 	FVector Current = GetActorLocation();
 	float MoveStep = MoveSpeed * DeltaTime;
-	
+
 	if (HitSwitches.Num() == 0) return;
-		
+
 	FVector Target = HitSwitches[0];
 	int BestTargetIndex = 0;
-	
+
 	for (int32 i = 1; i < FMath::Min(3, HitSwitches.Num()); ++i)
 	{
 		FVector PotentialTarget = HitSwitches[i];
 		FVector ToPotential = PotentialTarget - Current;
-		
+
 		if (ToPotential.Size() <= MoveStep * 2.f)
 		{
-			float AngleDeg = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct((Target - Current).GetSafeNormal(), ToPotential.GetSafeNormal())));
+			float AngleDeg = FMath::RadiansToDegrees(
+				FMath::Acos(FVector::DotProduct((Target - Current).GetSafeNormal(), ToPotential.GetSafeNormal())));
 			if (AngleDeg < 60.f)
 			{
 				Target = PotentialTarget;
@@ -107,10 +108,10 @@ void ACTPCentiNode::FollowPrevNode(float DeltaTime)
 			}
 		}
 	}
-	
+
 	FVector ToTarget = Target - Current;
 	float Distance = ToTarget.Size();
-	
+
 	if (Distance <= MoveStep)
 	{
 		Current = Target;
@@ -118,13 +119,13 @@ void ACTPCentiNode::FollowPrevNode(float DeltaTime)
 
 		if (BestTargetIndex >= 0 && BestTargetIndex < HitSwitches.Num())
 			HitSwitches.RemoveAt(0, BestTargetIndex + 1);
-		
+
 		if (MoveStep > 0.f && HitSwitches.Num() > 0)
 		{
 			Target = HitSwitches[0];
 			ToTarget = Target - Current;
 			Distance = ToTarget.Size();
-			
+
 			if (Distance > 0.f)
 			{
 				FVector Dir = ToTarget / Distance;
@@ -135,8 +136,8 @@ void ACTPCentiNode::FollowPrevNode(float DeltaTime)
 	}
 	else
 	{
-		FVector Dir =  ToTarget / Distance;
-		MovingDirection = FVector2D(FMath::RoundToFloat(Dir.Y),FMath::RoundToFloat(Dir.Z));
+		FVector Dir = ToTarget / Distance;
+		MovingDirection = FVector2D(FMath::RoundToFloat(Dir.Y), FMath::RoundToFloat(Dir.Z));
 		RemainingVerticalOffset = Distance * MovingDirection.Y;
 		Current += Dir * MoveStep;
 	}
@@ -150,23 +151,25 @@ void ACTPCentiNode::FollowPrevNode(float DeltaTime)
 		RecentDir = (HitSwitches[0] - Current).GetSafeNormal();
 	else
 		RecentDir = (Current - PrevNode->GetActorLocation()).GetSafeNormal();
-	
+
 	float AngleDeg = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(RecentDir, ToPrev.GetSafeNormal())));
-	
+
 	if (AngleDeg < 25.f)
 	{
 		if (CurrentDist < Offset - 3)
 		{
 			FVector Dir = -ToPrev.GetSafeNormal();
-			MovingDirection = FVector2D(FMath::RoundToFloat(-ToPrev.GetSafeNormal().Y), FMath::RoundToFloat(-ToPrev.GetSafeNormal().Z));
+			MovingDirection = FVector2D(FMath::RoundToFloat(-ToPrev.GetSafeNormal().Y),
+			                            FMath::RoundToFloat(-ToPrev.GetSafeNormal().Z));
 			float Adjust = (75 - CurrentDist) * 0.5f;
 			Current += Dir * Adjust;
 		}
 		else if (CurrentDist > Offset + 3)
 		{
 			FVector Dir = ToPrev.GetSafeNormal();
-			
-			MovingDirection = FVector2D(FMath::RoundToFloat(ToPrev.GetSafeNormal().Y), FMath::RoundToFloat(ToPrev.GetSafeNormal().Z));
+
+			MovingDirection = FVector2D(FMath::RoundToFloat(ToPrev.GetSafeNormal().Y),
+			                            FMath::RoundToFloat(ToPrev.GetSafeNormal().Z));
 			float Adjust = (CurrentDist - 85) * 0.5f;
 			Current += Dir * Adjust;
 		}
@@ -187,24 +190,26 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 			if (FMath::Abs(RemainingVerticalOffset) <= Step)
 			{
 				InitialLocation.Z += RemainingVerticalOffset;
-				
+
 				SetActorLocation(InitialLocation);
-				
+
 				bIsMovingVertically = false;
 				RemainingVerticalOffset = 0.f;
 
-		
-				FVector NextHorizontalLocation = InitialLocation + FVector(0.f, -LastMovingDirection.X, -LastMovingDirection.Y) * (Step * 2.f);
-   				if (CheckCollisionAt(NextHorizontalLocation))
+
+				FVector NextHorizontalLocation = InitialLocation + FVector(
+					0.f, -LastMovingDirection.X, -LastMovingDirection.Y) * (Step * 2.f);
+				if (CheckCollisionAt(NextHorizontalLocation))
 				{
-					NextHorizontalLocation = InitialLocation + FVector(0.f, LastMovingDirection.X, LastMovingDirection.Y) * (Step * 2.f);
-            
+					NextHorizontalLocation = InitialLocation + FVector(0.f, LastMovingDirection.X,
+					                                                   LastMovingDirection.Y) * (Step * 2.f);
+
 					if (!CheckCollisionAt(NextHorizontalLocation))
 					{
 						MovingDirection = LastMovingDirection;
 						DetectNextObstacle();
 					}
-   					else
+					else
 						MovingDirection = -LastMovingDirection;
 				}
 				else
@@ -223,7 +228,7 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 			// we don't want to continue to the collision's checks
 			return;
 		}
-		
+
 		// ------- Collisions handling ------- //
 		FVector NewLocation = InitialLocation + FVector(0.f, MovingDirection.X, MovingDirection.Y) * Step;
 		if ((CheckCollisionAt(NewLocation) || FindDistToNextBound(NewLocation) < 5) && !bIsMovingVertically)
@@ -234,7 +239,7 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 				LastMovingDirection = MovingDirection;
 				FVector PivotBeforeTurn = GetActorLocation();
 				AddHitSwitch(PivotBeforeTurn, NextNode);
-				
+
 				FVector NextVerticalLocation = PivotBeforeTurn;
 				if (bIsFalling)
 				{
@@ -270,7 +275,7 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 						MovingDirection = FVector2D(0, 1);
 					}
 				}
-				
+
 				bIsMovingVertically = true;
 				RemainingVerticalOffset = Offset * MovingDirection.Y;
 
@@ -289,15 +294,17 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 					bIsCollidingPoison = false;
 					MovingDirection = FVector2D(0, -1);
 				}
-				
+
 				AddHitSwitch(NextVerticalLocation, NextNode);
 			}
 		}
 
 		// Limits of the game zone
-		NewLocation.Y = FMath::Clamp(NewLocation.Y, GameMode->Bounds.Min.X + 0.5f * MeshScale.X * 100, GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100);
-		NewLocation.Z = FMath::Clamp(NewLocation.Z, GameMode->Bounds.Min.Y + 0.5f * MeshScale.Y * 100, GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100);
-		
+		NewLocation.Y = FMath::Clamp(NewLocation.Y, GameMode->Bounds.Min.X + 0.5f * MeshScale.X * 100,
+		                             GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100);
+		NewLocation.Z = FMath::Clamp(NewLocation.Z, GameMode->Bounds.Min.Y + 0.5f * MeshScale.Y * 100,
+		                             GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100);
+
 		SetActorLocation(NewLocation);
 	}
 }
@@ -307,7 +314,7 @@ void ACTPCentiNode::AddHitSwitch(FVector Position, ACTPCentiNode* Node)
 	if (!Node || !Node->PrevNode) return;
 
 	FVector Last = Node->HitSwitches.Num() > 0 ? Node->HitSwitches.Last() : Node->PrevNode->GetActorLocation();
-	
+
 	if (Node->HitSwitches.Num() == 0 || FVector::Dist(Position, Last) >= Offset - 2)
 	{
 		Node->HitSwitches.Emplace(Position);
@@ -322,7 +329,7 @@ AActor* ACTPCentiNode::DetectNextObstacle()
 {
 	FVector Start = GetActorLocation();
 	FVector End = Start + FVector(0.f, MovingDirection.X, 0) * 2000.f;
-	
+
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
@@ -334,17 +341,21 @@ AActor* ACTPCentiNode::DetectNextObstacle()
 		ECC_Visibility,
 		CollisionParams
 	);
-	
+
 	if (bHit)
 	{
-		FVector NextMushroomLocation = FVector(HitResult.Location.X, HitResult.Location.Y - MeshScale.X * 100 * 0.5f * MovingDirection.X, HitResult.Location.Z);
+		FVector NextMushroomLocation = FVector(HitResult.Location.X,
+		                                       HitResult.Location.Y - MeshScale.X * 100 * 0.5f * MovingDirection.X,
+		                                       HitResult.Location.Z);
 		AddHitSwitch(NextMushroomLocation, NextNode);
 	}
 	else
 	{
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
-			AddHitSwitch(FVector(GetActorLocation().X, GameMode->Bounds.Max.X * MovingDirection.X - MeshScale.X * 100 * 0.5f * MovingDirection.X, GetActorLocation().Z), NextNode);
+			AddHitSwitch(FVector(GetActorLocation().X,
+			                     GameMode->Bounds.Max.X * MovingDirection.X - MeshScale.X * 100 * 0.5f * MovingDirection
+			                     .X, GetActorLocation().Z), NextNode);
 		}
 	}
 	return HitResult.GetActor();
@@ -356,7 +367,7 @@ bool ACTPCentiNode::CheckCollisionAt(FVector Location)
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 
-	bool bHit =  GetWorld()->SweepSingleByChannel(
+	bool bHit = GetWorld()->SweepSingleByChannel(
 		Hit,
 		GetActorLocation(),
 		Location,
@@ -367,7 +378,7 @@ bool ACTPCentiNode::CheckCollisionAt(FVector Location)
 	);
 	if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(Hit.GetActor()))
 	{
-		if(Mushroom->bIsPoison)
+		if (Mushroom->bIsPoison)
 			bIsCollidingPoison = true;
 	}
 	return bHit;
@@ -376,28 +387,29 @@ bool ACTPCentiNode::CheckCollisionAt(FVector Location)
 float ACTPCentiNode::FindDistToNextBound(FVector NewLocation) const
 {
 	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
- 	{
+	{
 		if (MovingDirection.Y == -1)
-			return  FMath::Abs(GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5 - NewLocation.Z);
+			return FMath::Abs(GameMode->Bounds.Min.Y + MeshScale.Y * 100 * 0.5 - NewLocation.Z);
 
 		if (MovingDirection.Y == 1)
-			return  FMath::Abs(GameMode->Bounds.Max.Y - MeshScale.Y * 100 * 0.5 - NewLocation.Z);
-		
+			return FMath::Abs(GameMode->Bounds.Max.Y - MeshScale.Y * 100 * 0.5 - NewLocation.Z);
+
 		if (MovingDirection.X == -1)
- 			return  FMath::Abs(GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5 - NewLocation.Y);
+			return FMath::Abs(GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5 - NewLocation.Y);
 
 		if (MovingDirection.X == 1)
- 			return  FMath::Abs(GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5 - NewLocation.Y);
- 	}
-	
- 	return FLT_MAX;
+			return FMath::Abs(GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5 - NewLocation.Y);
+	}
+
+	return FLT_MAX;
 }
 
 void ACTPCentiNode::DeleteOutsideBounds()
 {
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		if (FMath::Abs(GetActorLocation().Y) > GameMode->Bounds.Max.X || FMath::Abs(GetActorLocation().Z) > GameMode->Bounds.Max.Y)
+		if (FMath::Abs(GetActorLocation().Y) > GameMode->Bounds.Max.X || FMath::Abs(GetActorLocation().Z) > GameMode->
+			Bounds.Max.Y)
 		{
 			this->Destroy();
 		}
@@ -408,7 +420,7 @@ void ACTPCentiNode::BecomeHead()
 {
 	MeshComponent->SetStaticMesh(HeadNodeMesh);
 	bIsHead = true;
-	
+
 	CleanFuturePositions(this);
 
 	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
@@ -423,13 +435,13 @@ void ACTPCentiNode::BecomeHead()
 			DetectNextObstacle();
 			return;
 		}
-		
+
 		if (MovingDirection.X != 0)
 		{
 			LastMovingDirection = MovingDirection;
 			FVector PivotBeforeTurn = GetActorLocation();
 			AddHitSwitch(PivotBeforeTurn, NextNode);
-					
+
 			FVector NextVerticalLocation = PivotBeforeTurn;
 			if (bIsFalling)
 			{
@@ -453,7 +465,7 @@ void ACTPCentiNode::BecomeHead()
 					MovingDirection = FVector2D(0, 1);
 				}
 			}
-					
+
 			bIsMovingVertically = true;
 			RemainingVerticalOffset = Offset * MovingDirection.Y;
 
@@ -471,50 +483,51 @@ void ACTPCentiNode::BecomeHead()
 void ACTPCentiNode::CleanFuturePositions(ACTPCentiNode* NewHeadNode)
 {
 	if (!NewHeadNode || !NewHeadNode->NextNode) return;
-	
+
 	FVector NewHeadPos = NewHeadNode->GetActorLocation();
-	
+
 	ACTPCentiNode* CurrentNode = NewHeadNode->NextNode;
 	while (CurrentNode)
 	{
 		TArray<FVector> CleanedHistory;
-		
+
 		for (int32 i = 0; i < CurrentNode->HitSwitches.Num(); ++i)
 		{
 			FVector HistoryPos = CurrentNode->HitSwitches[i];
 			bool bKeepPosition = ShouldKeepPosition(CurrentNode, NewHeadPos, i, NewHeadNode);
-			
+
 			if (bKeepPosition)
 				CleanedHistory.Add(HistoryPos);
-			
+
 			else
 				break;
 		}
-		
+
 		CurrentNode->HitSwitches = CleanedHistory;
-		
+
 		if (CurrentNode->HitSwitches.Num() == 0 && CurrentNode->PrevNode)
 			CurrentNode->HitSwitches.Add(NewHeadPos);
-		
+
 		CurrentNode = CurrentNode->NextNode;
 	}
 }
 
-bool ACTPCentiNode::ShouldKeepPosition(ACTPCentiNode* Node, const FVector& NewHeadPos, int32 PositionIndex, ACTPCentiNode* NewHeadNode)
+bool ACTPCentiNode::ShouldKeepPosition(ACTPCentiNode* Node, const FVector& NewHeadPos, int32 PositionIndex,
+                                       ACTPCentiNode* NewHeadNode)
 {
 	float DistanceAlongPath = 0.f;
 	FVector CurrentPos = Node->GetActorLocation();
-	
+
 	for (int32 i = 0; i <= PositionIndex && i < Node->HitSwitches.Num(); ++i)
 	{
 		FVector NextPos = Node->HitSwitches[i];
 		DistanceAlongPath += FVector::Dist(CurrentPos, NextPos);
 		CurrentPos = NextPos;
 	}
-	
+
 	float DistanceToNewHead = 0.f;
 	CurrentPos = Node->GetActorLocation();
-	
+
 	ACTPCentiNode* TempNode = Node;
 	while (TempNode && TempNode != NewHeadNode)
 	{
@@ -525,7 +538,7 @@ bool ACTPCentiNode::ShouldKeepPosition(ACTPCentiNode* Node, const FVector& NewHe
 		}
 		else
 			break;
-		
+
 		if (TempNode && FVector::Dist(TempNode->GetActorLocation(), NewHeadPos) < 10.f)
 			break;
 	}
@@ -545,9 +558,9 @@ void ACTPCentiNode::HitPlayer(ACtpPlayerPawn* Player)
 void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 {
 	Super::HitBullet(Bullet);
-	
+
 	// Split the centipede
-   	if (PrevNode)
+	if (PrevNode)
 	{
 		PrevNode->NextNode = nullptr;
 	}
@@ -577,19 +590,23 @@ void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 		{
 			// Spawn a mushroom
 			ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-			float ClampedYLocation = FMath::Clamp(this->GetActorLocation().Y, GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5, GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5);
+			float ClampedYLocation = FMath::Clamp(this->GetActorLocation().Y,
+			                                      GameMode->Bounds.Min.X + MeshScale.X * 100 * 0.5,
+			                                      GameMode->Bounds.Max.X - MeshScale.X * 100 * 0.5);
 
 			// Snap Z location on the nearest row
-			float ApproximativeRow = (GameMode->Bounds.Max.Y - this->GetActorLocation().Z - Mushroom->MeshScale.Y * 100 * 0.5) / GameMode->SquareSize.Y;
-			float CorrectedZLocation = GameMode->Bounds.Max.Y - (FMath::RoundToInt(ApproximativeRow) * GameMode->SquareSize.Y) - Mushroom->MeshScale.Y * 100 * 0.5;
+			float ApproximativeRow = (GameMode->Bounds.Max.Y - this->GetActorLocation().Z - Mushroom->MeshScale.Y * 100
+				* 0.5) / GameMode->SquareSize.Y;
+			float CorrectedZLocation = GameMode->Bounds.Max.Y - (FMath::RoundToInt(ApproximativeRow) * GameMode->
+				SquareSize.Y) - Mushroom->MeshScale.Y * 100 * 0.5;
 
 			Mushroom->InitializePosition(FVector(GetActorLocation().X, ClampedYLocation, CorrectedZLocation));
-			
+
 			// Score points
 			if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
 			{
 				if (bIsHead)
-					ScoreSystem->SetScore(ScoreSystem->GetScore() +  100);
+					ScoreSystem->SetScore(ScoreSystem->GetScore() + 100);
 				else
 					ScoreSystem->SetScore(ScoreSystem->GetScore() + 10);
 			}
@@ -611,7 +628,7 @@ void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 				{
 					FActorSpawnParameters SpawnParams;
 					SpawnParams.Owner = this;
-			
+
 					GameLoop->GenerateCentipede(World, SpawnParams, GameMode);
 				}
 			}

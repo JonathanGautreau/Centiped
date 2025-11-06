@@ -18,21 +18,22 @@ ACtpBullet::ACtpBullet()
 
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	if(!RootComponent)
+	if (!RootComponent)
 	{
 		RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSceneComponent"));
 	}
 
-	if(!MeshComponent)
+	if (!MeshComponent)
 	{
 		MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMeshComponent"));
-		
-		static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/SM_Bullet.SM_Bullet"));
-		if(StaticMeshRef.Succeeded())
+
+		static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(
+			TEXT("/Game/Centiped/Meshes/SM_Bullet.SM_Bullet"));
+		if (StaticMeshRef.Succeeded())
 		{
 			MeshComponent->SetStaticMesh(StaticMeshRef.Object);
 		}
-		
+
 		MeshComponent->SetGenerateOverlapEvents(true);
 		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		MeshComponent->SetCollisionProfileName(UCollisionProfile::DefaultProjectile_ProfileName);
@@ -40,9 +41,9 @@ ACtpBullet::ACtpBullet()
 		MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 		MeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap); // Collisions with Mushrooms
 		MeshComponent->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Overlap); // Collisions with Centipede
-		
+
 		MeshComponent->SetRelativeScale3D(FVector(Radius, Radius, Radius));
-		MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
+		MeshComponent->SetDefaultCustomPrimitiveDataVector4(0, FVector4(0.2f, 0.2f, 0, 1.0f));
 		MeshComponent->SetupAttachment(RootComponent);
 	}
 }
@@ -51,14 +52,13 @@ ACtpBullet::ACtpBullet()
 void ACtpBullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ACtpBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	BulletVelocity(DeltaTime);
 	DestroyOutsideBounds();
 }
@@ -85,7 +85,7 @@ void ACtpBullet::DestroyOutsideBounds()
 void ACtpBullet::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	
+
 	if (OtherActor && OtherActor != this)
 	{
 		if (Cast<ACtpMushroom>(OtherActor))

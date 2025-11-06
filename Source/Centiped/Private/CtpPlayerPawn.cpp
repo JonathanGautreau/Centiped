@@ -26,7 +26,7 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	
+
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRef(TEXT("/Game/Centiped/Meshes/Player.Player"));
 	if (StaticMeshRef.Succeeded())
 	{
@@ -40,9 +40,9 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	MeshComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap); // Collisions with Mushrooms
 	MeshComponent->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Overlap); // Collisions with Centipede
-	
+
 	MeshComponent->SetRelativeScale3D(FVector(1, MeshScale.X, MeshScale.Y));
-	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
+	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0, FVector4(0.2f, 0.2f, 0, 1.0f));
 	MeshComponent->SetupAttachment(RootComponent);
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> MoveActionRef(TEXT("/Game/Centiped/Inputs/IA_Move.IA_Move"));
@@ -55,8 +55,9 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 	{
 		UE_LOG(LogCentiped, Error, TEXT("Failed to load MoveAction from /Game/Centiped/Inputs/IA_Move"));
 	}
-	
-	static ConstructorHelpers::FObjectFinder<UInputAction> ShootActionRef(TEXT("/Game/Centiped/Inputs/IA_Shoot.IA_Shoot"));
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> ShootActionRef(
+		TEXT("/Game/Centiped/Inputs/IA_Shoot.IA_Shoot"));
 	if (ShootActionRef.Succeeded())
 	{
 		ShootAction = ShootActionRef.Object;
@@ -67,7 +68,8 @@ ACtpPlayerPawn::ACtpPlayerPawn()
 		UE_LOG(LogCentiped, Error, TEXT("Failed to load ShootAction from /Game/Centiped/Inputs/IA_Shoot"));
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> RestartActionRef(TEXT("/Game/Centiped/Inputs/IA_Restart.IA_Restart"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> RestartActionRef(
+		TEXT("/Game/Centiped/Inputs/IA_Restart.IA_Restart"));
 	if (RestartActionRef.Succeeded())
 	{
 		RestartAction = RestartActionRef.Object;
@@ -127,7 +129,7 @@ void ACtpPlayerPawn::PlayerMovements(float DeltaTime)
 	{
 		FVector InitialLocation = GetActorLocation();
 		FVector NewLocation = InitialLocation + FVector(0.f, MoveDirection.X, MoveDirection.Y) * DeltaTime * MoveSpeed;
-		
+
 		FHitResult HitResult;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this);
@@ -141,16 +143,18 @@ void ACtpPlayerPawn::PlayerMovements(float DeltaTime)
 			FCollisionShape::MakeBox(FVector(5.f, MeshScale.X * 100.f * 0.5f, MeshScale.Y * 100.f * 0.5f)),
 			Params
 		);
-		
+
 		if (bHit && HitResult.GetActor() && Cast<ACtpMushroom>(HitResult.GetActor()))
 		{
 			// Diagonal movement is not allowed in the event of a collision because the player could slip between two obstacles
 			return;
 		}
-		
+
 		// Limits of the Player zone
-		NewLocation.Y = FMath::Clamp(NewLocation.Y, GameMode->Bounds.Min.X + 0.5f * MeshScale.X * 100, GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100);
-		NewLocation.Z = FMath::Clamp(NewLocation.Z, GameMode->Bounds.Min.Y + 0.5f * MeshScale.Y * 100, GameMode->Bounds.Min.Y / 3);
+		NewLocation.Y = FMath::Clamp(NewLocation.Y, GameMode->Bounds.Min.X + 0.5f * MeshScale.X * 100,
+		                             GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100);
+		NewLocation.Z = FMath::Clamp(NewLocation.Z, GameMode->Bounds.Min.Y + 0.5f * MeshScale.Y * 100,
+		                             GameMode->Bounds.Min.Y / 3);
 
 		SetActorLocation(NewLocation);
 		MoveDirection = FVector2D::Zero();
@@ -214,7 +218,8 @@ void ACtpPlayerPawn::Shoot(const FInputActionInstance& Instance)
 				FActorSpawnParameters SpawnParams;
 				SpawnParams.Owner = this;
 
-				const FVector InitialPosition = FVector(0, GetActorLocation().Y, GetActorLocation().Z + MeshScale.Y * 100 * 0.5f);
+				const FVector InitialPosition = FVector(0, GetActorLocation().Y,
+				                                        GetActorLocation().Z + MeshScale.Y * 100 * 0.5f);
 				World->SpawnActor<ACtpBullet>(ProjectileClass, InitialPosition, FRotator(), SpawnParams);
 			}
 		}
@@ -235,12 +240,12 @@ void ACtpPlayerPawn::RestartGame(const FInputActionInstance& Instance)
 {
 	if (GetLife() != 0)
 		return;
-	
+
 	if (UWorld* World = GetWorld())
 	{
 		APlayerController* PlayerController = World->GetFirstPlayerController();
 		if (!PlayerController) return;
-		
+
 		if (ACtpHud* HUD = Cast<ACtpHud>(PlayerController->GetHUD()))
 		{
 			HUD->ShowGameOverText(false);
