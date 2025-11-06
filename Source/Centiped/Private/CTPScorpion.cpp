@@ -5,6 +5,8 @@
 
 #include "CtpGameMode.h"
 #include "CtpMushroom.h"
+#include "FMODStudioModule.h"
+#include "fmod_studio.hpp"
 
 
 // Sets default values
@@ -84,6 +86,15 @@ void ACTPScorpion::HitBullet(ACtpBullet* Bullet)
 {
 	Super::HitBullet(Bullet);
 
+	FMOD::Studio::EventDescription* AudioDesc_SCORPIONDESTROY =nullptr;
+	FMOD::Studio::EventInstance* AudioInst_SCORPIONDESTROY =nullptr;
+	IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Ennemy/Scorpion_Destroy", &AudioDesc_SCORPIONDESTROY);
+	AudioDesc_SCORPIONDESTROY->createInstance(&AudioInst_SCORPIONDESTROY);
+	AudioInst_SCORPIONDESTROY->start();
+	AudioInst_SCORPIONDESTROY->release();
+	AudioDesc_SCORPIONDESTROY = nullptr;
+	AudioInst_SCORPIONDESTROY = nullptr;
+	
 	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		if (UCTPScoreSystem* Score = GameMode->GetScoreSystem())

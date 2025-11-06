@@ -7,6 +7,8 @@
 #include "CtpBullet.h"
 #include "CtpGameMode.h"
 #include "CtpLog.h"
+#include "FMODStudioModule.h"
+#include "fmod_studio.hpp"
 
 
 // Sets default values
@@ -114,6 +116,16 @@ void ACTPEnemy::HitPlayer(ACtpPlayerPawn* Player)
 			}
 		}
 	}
+	
+	FMOD::Studio::EventDescription* AudioDesc_HITPLAYER =nullptr;
+	FMOD::Studio::EventInstance* AudioInst_HITPLAYER =nullptr;
+	IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Ennemy/Hit_Player", &AudioDesc_HITPLAYER);
+	AudioDesc_HITPLAYER->createInstance(&AudioInst_HITPLAYER);
+	AudioInst_HITPLAYER->start();
+	AudioInst_HITPLAYER->release();
+	AudioDesc_HITPLAYER = nullptr;
+	AudioInst_HITPLAYER = nullptr;
+	
 }
 
 void ACTPEnemy::HitBullet(ACtpBullet* Bullet)

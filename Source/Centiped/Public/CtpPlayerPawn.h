@@ -85,6 +85,7 @@ public:
 	void LoseLife();
 	void GainLife();
 
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="PlayerPawn")
 	TSubclassOf<ACtpBullet> ProjectileClass = ACtpBullet::StaticClass();

@@ -5,6 +5,8 @@
 
 #include "CtpGameMode.h"
 #include "CtpLog.h"
+#include "FMODStudioModule.h"
+#include "fmod_studio.hpp"
 
 
 // Sets default values
@@ -98,6 +100,15 @@ void ACTPSpider::HitBullet(ACtpBullet* Bullet)
 {
 	Super::HitBullet(Bullet);
 
+	FMOD::Studio::EventDescription* AudioDesc_SPIDERDESTROY =nullptr;
+	FMOD::Studio::EventInstance* AudioInst_SPIDERDESTROY =nullptr;
+	IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Ennemy/Spider_Destroy", &AudioDesc_SPIDERDESTROY);
+	AudioDesc_SPIDERDESTROY->createInstance(&AudioInst_SPIDERDESTROY);
+	AudioInst_SPIDERDESTROY->start();
+	AudioInst_SPIDERDESTROY->release();
+	AudioDesc_SPIDERDESTROY = nullptr;
+	AudioInst_SPIDERDESTROY = nullptr;
+	
 	if (UWorld* World = GetWorld())
 	{
 		if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(World->GetAuthGameMode()))

@@ -5,10 +5,12 @@
 #include "CtpBullet.h"
 #include "CtpGameMode.h"
 #include "CtpGameLoop.h"
+#include "fmod_studio.hpp"
 #include "CtpLog.h"
 #include "CtpMushroom.h"
 #include "CtpPlayerPawn.h"
 #include "EngineUtils.h"
+#include "FMODStudioModule.h"
 
 // Sets default values
 ACTPCentiNode::ACTPCentiNode()
@@ -568,6 +570,17 @@ void ACTPCentiNode::HitBullet(ACtpBullet* Bullet)
 		NextNode->BecomeHead();
 	}
 
+	FMOD::Studio::EventDescription* AudioDesc_CENTIPEDDESTROY =nullptr;
+	FMOD::Studio::EventInstance* AudioInst_CENTIPEDDESTROY =nullptr;
+	IFMODStudioModule::Get().GetStudioSystem(EFMODSystemContext::Runtime)->getEvent("event:/Ennemy/Centiped_Destroy", &AudioDesc_CENTIPEDDESTROY);
+	AudioDesc_CENTIPEDDESTROY->createInstance(&AudioInst_CENTIPEDDESTROY);
+	if (bIsHead) AudioInst_CENTIPEDDESTROY->setParameterByName("bIsHead",1);
+	else AudioInst_CENTIPEDDESTROY->setParameterByName("bIsHead",0);
+	AudioInst_CENTIPEDDESTROY->start();
+	AudioInst_CENTIPEDDESTROY->release();
+	AudioDesc_CENTIPEDDESTROY =nullptr;
+	AudioInst_CENTIPEDDESTROY = nullptr;
+	
 	// Delete the hit node, then create mushroom
 	this->Destroy();
 

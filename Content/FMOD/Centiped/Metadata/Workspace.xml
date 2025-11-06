@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="Workspace" id="{8d11fdf2-37e6-4e2f-af5f-e0c4ca80145a}">
+		<property name="builtBanksOutputDirectory">
+			<value>F:/CWork/ICAN/Git/Centiped/Content/FMOD</value>
+		</property>
+		<relationship name="masterEventFolder">
+			<destination>{b2150cd7-1ceb-4f87-8974-6b02817fd9ad}</destination>
+		</relationship>
+		<relationship name="masterTagFolder">
+			<destination>{bac1dfb3-24ac-438b-a111-510835e303fb}</destination>
+		</relationship>
+		<relationship name="masterEffectPresetFolder">
+			<destination>{df1cf189-b07e-4f9e-b118-640f1911440a}</destination>
+		</relationship>
+		<relationship name="masterParameterPresetFolder">
+			<destination>{74a5e39b-23c9-46bd-934c-dc51deff18e0}</destination>
+		</relationship>
+		<relationship name="masterBankFolder">
+			<destination>{38a0c016-3ef9-4cc4-a824-72267f6b58c8}</destination>
+		</relationship>
+		<relationship name="masterSandboxFolder">
+			<destination>{94c265eb-a99e-4f61-a217-7e4a21089b8d}</destination>
+		</relationship>
+		<relationship name="masterAssetFolder">
+			<destination>{e5e3d7d2-e8ec-47c2-b9e9-507161cf1239}</destination>
+		</relationship>
+		<relationship name="mixer">
+			<destination>{50295f7e-6c9e-4567-a994-b2264066a116}</destination>
+		</relationship>
+		<relationship name="profilerSessionFolder">
+			<destination>{406769a5-7944-4590-ba51-41cedceaa3dd}</destination>
+		</relationship>
+		<relationship name="platforms">
+			<destination>{75ab6a01-4ac9-40d2-8f1e-7f60d60db976}</destination>
+		</relationship>
+	</object>
+</objects>

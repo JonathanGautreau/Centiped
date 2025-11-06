@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{1ccf669c-32f4-49ec-be21-c1a87f277646}">
+		<property name="assetPath">
+			<value>Beeps, Lofi, Game, Retro, 8 Bit, Explosion 02 SND101140.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>0.94212499999999999</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{e5e3d7d2-e8ec-47c2-b9e9-507161cf1239}</destination>
+		</relationship>
+	</object>
+</objects>
