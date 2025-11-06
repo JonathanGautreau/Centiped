@@ -75,6 +75,7 @@ void ACTPCentiNode::Move(float DeltaTime)
 	{
 		FollowPrevNode(DeltaTime);
 	}
+	DeleteOutsideBounds();
 }
 
 void ACTPCentiNode::FollowPrevNode(float DeltaTime)
@@ -303,7 +304,6 @@ void ACTPCentiNode::AddHitSwitch(FVector Position, ACTPCentiNode* Node)
 	if (Node->HitSwitches.Num() == 0 || FVector::Dist(Position, Last) >= Offset - 2)
 	{
 		Node->HitSwitches.Emplace(Position);
-		// DrawDebugSphere(GetWorld(), Position, 20.f, 8, FColor::MakeRandomColor(), false, 5.f);
 
 		if (Node->NextNode)
 			AddHitSwitch(Position, Node->NextNode);
@@ -327,10 +327,7 @@ AActor* ACTPCentiNode::DetectNextObstacle()
 		ECC_Visibility,
 		CollisionParams
 	);
-
-	// FColor LineColor = bHit ? FColor::Red : FColor::Green;
-	// DrawDebugLine(GetWorld(), Start, End, LineColor, false, 1.0f, 0, 2.0f);
-
+	
 	if (bHit)
 	{
 		FVector NextMushroomLocation = FVector(HitResult.Location.X, HitResult.Location.Y - MeshScale.X * 100 * 0.5f * MovingDirection.X, HitResult.Location.Z);
@@ -387,6 +384,17 @@ float ACTPCentiNode::FindDistToNextBound(FVector NewLocation) const
  	}
 	
  	return FLT_MAX;
+}
+
+void ACTPCentiNode::DeleteOutsideBounds()
+{
+	if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (FMath::Abs(GetActorLocation().Y) > GameMode->Bounds.Max.X || FMath::Abs(GetActorLocation().Z) > GameMode->Bounds.Max.Y)
+		{
+			this->Destroy();
+		}
+	}
 }
 
 void ACTPCentiNode::BecomeHead()

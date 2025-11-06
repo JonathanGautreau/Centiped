@@ -14,14 +14,17 @@ class CENTIPED_API ACtpHud : public AHUD
 {
 	GENERATED_BODY()
 	
+public:
+	ACtpHud();
+	void ShowGameOverText(bool bDisplayGameOverText);
+	
 protected:
 	virtual void DrawHUD() override;
-
-public:
-	void ShowGameOverText(bool bDisplayGameOverText);
-
 
 private:
 	UPROPERTY(EditAnywhere, Category="HUD")
 	bool bDisplayText = false;
+
+	UPROPERTY(EditAnywhere, Category="HUD")
+	UFont* CustomFont;
 };

@@ -65,7 +65,7 @@ public:
 	int CentipedeSize = 10;
 	
 	UPROPERTY(category = "GameLoop", EditAnywhere)
-	int InitialNumberOfMushrooms = 30;
+	int InitialNumberOfMushrooms = 20;
 	
 	UPROPERTY(category = "GameLoop", EditAnywhere)
 	bool bIsFlea;
