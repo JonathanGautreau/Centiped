@@ -10,7 +10,7 @@
 
 
 // Sets default values
-ACTPEnemy::ACTPEnemy(): MoveSpeed(500)
+ACTPEnemy::ACTPEnemy() : MoveSpeed(500)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -39,7 +39,7 @@ void ACTPEnemy::PostInitializeComponents()
 	// ----- Mesh visuel -----
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); // Juste visuel
 	MeshComponent->SetRelativeScale3D(FVector(0.8f, 0.8f, 0.8f));
-	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0,FVector4(0.2f, 0.2f, 0, 1.0f));
+	MeshComponent->SetDefaultCustomPrimitiveDataVector4(0, FVector4(0.2f, 0.2f, 0, 1.0f));
 }
 
 // Called when the game starts or when spawned
@@ -58,13 +58,12 @@ void ACTPEnemy::Tick(float DeltaTime)
 
 void ACTPEnemy::Move(float DeltaTime)
 {
-	
 }
 
 void ACTPEnemy::NotifyActorBeginOverlap(AActor* OtherActor)
 {
- 	Super::NotifyActorBeginOverlap(OtherActor); // method from AActor
-	
+	Super::NotifyActorBeginOverlap(OtherActor); // method from AActor
+
 	if (OtherActor && OtherActor != this)
 	{
 		if (ACtpMushroom* Mushroom = Cast<ACtpMushroom>(OtherActor))
@@ -84,37 +83,36 @@ void ACTPEnemy::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void ACTPEnemy::HitMushroom(ACtpMushroom* Mushroom)
 {
-	
 }
 
 void ACTPEnemy::HitPlayer(ACtpPlayerPawn* Player)
 {
 	if (Player->bIsOverlappedByEnemy)
 		return;
-	
+
 	Player->bIsOverlappedByEnemy = true;
-	
+
 	// Loose one life
 	Player->LoseLife();
-	
+
 	if (ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 	{
- 		// Score mushrooms
- 		if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
- 			ScoreSystem->ScoreMushrooms();
-	
- 		// Reset round/game
- 		if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
- 		{
- 			if (Player->GetLife() == 0)
- 			{
- 				GameLoop->GameOver();
- 			}
- 			else
- 			{
- 				GameLoop->ResetRound();
- 			}
- 		}
+		// Score mushrooms
+		if (UCTPScoreSystem* ScoreSystem = GameMode->GetScoreSystem())
+			ScoreSystem->ScoreMushrooms();
+
+		// Reset round/game
+		if (UCtpGameLoop* GameLoop = GameMode->GetGameLoop())
+		{
+			if (Player->GetLife() == 0)
+			{
+				GameLoop->GameOver();
+			}
+			else
+			{
+				GameLoop->ResetRound();
+			}
+		}
 	}
 }
 

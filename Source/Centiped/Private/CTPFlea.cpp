@@ -15,14 +15,15 @@ ACTPFlea::ACTPFlea()
 	{
 		MeshComponent->SetStaticMesh(StaticMeshRefBase.Object);
 	}
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefDamaged(TEXT("/Game/Centiped/Meshes/flea2.flea2"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMeshRefDamaged(
+		TEXT("/Game/Centiped/Meshes/flea2.flea2"));
 	if (StaticMeshRefDamaged.Succeeded())
 	{
 		DamagedMesh = StaticMeshRefDamaged.Object;
 	}
-	
+
 	// ------- Override properties ------- //
-	MeshScale = FVector2D(.4f,.4f);
+	MeshScale = FVector2D(.4f, .4f);
 	CollisionBox->SetBoxExtent(FVector(50.f, MeshScale.X * 100 * 0.5f, MeshScale.Y * 100 * 0.5f));
 	MoveSpeed = 1000;
 	Life = 2;
@@ -32,8 +33,8 @@ ACTPFlea::ACTPFlea()
 void ACTPFlea::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	HitSwitch = FVector2D(GetActorLocation().X,GetActorLocation().Y - 120);
+
+	HitSwitch = FVector2D(GetActorLocation().X, GetActorLocation().Y - 120);
 }
 
 // Called every frame
@@ -45,7 +46,7 @@ void ACTPFlea::Tick(float DeltaTime)
 void ACTPFlea::Move(float DeltaTime)
 {
 	Super::Move(DeltaTime);
-	
+
 	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 	NewLocation.Y -= DeltaTime * MoveSpeed;
 	int Row = 0;
@@ -54,7 +55,7 @@ void ACTPFlea::Move(float DeltaTime)
 		if (UWorld* World = GetWorld())
 		{
 			ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
-			Mushroom->InitializePosition(FVector(GetActorLocation().X,GetActorLocation().Y,HitSwitch.Y));
+			Mushroom->InitializePosition(FVector(GetActorLocation().X, GetActorLocation().Y, HitSwitch.Y));
 		}
 		HitSwitch.Y -= FMath::RandRange(VerticalOffset, VerticalOffset * 2);
 	}
@@ -77,7 +78,7 @@ void ACTPFlea::HitMushroom(ACtpMushroom* Mushroom)
 {
 	Super::HitMushroom(Mushroom);
 
-	HitSwitch.Y = Mushroom->GetActorLocation().Z - FMath::RandRange(VerticalOffset, VerticalOffset*2);
+	HitSwitch.Y = Mushroom->GetActorLocation().Z - FMath::RandRange(VerticalOffset, VerticalOffset * 2);
 }
 
 void ACTPFlea::HitPlayer(ACtpPlayerPawn* Player)
@@ -88,10 +89,10 @@ void ACTPFlea::HitPlayer(ACtpPlayerPawn* Player)
 void ACTPFlea::HitBullet(ACtpBullet* Bullet)
 {
 	Super::HitBullet(Bullet);
-	
- 	Life--;
 
-	if (Life == 0 )
+	Life--;
+
+	if (Life == 0)
 	{
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
@@ -109,5 +110,3 @@ void ACTPFlea::HitBullet(ACtpBullet* Bullet)
 		MeshComponent->SetStaticMesh(DamagedMesh);
 	}
 }
-
-
