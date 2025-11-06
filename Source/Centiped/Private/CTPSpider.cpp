@@ -18,6 +18,7 @@ ACTPSpider::ACTPSpider()
 	
 	// ------- Override properties ------- //
 	MeshScale = FVector2D(.6f,.6f);
+	CollisionBox->SetBoxExtent(FVector(50.f, MeshScale.X * 100 * 0.5f, MeshScale.Y * 100 * 0.5f));
 	Life = 1;
 
 	// ------- Specific properties ------- //
@@ -133,9 +134,5 @@ void ACTPSpider::HitBullet(ACtpBullet* Bullet)
 
 void ACTPSpider::RandomSpeedOnX()
 {
-
-		Speed.X = FMath::RandRange(0, 250);
-
-		UE_LOG(LogCentiped, Log, TEXT("Modify X speed : %f"), Speed.X);
-	
+	Speed.X = FMath::RandRange(0, 250);
 }

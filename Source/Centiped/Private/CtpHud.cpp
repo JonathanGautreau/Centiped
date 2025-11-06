@@ -26,7 +26,7 @@ void ACtpHud::DrawHUD()
 
 	const FString LifeText = FString::Printf(TEXT("Life count : %.0f"), LifeCount);
 	const FString ScoreText = FString::Printf(TEXT("Score : %d"), Score);
-	const FLinearColor TextColor = FLinearColor::Black;
+	const FLinearColor TextColor = FLinearColor::White;
 
 	DrawText(LifeText, TextColor, 60.f, 20.f, nullptr, 1.5f, false);
 	DrawText(ScoreText, TextColor, 250.f, 20.f, nullptr, 1.5f, false);

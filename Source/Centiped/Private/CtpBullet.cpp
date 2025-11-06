@@ -7,6 +7,7 @@
 #include "CtpGameMode.h"
 #include "CTPLog.h"
 #include "CtpMushroom.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
@@ -92,7 +93,5 @@ void ACtpBullet::NotifyActorBeginOverlap(AActor* OtherActor)
 
 		if (Cast<ACTPEnemy>(OtherActor))
 			Destroy();
-		
-		// UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
 	}
 }

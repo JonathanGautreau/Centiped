@@ -39,7 +39,7 @@ ACtpMushroom::ACtpMushroom()
 		MeshMushroomHeavilyDamaged = StaticMeshRefBase3.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> NormalMatInstanceRef(TEXT("/Game/Centiped/Materials/MI_DefaultMat_White.MI_DefaultMat_White"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> NormalMatInstanceRef(TEXT("/Game/Centiped/Materials/MI_DefaultMat_Green.MI_DefaultMat_Green"));
 	if (NormalMatInstanceRef.Succeeded())
 	{
 		MatInstNormalMushroom = NormalMatInstanceRef.Object;
@@ -109,7 +109,6 @@ void ACtpMushroom::NotifyActorBeginOverlap(AActor* OtherActor)
 	
 	if (OtherActor && OtherActor != this)
 	{
-		// UE_LOG(LogCentiped, Log, TEXT("%s is  overlapping : %s"), *this->GetName(), *OtherActor->GetName());
 		if (const ACtpGameMode* GameMode = Cast<ACtpGameMode>(GetWorld()->GetAuthGameMode()))
 		{
 			if (Cast<ACtpBullet>(OtherActor))
@@ -155,9 +154,9 @@ void ACtpMushroom::CheckOnDestroyed()
 		{
 			GameLoop->PoisonedMush.Remove(this);
 			GameLoop->SetSpawnedMushroomsCount(GameLoop->GetSpawnedMushroomsCount() - 1);
-			// GameLoop->CheckFleaGeneration();
-			// GameLoop->CheckScorpionGeneration();
-			// GameLoop->CheckSpiderGeneration();
+			GameLoop->CheckFleaGeneration();
+			GameLoop->CheckScorpionGeneration();
+			GameLoop->CheckSpiderGeneration();
 			for (TActorIterator<AActor> It(GetWorld()); It; ++It)
 			{
 				if (ACTPCentiNode* Head = Cast<ACTPCentiNode>(*It))
