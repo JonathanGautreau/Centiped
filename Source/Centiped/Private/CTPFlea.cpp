@@ -5,7 +5,9 @@
 #include "CtpGameMode.h"
 #include "CtpMushroom.h"
 #include "CtpBullet.h"
+#include "CTPCentiNode.h"
 #include "CtpPlayerPawn.h"
+#include "EngineUtils.h"
 #include "FMODStudioModule.h"
 #include "fmod_studio.hpp"
 
@@ -51,13 +53,20 @@ void ACTPFlea::Move(float DeltaTime)
 
 	FVector2D NewLocation = FVector2D(GetActorLocation().Y, GetActorLocation().Z);
 	NewLocation.Y -= DeltaTime * MoveSpeed;
-	int Row = 0;
+
 	if (NewLocation.Y < HitSwitch.Y)
 	{
 		if (UWorld* World = GetWorld())
 		{
 			ACtpMushroom* Mushroom = World->SpawnActor<ACtpMushroom>(ACtpMushroom::StaticClass());
 			Mushroom->InitializePosition(FVector(GetActorLocation().X, GetActorLocation().Y, HitSwitch.Y));
+
+			for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+			{
+				if (ACTPCentiNode* Head = Cast<ACTPCentiNode>(*It))
+					if (Head->bIsHead && Head->MovingDirection.X != 0)
+						Head->DetectNextObstacle();
+			}
 		}
 		HitSwitch.Y -= FMath::RandRange(VerticalOffset, VerticalOffset * 2);
 	}
