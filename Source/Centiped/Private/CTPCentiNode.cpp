@@ -27,6 +27,8 @@ ACTPCentiNode::ACTPCentiNode()
 		HeadNodeMesh = HeadStaticMeshRef.Object;
 	}
 	CollisionBox->SetBoxExtent(FVector(50.f, MeshScale.X * 100 * 0.5f, MeshScale.Y * 100 * 0.5f));
+
+	MoveSpeed = 800.f;
 }
 
 void ACTPCentiNode::BeginPlay()
@@ -174,6 +176,7 @@ void ACTPCentiNode::FollowPrevNode(float DeltaTime)
 			Current += Dir * Adjust;
 		}
 	}
+	Current = FMath::VInterpConstantTo(GetActorLocation(), Current, DeltaTime, MoveSpeed);
 	SetActorLocation(Current);
 }
 
@@ -190,7 +193,6 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 			if (FMath::Abs(RemainingVerticalOffset) <= Step)
 			{
 				InitialLocation.Z += RemainingVerticalOffset;
-
 				SetActorLocation(InitialLocation);
 
 				bIsMovingVertically = false;
@@ -223,6 +225,7 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 				// Vertical progressive movement
 				InitialLocation.Z += Step * MovingDirection.Y;
 				RemainingVerticalOffset -= Step * MovingDirection.Y;
+				InitialLocation = FMath::VInterpConstantTo(GetActorLocation(), InitialLocation, DeltaTime, MoveSpeed);
 				SetActorLocation(InitialLocation);
 			}
 			// we don't want to continue to the collision's checks
@@ -304,7 +307,7 @@ void ACTPCentiNode::MoveTheHead(float DeltaTime)
 		                             GameMode->Bounds.Max.X - 0.5f * MeshScale.X * 100);
 		NewLocation.Z = FMath::Clamp(NewLocation.Z, GameMode->Bounds.Min.Y + 0.5f * MeshScale.Y * 100,
 		                             GameMode->Bounds.Max.Y - 0.5f * MeshScale.Y * 100);
-
+		NewLocation = FMath::VInterpConstantTo(GetActorLocation(), NewLocation, DeltaTime, MoveSpeed);
 		SetActorLocation(NewLocation);
 	}
 }
